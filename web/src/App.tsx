@@ -130,39 +130,39 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-100 text-zinc-900 flex flex-col selection:bg-zinc-900 selection:text-white">
-      {/* Top Header Bar */}
-      <Header
-        onOpenReceipt={() => {
-          setActiveStockItem(null);
-          setIsReceiptOpen(true);
+    <div className="min-h-screen bg-[#f4f5f8] text-zinc-900 flex selection:bg-lime selection:text-zinc-950">
+      {/* Desktop Sidebar Navigation (Full Height) */}
+      <Sidebar
+        currentTab={currentTab}
+        onSelectTab={(tab) => {
+          setStockInitialFilter(undefined);
+          setCurrentTab(tab);
         }}
-        onOpenIssue={() => {
-          setActiveStockItem(null);
-          setIsIssueOpen(true);
-        }}
-        onOpenTransfer={() => {
-          setActiveStockItem(null);
-          setIsTransferOpen(true);
-        }}
-        onSearchFocus={() => setCurrentTab('stock')}
-        onOpenCreateLocation={handleOpenCreateLocation}
-        isTabletMode={isTabletMode}
-        onToggleTabletMode={handleToggleTabletMode}
       />
 
-      <div className="flex-1 flex overflow-hidden">
-        {/* Desktop Sidebar Navigation */}
-        <Sidebar
-          currentTab={currentTab}
-          onSelectTab={(tab) => {
-            setStockInitialFilter(undefined);
-            setCurrentTab(tab);
+      {/* Main Canvas Area (Header + Content) */}
+      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+        <Header
+          onOpenReceipt={() => {
+            setActiveStockItem(null);
+            setIsReceiptOpen(true);
           }}
+          onOpenIssue={() => {
+            setActiveStockItem(null);
+            setIsIssueOpen(true);
+          }}
+          onOpenTransfer={() => {
+            setActiveStockItem(null);
+            setIsTransferOpen(true);
+          }}
+          onSearchFocus={() => setCurrentTab('stock')}
+          onOpenCreateLocation={handleOpenCreateLocation}
+          isTabletMode={isTabletMode}
+          onToggleTabletMode={handleToggleTabletMode}
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 pb-20 md:pb-6">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 pb-24 md:pb-8 overflow-y-auto">
           {currentTab === 'dashboard' && (
             <DashboardView
               onNavigateToStock={handleNavigateToStock}
@@ -170,6 +170,8 @@ const AppContent: React.FC = () => {
               onOpenMaterialModal={(id) => setSelectedMaterialId(id)}
               onNavigateToLocations={() => setCurrentTab('locations')}
               onOpenCreateLocation={handleOpenCreateLocation}
+              onQuickReceipt={handleQuickReceipt}
+              onQuickIssue={handleQuickIssue}
             />
           )}
 

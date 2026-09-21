@@ -253,7 +253,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white border border-zinc-200 rounded-lg p-4 shadow-xs space-y-3">
+      <div className="liquid-glass-card p-5 space-y-3.5">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3">
           {/* Search input */}
           <div className="md:col-span-4 relative">
@@ -376,8 +376,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
         </div>
       </div>
 
-      {/* Stock Table (Ron Design Canvas Card) */}
-      <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
+      {/* Stock Table (Liquid Glass Card) */}
+      <div className="liquid-glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 uppercase font-mono text-[11px]">
