@@ -1,0 +1,97 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function hasRole(role) {
+      return isAuthenticated() && getUserData().role == role;
+    }
+
+    function hasAnyRole(roles) {
+      return isAuthenticated() && (getUserData().role in roles);
+    }
+
+    function isAdmin() {
+      return hasRole('ADMIN');
+    }
+
+    function isSupervisor() {
+      return hasAnyRole(['ADMIN', 'SUPERVISOR']);
+    }
+
+    function isStorekeeper() {
+      return hasAnyRole(['ADMIN', 'SUPERVISOR', 'STOREKEEPER']);
+    }
+
+    function canAccessWarehouse(warehouseId) {
+      return isAdmin() || (warehouseId in getUserData().warehouseAccess) || ('*' in getUserData().warehouseAccess);
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Warehouses collection
+    match /warehouses/{warehouseId} {
+      allow read: if isAuthenticated();
+      allow write: if isAdmin();
+    }
+
+    // Bins collection
+    match /bins/{binId} {
+      allow read: if isAuthenticated();
+      allow write: if isSupervisor();
+    }
+
+    // Materials master collection
+    match /materials/{materialId} {
+      allow read: if isAuthenticated();
+      allow write: if isSupervisor();
+    }
+
+    // Stock collection
+    match /stock/{stockId} {
+      allow read: if isAuthenticated();
+      // Only storekeepers and above can modify stock, and availableQuantity must not be negative
+      allow create: if isStorekeeper() && request.resource.data.quantity >= 0;
+      allow update: if isStorekeeper() 
+        && request.resource.data.quantity >= 0 
+        && request.resource.data.availableQuantity >= 0;
+      allow delete: if isAdmin();
+    }
+
+    // Stock Movements collection — IMMUTABLE AUDIT TRAIL
+    match /stock_movements/{movementId} {
+      allow read: if isAuthenticated();
+      // Movements can only be created, NEVER updated or deleted
+      allow create: if isStorekeeper() 
+        && request.resource.data.performedBy == request.auth.uid;
+      allow update, delete: if false; // Strict immutability
+    }
+
+    // Physical Inventory counts
+    match /inventory_counts/{countId} {
+      allow read: if isAuthenticated();
+      allow create: if isStorekeeper();
+      allow update: if isSupervisor();
+      allow delete: if isAdmin();
+    }
+
+    // Audit Logs collection — IMMUTABLE
+    match /audit_logs/{logId} {
+      allow read: if isSupervisor();
+      allow create: if isAuthenticated();
+      allow update, delete: if false; // Strict immutability
+    }
+  }
+}

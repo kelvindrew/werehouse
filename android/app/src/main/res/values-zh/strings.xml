@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">WMS 仓库管理系统</string>
+    <string name="app_subtitle">B1 &amp; B2 仓库综合管理</string>
+    
+    <!-- Navigation & Hub -->
+    <string name="hub_title">仓库作业中心</string>
+    <string name="hub_subtitle">B1 &amp; B2 仓库作业 • 库管员</string>
+    <string name="tab_home">首页</string>
+    <string name="tab_stock">库存</string>
+    <string name="tab_scan">扫码</string>
+    <string name="tab_movements">流水</string>
+    <string name="tab_inventory">盘点</string>
+
+    <!-- KPIs -->
+    <string name="kpi_total_items">物料品类总数</string>
+    <string name="kpi_total_stock">库存总量</string>
+    <string name="kpi_total_value">库存总估值 (USD)</string>
+    <string name="kpi_active_warehouses">运行仓库数</string>
+    <string name="kpi_units">件/套</string>
+
+    <!-- Warehouses -->
+    <string name="wh_all">全部 (B1 + B2)</string>
+    <string name="wh_b1">B1 仓库 (MD01)</string>
+    <string name="wh_b2">B2 仓库 (A-E区)</string>
+
+    <!-- Quick Operations -->
+    <string name="action_scan">条码 / QR 扫码识别</string>
+    <string name="action_receipt">入库登记</string>
+    <string name="action_issue">领料出库</string>
+    <string name="action_transfer">库间移库调拨</string>
+    <string name="action_inventory">物理盘点调账</string>
+    <string name="recent_movements">最新出入库记录</string>
+
+    <!-- Stock Search & Details -->
+    <string name="search_hint">搜索编码、物料名称、中文名、库位...</string>
+    <string name="stock_title">全库物料库存清单</string>
+    <string name="col_photo">实图</string>
+    <string name="col_code">物料编码</string>
+    <string name="col_desc">英文描述</string>
+    <string name="col_chinese">中文名称</string>
+    <string name="col_qty">实际库存</string>
+    <string name="col_bin">存储库位 (BIN)</string>
+    <string name="col_price">标准单价</string>
+    <string name="col_value">库存金额</string>
+    <string name="available_qty">可用库存：%1$.2f</string>
+
+    <!-- Form Inputs & Dialogs -->
+    <string name="select_material">选择入库物料</string>
+    <string name="quantity">作业数量</string>
+    <string name="target_warehouse">目标仓库</string>
+    <string name="target_bin">目标库位 (BIN)</string>
+    <string name="source_warehouse">源仓库</string>
+    <string name="source_bin">源库位 (BIN)</string>
+    <string name="supplier_po">供应商 / 送货单号</string>
+    <string name="dept_recipient">领料部门 / 领料人</string>
+    <string name="reason">出库原因 / 工单号</string>
+    <string name="remarks">备注信息</string>
+
+    <!-- Buttons & Status -->
+    <string name="btn_confirm">确认提交</string>
+    <string name="btn_cancel">取消</string>
+    <string name="btn_save">保存</string>
+    <string name="btn_close">关闭</string>
+    <string name="success_receipt">入库登记成功！</string>
+    <string name="success_issue">出库办理成功！</string>
+    <string name="success_transfer">移库调拨作业完成！</string>
+    <string name="success_inventory">实物盘点调账成功！</string>
+    <string name="error_insufficient_stock">可用库存不足，无法出库！</string>
+
+    <!-- Languages -->
+    <string name="language_settings">界面语言设置</string>
+    <string name="lang_fr">Français (法语)</string>
+    <string name="lang_en">English (英语)</string>
+    <string name="lang_zh">中文 (Mandarin)</string>
+</resources>

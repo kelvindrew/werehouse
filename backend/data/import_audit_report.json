@@ -1,0 +1,760 @@
+{
+  "importTimestamp": "2026-09-16T18:26:36.302783+00:00",
+  "b1Summary": {
+    "sheetName": "B1 warehouse stock",
+    "totalRowsRead": 775,
+    "validRows": 771,
+    "phantomRowsSkipped": 4,
+    "missingMaterialCodes": 6,
+    "missingBins": 0,
+    "missingPrices": 269,
+    "duplicatesConsolidated": 28,
+    "binTyposFixed": 2,
+    "formulaErrorsResolved": 0,
+    "originalSumQuantity": 40681.0,
+    "importedSumQuantity": 40681.0,
+    "originalSumTotalValue": 3385933.680984617,
+    "importedSumTotalValue": 2554064.300000001,
+    "isBalanced": true,
+    "issues": [
+      {
+        "rowNumber": 81,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "160103192 @ MD01",
+        "message": "Duplicate item consolidated: added 50.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 95,
+        "sheetName": "B1",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'LITECOM ELECTRICAL'",
+        "actionTaken": "Assigned temporary code TEMP-B1-R0095"
+      },
+      {
+        "rowNumber": 97,
+        "sheetName": "B1",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'TUOYU'",
+        "actionTaken": "Assigned temporary code TEMP-B1-R0097"
+      },
+      {
+        "rowNumber": 146,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "140100262 @ MD01",
+        "message": "Duplicate item consolidated: added 29.0 SET",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 147,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "140100262 @ MD01",
+        "message": "Duplicate item consolidated: added 29.0 SET",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 219,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40675616 @ MD01",
+        "message": "Duplicate item consolidated: added 1.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 236,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40140629 @ MD01",
+        "message": "Duplicate item consolidated: added 10.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 237,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40741974 @ MD01",
+        "message": "Duplicate item consolidated: added 9.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 241,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40704243 @ MD01",
+        "message": "Duplicate item consolidated: added 3.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 242,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40750919 @ MD01",
+        "message": "Duplicate item consolidated: added 1.0 SET",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 244,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40697689 @ MD01",
+        "message": "Duplicate item consolidated: added 50.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 253,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "130100154 @ MD01",
+        "message": "Duplicate item consolidated: added 20.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 265,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "331200233 @ MD01",
+        "message": "Duplicate item consolidated: added 30.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 284,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40675613 @ MD01",
+        "message": "Duplicate item consolidated: added 3.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 345,
+        "sheetName": "B1",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'M20*140'",
+        "actionTaken": "Assigned temporary code TEMP-B1-R0345"
+      },
+      {
+        "rowNumber": 346,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "131301770 @ MD01",
+        "message": "Duplicate item consolidated: added 3000.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 352,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40799691 @ MD01",
+        "message": "Duplicate item consolidated: added 2.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 355,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "MMS1-479 @ MD01",
+        "message": "Duplicate item consolidated: added 5.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 356,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "175072 @ MD01",
+        "message": "Duplicate item consolidated: added 8.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 357,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "8064717 @ MD01",
+        "message": "Duplicate item consolidated: added 8.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 358,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "8064733 @ MD01",
+        "message": "Duplicate item consolidated: added 5.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 360,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40778507 @ MD01",
+        "message": "Duplicate item consolidated: added 1.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 361,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40778840 @ MD01",
+        "message": "Duplicate item consolidated: added 2.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 366,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "171000725 @ MD01",
+        "message": "Duplicate item consolidated: added 0.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 378,
+        "sheetName": "B1",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item ''",
+        "actionTaken": "Assigned temporary code TEMP-B1-R0378"
+      },
+      {
+        "rowNumber": 379,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "13232622 @ MD01",
+        "message": "Duplicate item consolidated: added 5.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 395,
+        "sheetName": "B1",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'NYLON ROPE'",
+        "actionTaken": "Assigned temporary code TEMP-B1-R0395"
+      },
+      {
+        "rowNumber": 448,
+        "sheetName": "B1",
+        "type": "TYPO_CORRECTED",
+        "field": "BIN Loc",
+        "value": "MDO1-02-02-02-04",
+        "message": "Typo MDO1 corrected to MD01",
+        "actionTaken": "Replaced 'O' with '0'"
+      },
+      {
+        "rowNumber": 456,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40787766 @ MD01-02-02-03-04",
+        "message": "Duplicate item consolidated: added 2.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 475,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40704128 @ MD01-02-03-03-02",
+        "message": "Duplicate item consolidated: added 5.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 491,
+        "sheetName": "B1",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'COMPRESSION PN 16'",
+        "actionTaken": "Assigned temporary code TEMP-B1-R0491"
+      },
+      {
+        "rowNumber": 628,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40697085 @ MD01-09-01-03-02",
+        "message": "Duplicate item consolidated: added 1.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 693,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "MMS1-235 @ MD01-09-06-01-02",
+        "message": "Duplicate item consolidated: added 1000.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 708,
+        "sheetName": "B1",
+        "type": "TYPO_CORRECTED",
+        "field": "BIN Loc",
+        "value": "MDO1-09-06-03-04",
+        "message": "Typo MDO1 corrected to MD01",
+        "actionTaken": "Replaced 'O' with '0'"
+      },
+      {
+        "rowNumber": 719,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40136586 @ MD01-10-03-02-04",
+        "message": "Duplicate item consolidated: added 153.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 751,
+        "sheetName": "B1",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40116357 @ MD01-10-05-02-05",
+        "message": "Duplicate item consolidated: added 3.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      }
+    ]
+  },
+  "b2Summary": {
+    "sheetName": "B2 warehouse stock",
+    "totalRowsRead": 784,
+    "validRows": 784,
+    "phantomRowsSkipped": 0,
+    "missingMaterialCodes": 6,
+    "missingBins": 0,
+    "missingPrices": 306,
+    "duplicatesConsolidated": 3,
+    "binTyposFixed": 0,
+    "formulaErrorsResolved": 34,
+    "originalSumQuantity": 57949.0,
+    "importedSumQuantity": 57949.0,
+    "originalSumTotalValue": 1546528.1400000001,
+    "importedSumTotalValue": 1538790.34,
+    "isBalanced": true,
+    "issues": [
+      {
+        "rowNumber": 4,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'WHITE PAINTS'",
+        "actionTaken": "Assigned temporary code TEMP-B2-R0004"
+      },
+      {
+        "rowNumber": 5,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'THINNER & MIX'",
+        "actionTaken": "Assigned temporary code TEMP-B2-R0005"
+      },
+      {
+        "rowNumber": 25,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 33,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 93,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 97,
+        "sheetName": "B2",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "130600028 @ B2-01-02-28",
+        "message": "Duplicate item consolidated: added 10.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 143,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 162,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 165,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 204,
+        "sheetName": "B2",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "40027136 @ B2-02-02-21",
+        "message": "Duplicate item consolidated: added 23.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 229,
+        "sheetName": "B2",
+        "type": "DUPLICATE_CONSOLIDATED",
+        "field": "Material + BIN",
+        "value": "MMS1-481 @ B2-02-03-08",
+        "message": "Duplicate item consolidated: added 100.0 EA",
+        "actionTaken": "Consolidated into existing stock record"
+      },
+      {
+        "rowNumber": 240,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 280,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 284,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 310,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'Circuit breaker'",
+        "actionTaken": "Assigned temporary code TEMP-B2-R0310"
+      },
+      {
+        "rowNumber": 344,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 374,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: None, Total: #VALUE!",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 477,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 511,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 530,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 536,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 538,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 570,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 578,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: None, Total: #VALUE!",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 579,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: None, Total: #VALUE!",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 581,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 592,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 594,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 615,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 618,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 627,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 638,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 639,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 653,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 655,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 667,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 721,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: None, Total: #VALUE!",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 733,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 759,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      },
+      {
+        "rowNumber": 763,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'YELLOW PAINT'",
+        "actionTaken": "Assigned temporary code TEMP-B2-R0763"
+      },
+      {
+        "rowNumber": 766,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item 'FIRE EXTINGUISHERS'",
+        "actionTaken": "Assigned temporary code TEMP-B2-R0766"
+      },
+      {
+        "rowNumber": 779,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Material",
+        "value": null,
+        "message": "Missing Material Code for item ''",
+        "actionTaken": "Assigned temporary code TEMP-B2-R0779"
+      },
+      {
+        "rowNumber": 780,
+        "sheetName": "B2",
+        "type": "WARNING",
+        "field": "Price/Amount",
+        "value": "Unit: #N/A, Total: #N/A",
+        "message": "Excel formula error #N/A detected in price/amount cells",
+        "actionTaken": "Sanitized to float 0.0 and checked Sheet1"
+      }
+    ]
+  },
+  "totals": {
+    "totalMaterials": 1466,
+    "totalBins": 971,
+    "totalStockRecords": 1524,
+    "totalInitialMovements": 1555,
+    "overallQuantity": 98630.0,
+    "overallValuationUSD": 4092854.64
+  }
+}

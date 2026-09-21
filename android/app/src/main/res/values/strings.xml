@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">WMS B1 &amp; B2</string>
+    <string name="app_subtitle">Gestion de Warehouse</string>
+    
+    <!-- Navigation & Hub -->
+    <string name="hub_title">Warehouse Hub</string>
+    <string name="hub_subtitle">Opérations B1 &amp; B2 • Magasinier</string>
+    <string name="tab_home">Accueil</string>
+    <string name="tab_stock">Stock</string>
+    <string name="tab_scan">Scanner</string>
+    <string name="tab_movements">Mouvements</string>
+    <string name="tab_inventory">Inventaire</string>
+
+    <!-- KPIs -->
+    <string name="kpi_total_items">Articles Référencés</string>
+    <string name="kpi_total_stock">Stock Total</string>
+    <string name="kpi_total_value">Valorisation (USD)</string>
+    <string name="kpi_active_warehouses">Entrepôts Actifs</string>
+    <string name="kpi_units">unités</string>
+
+    <!-- Warehouses -->
+    <string name="wh_all">Tous (B1 + B2)</string>
+    <string name="wh_b1">B1 (MD01)</string>
+    <string name="wh_b2">B2 (Zones A-E)</string>
+
+    <!-- Quick Operations -->
+    <string name="action_scan">Scanner Code-Barres / QR</string>
+    <string name="action_receipt">Entrée en Stock</string>
+    <string name="action_issue">Sortie de Matériel</string>
+    <string name="action_transfer">Transfert B1 ↔ B2</string>
+    <string name="action_inventory">Inventaire Physique</string>
+    <string name="recent_movements">Mouvements Récents</string>
+
+    <!-- Stock Search & Details -->
+    <string name="search_hint">Rechercher code, désignation, chinois, BIN...</string>
+    <string name="stock_title">Inventaire Global des Stocks</string>
+    <string name="col_photo">Photo</string>
+    <string name="col_code">Code Article</string>
+    <string name="col_desc">Désignation</string>
+    <string name="col_chinese">Nom Chinois</string>
+    <string name="col_qty">Quantité en Stock</string>
+    <string name="col_bin">Emplacement (BIN)</string>
+    <string name="col_price">Prix Unitaire</string>
+    <string name="col_value">Valeur Totale</string>
+    <string name="available_qty">Disponible : %1$.2f</string>
+
+    <!-- Form Inputs & Dialogs -->
+    <string name="select_material">Sélectionner un article</string>
+    <string name="quantity">Quantité</string>
+    <string name="target_warehouse">Entrepôt Cible</string>
+    <string name="target_bin">Emplacement BIN Cible</string>
+    <string name="source_warehouse">Entrepôt Source</string>
+    <string name="source_bin">Emplacement BIN Source</string>
+    <string name="supplier_po">Fournisseur / N° BL</string>
+    <string name="dept_recipient">Département / Demandeur</string>
+    <string name="reason">Motif / Justification</string>
+    <string name="remarks">Remarques</string>
+
+    <!-- Buttons & Status -->
+    <string name="btn_confirm">Confirmer</string>
+    <string name="btn_cancel">Annuler</string>
+    <string name="btn_save">Enregistrer</string>
+    <string name="btn_close">Fermer</string>
+    <string name="success_receipt">Entrée enregistrée avec succès !</string>
+    <string name="success_issue">Sortie validée avec succès !</string>
+    <string name="success_transfer">Transfert exécuté avec succès !</string>
+    <string name="success_inventory">Inventaire réconcilié !</string>
+    <string name="error_insufficient_stock">Stock disponible insuffisant !</string>
+
+    <!-- Languages -->
+    <string name="language_settings">Langue de l\'application</string>
+    <string name="lang_fr">Français (FR)</string>
+    <string name="lang_en">English (EN)</string>
+    <string name="lang_zh">Mandarin (中文)</string>
+</resources>

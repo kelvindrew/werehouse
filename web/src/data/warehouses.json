@@ -1,0 +1,26 @@
+[
+  {
+    "id": "B1",
+    "code": "B1",
+    "name": "Warehouse B1",
+    "description": "Entrepôt principal B1 (Zone MD01)",
+    "location": "Site Industriel - Bâtiment B1",
+    "status": "ACTIVE",
+    "createdAt": "2026-09-16T18:26:36.302783+00:00",
+    "totalItemsCount": 743,
+    "totalQuantity": 40681.0,
+    "totalValuationUSD": 2554064.3
+  },
+  {
+    "id": "B2",
+    "code": "B2",
+    "name": "Warehouse B2",
+    "description": "Entrepôt secondaire B2 (Zones B2-01 à B2-04, A, C, E)",
+    "location": "Site Industriel - Bâtiment B2",
+    "status": "ACTIVE",
+    "createdAt": "2026-09-16T18:26:36.302783+00:00",
+    "totalItemsCount": 781,
+    "totalQuantity": 57949.0,
+    "totalValuationUSD": 1538790.34
+  }
+]
