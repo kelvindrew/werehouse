@@ -1,0 +1,14 @@
+{
+  "name": "werehouse-root",
+  "version": "1.0.0",
+  "private": true,
+  "description": "WMS Warehouse Management System",
+  "scripts": {
+    "build": "npm --prefix web install && npm --prefix web run build && node -e \"const fs = require('fs'); fs.cpSync('web/dist', 'dist', { recursive: true, force: true });\"",
+    "start": "npm --prefix web run preview",
+    "dev": "npm --prefix web run dev"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
