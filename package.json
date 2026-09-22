@@ -7,9 +7,12 @@
     "build": "npm --prefix web install && npm --prefix web run build && node -e \"const fs = require('fs'); fs.cpSync('web/dist', 'dist', { recursive: true, force: true });\"",
     "start": "npm --prefix web run preview",
     "dev": "npm --prefix web run dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler pages deploy dist --project-name werehouse"
   },
   "engines": {
     "node": ">=20.0.0"
+  },
+  "devDependencies": {
+    "wrangler": "^4.136.2"
   }
 }
