@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npm --prefix web install && npm --prefix web run build && node -e \"const fs = require('fs'); fs.cpSync('web/dist', 'dist', { recursive: true, force: true });\"",
     "start": "npm --prefix web run preview",
-    "dev": "npm --prefix web run dev"
+    "dev": "npm --prefix web run dev",
+    "deploy": "wrangler deploy"
   },
   "engines": {
     "node": ">=20.0.0"
