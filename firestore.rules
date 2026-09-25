@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Read access for authenticated users, or open for intranet warehouse kiosks
+    match /{document=**} {
+      allow read, write: if true; // Configurable for intranet / pilot phase
+    }
+  }
+}

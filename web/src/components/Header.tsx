@@ -14,8 +14,11 @@ import {
   Search,
   Bell,
   Sparkles,
-  ShieldCheck
+  ShieldCheck,
+  Cloud,
+  CloudOff
 } from 'lucide-react';
+import { firebaseSync, SyncStatus } from '../lib/firebaseSync';
 
 interface HeaderProps {
   onOpenReceipt: () => void;
@@ -53,11 +56,19 @@ export const Header: React.FC<HeaderProps> = ({
 
   const [locations, setLocations] = useState(() => dataService.getLocations());
   const [hasNotifications, setHasNotifications] = useState(true);
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>(() => firebaseSync.getStatus());
 
   useEffect(() => {
-    return dataService.subscribe(() => {
+    const unsubData = dataService.subscribe(() => {
       setLocations(dataService.getLocations());
     });
+    const unsubSync = firebaseSync.onStatusChange((s) => {
+      setSyncStatus(s);
+    });
+    return () => {
+      unsubData();
+      unsubSync();
+    };
   }, []);
 
   return (
@@ -225,6 +236,26 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             );
           })}
+        </div>
+
+        {/* Firebase Cloud Live Sync Pill */}
+        <div 
+          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/80 border border-zinc-200/80 shadow-2xs text-[11px] font-medium text-zinc-600 cursor-default"
+          title={syncStatus.isOnline ? `Firebase Firestore: werehouse-wms (${syncStatus.isSyncing ? 'Synchronisation...' : 'En direct'})` : 'Mode Hors-Ligne (Données locales en cache)'}
+        >
+          {syncStatus.isOnline ? (
+            <>
+              <span className={`w-2 h-2 rounded-full ${syncStatus.isSyncing ? 'bg-amber-400 animate-spin' : 'bg-emerald-500'}`} />
+              <Cloud className="w-3.5 h-3.5 text-emerald-600 hidden sm:inline" />
+              <span className="hidden xl:inline text-[10px] text-zinc-500 font-mono font-semibold">werehouse-wms</span>
+            </>
+          ) : (
+            <>
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <CloudOff className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden sm:inline text-[10px] text-amber-600 font-medium">Local</span>
+            </>
+          )}
         </div>
 
         {/* Notification Bell with Ping Dot (Matching Reference Image) */}
