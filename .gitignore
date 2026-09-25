@@ -4,6 +4,7 @@ node_modules/
 .npm
 .eslintcache
 .wrangler/
+.firebase/
 
 # Production builds
 dist/
