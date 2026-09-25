@@ -15,7 +15,7 @@ import {
   Timestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { StockItem, Material, StorageLocation, StockMovement, StockIssueVoucher, AuditLog } from '@shared/types/models';
+import { StockItem, Material, StorageLocation, StockMovement, StockIssueVoucher, AuditLog, SharedLink } from '@shared/types/models';
 
 import seedMaterials from '../data/materials.json';
 import seedStock from '../data/stock.json';
@@ -96,7 +96,8 @@ class FirebaseSyncService {
     onRemoteStock: (stocks: StockItem[]) => void,
     onRemoteLocations: (locations: StorageLocation[]) => void,
     onRemoteMovements: (movements: StockMovement[]) => void,
-    onRemoteVouchers: (vouchers: StockIssueVoucher[]) => void
+    onRemoteVouchers: (vouchers: StockIssueVoucher[]) => void,
+    onRemoteSharedLinks?: (links: SharedLink[]) => void
   ): Promise<void> {
     if (this.isInitialized) return;
     this.isInitialized = true;
@@ -175,6 +176,22 @@ class FirebaseSyncService {
         console.warn('Firestore vouchers listener note:', err.message);
       });
       this.unsubscribers.push(unsubVouchers);
+
+      // 6. Set up real-time listener for Shared Links
+      const linksColl = collection(db, 'shared_links');
+      const unsubLinks = onSnapshot(linksColl, (snapshot) => {
+        if (!snapshot.empty) {
+          const links: SharedLink[] = [];
+          snapshot.forEach(docSnap => {
+            links.push(docSnap.data() as SharedLink);
+          });
+          if (onRemoteSharedLinks) onRemoteSharedLinks(links);
+          this.notifyData();
+        }
+      }, (err) => {
+        console.warn('Firestore shared_links listener note:', err.message);
+      });
+      this.unsubscribers.push(unsubLinks);
 
       this.status.isSyncing = false;
       this.notifyStatus();
@@ -337,6 +354,55 @@ class FirebaseSyncService {
       await setDoc(doc(db, 'audit_logs', audit.id), audit);
     } catch (err: any) {
       console.warn('Firestore push audit note:', err?.message);
+    }
+  }
+
+  /**
+   * Pushes a shared link to Firestore
+   */
+  public async pushSharedLink(link: SharedLink): Promise<void> {
+    if (!this.status.isOnline) return;
+    try {
+      await setDoc(doc(db, 'shared_links', link.id), link);
+      this.status.lastSyncTime = new Date();
+      this.notifyStatus();
+    } catch (err: any) {
+      console.warn('Firestore push shared link note:', err?.message);
+    }
+  }
+
+  /**
+   * Deletes a shared link from Firestore
+   */
+  public async deleteSharedLink(linkId: string): Promise<void> {
+    if (!this.status.isOnline) return;
+    try {
+      await deleteDoc(doc(db, 'shared_links', linkId));
+      this.status.lastSyncTime = new Date();
+      this.notifyStatus();
+    } catch (err: any) {
+      console.warn('Firestore delete shared link note:', err?.message);
+    }
+  }
+
+  /**
+   * Fetches a shared link directly from Firestore by its token
+   */
+  public async fetchSharedLinkByToken(token: string): Promise<SharedLink | null> {
+    try {
+      const linksRef = collection(db, 'shared_links');
+      const snap = await getDocs(linksRef);
+      let found: SharedLink | null = null;
+      snap.forEach(d => {
+        const data = d.data() as SharedLink;
+        if (data.token === token) {
+          found = data;
+        }
+      });
+      return found;
+    } catch (err: any) {
+      console.warn('Firestore fetch shared link by token note:', err?.message);
+      return null;
     }
   }
 

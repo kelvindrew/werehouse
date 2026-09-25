@@ -4,6 +4,7 @@ import { dataService } from '../lib/dataService';
 import { TranslationDictionary } from '../lib/i18n';
 import { IssueVoucherModal } from './IssueVoucherModal';
 import { IssueVoucherDetailModal } from './IssueVoucherDetailModal';
+import { IssueModal } from './IssueModal';
 import { 
   Plus, 
   Search, 
@@ -15,6 +16,7 @@ import {
   Printer, 
   Eye, 
   ArrowUpRight, 
+  ArrowUpFromLine,
   Building, 
   Calendar,
   Layers,
@@ -38,8 +40,9 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
 
   // Filters
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedWarehouse, setSelectedWarehouse] = useState<'ALL' | 'B1' | 'B2'>('ALL');
+  const [selectedWarehouse, setSelectedWarehouse] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+  const [isQuickIssueOpen, setIsQuickIssueOpen] = useState(false);
 
   // Modal states
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -144,13 +147,21 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsQuickIssueOpen(true)}
+            className="px-3.5 py-2 text-xs font-mono font-bold bg-lime hover:bg-lime/90 text-zinc-950 transition-all flex items-center gap-1.5 rounded-lg shadow-2xs"
+          >
+            <ArrowUpFromLine className="w-4 h-4 stroke-[2.5]" />
+            <span>⚡ Sortie Rapide (Express)</span>
+          </button>
+
           <button
             onClick={handleOpenNewVoucher}
-            className="px-4 py-2 text-xs font-mono font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-colors flex items-center space-x-1.5 shadow-sm"
+            className="px-4 py-2 text-xs font-mono font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-colors flex items-center gap-1.5 rounded-lg shadow-sm"
           >
             <Plus className="w-4 h-4" />
-            <span>{t.btn_new_issue_voucher}</span>
+            <span>{t.btn_new_issue_voucher || '+ Bon Groupé (Multi-articles)'}</span>
           </button>
         </div>
       </div>
@@ -249,6 +260,30 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
             placeholder="Rechercher par N° bon, acheteur, matériel, département, motif, page carnet..."
             className="w-full pl-10 pr-4 py-2 text-xs bg-zinc-50 hover:bg-zinc-100/70 border border-zinc-200 rounded-full text-zinc-900 focus:outline-none focus:border-zinc-900 focus:bg-white transition-colors"
           />
+        </div>
+
+        {/* Warehouse Selection Capsule */}
+        <div className="flex items-center bg-zinc-100/90 p-1 rounded-full border border-zinc-200/80 overflow-x-auto max-w-full text-xs font-medium">
+          {[
+            { id: 'ALL', label: 'Tous Magasins' },
+            { id: 'B1', label: 'B1' },
+            { id: 'B2', label: 'B2' },
+            { id: 'CONT-01', label: 'CONT-01' },
+            { id: 'CONT-02', label: 'CONT-02' },
+            { id: 'YARD', label: 'YARD' },
+          ].map((wh) => (
+            <button
+              key={wh.id}
+              onClick={() => setSelectedWarehouse(wh.id)}
+              className={`px-2.5 py-1 rounded-full transition-all whitespace-nowrap ${
+                selectedWarehouse === wh.id
+                  ? 'bg-zinc-900 text-white font-semibold shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900 hover:bg-zinc-200/60'
+              }`}
+            >
+              {wh.label}
+            </button>
+          ))}
         </div>
 
         {/* Segmented Status Capsule Pills (Inspired by Navexa & Cardiology Reference) */}
@@ -442,6 +477,18 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
         onCancelVoucher={handleCancelVoucher}
         currentUser={currentUser}
         t={t}
+      />
+
+      {/* Quick Issue Express Modal */}
+      <IssueModal
+        isOpen={isQuickIssueOpen}
+        onClose={() => setIsQuickIssueOpen(false)}
+        onSuccess={() => {
+          loadData();
+        }}
+        onOpenMultiVoucher={() => {
+          setIsCreateModalOpen(true);
+        }}
       />
 
     </div>

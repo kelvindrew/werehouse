@@ -35,13 +35,33 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
   const pageSize = 20;
 
   useEffect(() => {
-    // Record public access upon load
-    const result = dataService.getSharedLinkByToken(token, true);
-    setLink(result.link);
-    setIsExpired(result.isExpired);
-    setIsRevoked(result.isRevoked);
-    setItems(result.items);
-    setLoading(false);
+    let isMounted = true;
+    setLoading(true);
+
+    const loadData = async () => {
+      // 1. Try fast async resolution (checks memory & Firestore)
+      let result = await dataService.getSharedLinkByTokenAsync(token, true);
+
+      if (!result.link && isMounted) {
+        // If not found immediately, retry after 1.2s in case Firestore connection was warming up
+        await new Promise(r => setTimeout(r, 1200));
+        result = await dataService.getSharedLinkByTokenAsync(token, true);
+      }
+
+      if (isMounted) {
+        setLink(result.link);
+        setIsExpired(result.isExpired);
+        setIsRevoked(result.isRevoked);
+        setItems(result.items);
+        setLoading(false);
+      }
+    };
+
+    loadData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [token]);
 
   // Compute remaining time string

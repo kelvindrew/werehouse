@@ -337,6 +337,7 @@ const AppContent: React.FC = () => {
         }}
         preselectedItem={activeStockItem}
         onSuccess={showToast}
+        onOpenMultiVoucher={() => setCurrentTab('issues')}
       />
 
       <TransferModal

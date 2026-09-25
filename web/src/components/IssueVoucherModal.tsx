@@ -45,7 +45,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
 
   // General Info
   const [voucherNumber, setVoucherNumber] = useState('');
-  const [warehouseId, setWarehouseId] = useState<'B1' | 'B2'>('B1');
+  const [warehouseId, setWarehouseId] = useState<string>('B1');
   const [date, setDate] = useState('');
   const [buyerName, setBuyerName] = useState('');
   const [department, setDepartment] = useState('');
@@ -73,7 +73,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
     if (isOpen) {
       if (voucherToEdit) {
         setVoucherNumber(voucherToEdit.voucherNumber);
-        setWarehouseId((voucherToEdit.warehouseId as 'B1' | 'B2') || 'B1');
+        setWarehouseId(voucherToEdit.warehouseId || 'B1');
         setDate(voucherToEdit.date ? voucherToEdit.date.substring(0, 16) : new Date().toISOString().substring(0, 16));
         setBuyerName(voucherToEdit.buyerName || '');
         setDepartment(voucherToEdit.department || '');
@@ -111,9 +111,12 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
   // Search available stock for Step 2
   useEffect(() => {
     if (step === 2) {
-      const stock = dataService.getStock({ warehouseId, onlyAvailable: true });
+      const stock = dataService.getStock({ 
+        warehouseId: warehouseId === 'ALL' ? undefined : warehouseId, 
+        onlyAvailable: true 
+      });
       if (!searchQuery.trim()) {
-        setAvailableStockResults(stock.slice(0, 20));
+        setAvailableStockResults(stock.slice(0, 30));
       } else {
         const q = searchQuery.toLowerCase().trim();
         const filtered = stock.filter(s => 
@@ -123,7 +126,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
           (s.specification && s.specification.toLowerCase().includes(q)) ||
           s.binLocation.toLowerCase().includes(q)
         );
-        setAvailableStockResults(filtered.slice(0, 20));
+        setAvailableStockResults(filtered.slice(0, 30));
       }
     }
   }, [step, warehouseId, searchQuery]);
@@ -446,7 +449,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                   <select
                     value={warehouseId}
                     onChange={e => {
-                      const newW = e.target.value as 'B1' | 'B2';
+                      const newW = e.target.value;
                       setWarehouseId(newW);
                       if (items.length > 0 && newW !== warehouseId) {
                         if (confirm("Changer de magasin réinitialisera les articles sélectionnés. Continuer ?")) {
@@ -456,8 +459,12 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                     }}
                     className="w-full text-xs bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                   >
+                    <option value="ALL">Tous les magasins / Emplacements consolidés</option>
                     <option value="B1">{t.b1_warehouse} — Pièces détachées MD01</option>
                     <option value="B2">{t.b2_warehouse} — Consommables Allées A-E</option>
+                    <option value="CONT-01">Container 01 — Brides & Outillage</option>
+                    <option value="CONT-02">Container 02 — Raccords & Vannes</option>
+                    <option value="YARD">Yard Extérieur — Gros gabarits & Tuyaux</option>
                   </select>
                 </div>
 

@@ -191,6 +191,13 @@ class DataService {
         });
         this.saveIssueVouchersToStorage();
         this.notify();
+      },
+      (remoteSharedLinks) => {
+        remoteSharedLinks.forEach(l => {
+          this.sharedLinks.set(l.id, l);
+        });
+        this.saveSharedLinksToStorage();
+        this.notify();
       }
     ).catch(err => {
       console.warn('initFirestoreSync note:', err?.message);
@@ -1319,7 +1326,7 @@ class DataService {
     reason?: string;
     comments?: string;
     user: User;
-  }): { success: boolean; movement: StockMovement } {
+  }): { success: boolean; movement: StockMovement; voucher: StockIssueVoucher } {
     if (params.quantity <= 0) {
       throw new Error('La quantité sortie doit être strictement positive.');
     }
@@ -1346,6 +1353,57 @@ class DataService {
     stockItem.totalValue = Math.round(newQty * stockItem.unitPrice * 100) / 100;
     stockItem.lastUpdated = timestamp;
 
+    const voucherNumber = (params.referenceNumber && params.referenceNumber.startsWith('BS-')) 
+      ? params.referenceNumber 
+      : this.generateNextVoucherNumber();
+    const voucherId = `VOUCH-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
+    const lineValuation = Math.round(params.quantity * stockItem.unitPrice * 100) / 100;
+
+    const voucher: StockIssueVoucher = {
+      id: voucherId,
+      voucherNumber,
+      warehouseId: params.warehouseId,
+      date: timestamp,
+      buyerName: params.requester || 'Anonyme',
+      department: params.department,
+      agentId: params.user.id,
+      agentName: params.user.name,
+      reason: params.reason,
+      observations: params.comments,
+      paperBookReference: params.referenceNumber,
+      paperSignatureCompleted: true,
+      status: 'CONFIRMED',
+      confirmedAt: timestamp,
+      confirmedBy: params.user.id,
+      confirmedByName: params.user.name,
+      items: [{
+        id: `VI-${Date.now()}-1`,
+        stockId: stockItem.id,
+        materialId: stockItem.materialId,
+        materialCode: stockItem.materialCode,
+        materialName: stockItem.materialName,
+        specification: stockItem.specification,
+        warehouseId: params.warehouseId,
+        binLocation: params.binLocation,
+        availableStock: previousQty,
+        requestedQuantity: params.quantity,
+        issuedQuantity: params.quantity,
+        stockBefore: previousQty,
+        stockAfter: newQty,
+        uom: stockItem.uom,
+        unitPrice: stockItem.unitPrice,
+        totalValue: lineValuation
+      }],
+      totalRequestedQty: params.quantity,
+      totalIssuedQty: params.quantity,
+      totalValuationUSD: lineValuation,
+      createdAt: timestamp,
+      updatedAt: timestamp
+    };
+
+    this.issueVouchers.set(voucherId, voucher);
+    this.saveIssueVouchersToStorage();
+
     const movement: StockMovement = {
       id: `MOV-ISS-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       movementType: 'ISSUE',
@@ -1358,8 +1416,10 @@ class DataService {
       previousQuantity: previousQty,
       newQuantity: newQty,
       unitPrice: stockItem.unitPrice,
-      totalAmount: Math.round(params.quantity * stockItem.unitPrice * 100) / 100,
-      referenceNumber: params.referenceNumber || 'BON-SORTIE-' + Date.now(),
+      totalAmount: lineValuation,
+      referenceNumber: voucherNumber,
+      issueVoucherId: voucherId,
+      issueVoucherNumber: voucherNumber,
       requester: params.requester,
       department: params.department,
       reason: params.reason,
@@ -1378,16 +1438,22 @@ class DataService {
       action: 'STOCK_ISSUE',
       targetCollection: 'stock',
       targetId: stockId,
-      description: `Sortie de stock : -${params.quantity} ${stockItem.uom} de ${stockItem.materialCode} sur ${params.warehouseId} (${params.binLocation}) pour ${params.requester || 'N/A'}`,
+      description: `Sortie de stock (${voucherNumber}) : -${params.quantity} ${stockItem.uom} de ${stockItem.materialCode} sur ${params.warehouseId} (${params.binLocation}) pour ${params.requester || 'N/A'}`,
       previousValue: { quantity: previousQty },
       newValue: { quantity: newQty },
       timestamp
     });
 
+    // Record autocomplete
+    if (params.requester) this.recordCustomValue('requester', params.requester);
+    if (params.department) this.recordCustomValue('department', params.department);
+    if (params.reason) this.recordCustomValue('reason', params.reason);
+
     this.notify();
     firebaseSync.pushStockItems([stockItem]);
     firebaseSync.pushMovement(movement);
-    return { success: true, movement };
+    firebaseSync.pushIssueVoucher(voucher);
+    return { success: true, movement, voucher };
   }
 
   /**
@@ -1782,6 +1848,7 @@ class DataService {
 
     this.sharedLinks.set(link.id, link);
     this.saveSharedLinksToStorage();
+    firebaseSync.pushSharedLink(link);
 
     // Log to Audit Trail
     this.auditLogs.unshift({
@@ -1947,12 +2014,157 @@ class DataService {
     };
   }
 
+  public async getSharedLinkByTokenAsync(token: string, recordAccess = false): Promise<{
+    link: SharedLink | null;
+    isExpired: boolean;
+    isRevoked: boolean;
+    items: Partial<StockItem>[];
+  }> {
+    // 1. Try local memory first
+    let link = Array.from(this.sharedLinks.values()).find(l => l.token === token);
+
+    // 2. If not found, fetch directly from Cloud Firestore
+    if (!link) {
+      try {
+        const remote = await firebaseSync.fetchSharedLinkByToken(token);
+        if (remote) {
+          link = remote;
+          this.sharedLinks.set(remote.id, remote);
+          this.saveSharedLinksToStorage();
+        }
+      } catch (e) {
+        console.warn('Async fetchSharedLinkByToken note:', e);
+      }
+    }
+
+    if (!link) {
+      return { link: null, isExpired: false, isRevoked: false, items: [] };
+    }
+
+    if (link.status === 'REVOKED') {
+      return { link, isExpired: false, isRevoked: true, items: [] };
+    }
+
+    const now = new Date();
+    if (new Date(link.expiresAt) <= now) {
+      if (link.status !== 'EXPIRED') {
+        link.status = 'EXPIRED';
+        this.saveSharedLinksToStorage();
+        firebaseSync.pushSharedLink(link);
+      }
+      return { link, isExpired: true, isRevoked: false, items: [] };
+    }
+
+    if (recordAccess) {
+      link.accessCount = (link.accessCount || 0) + 1;
+      link.lastAccessedAt = now.toISOString();
+      this.saveSharedLinksToStorage();
+      firebaseSync.pushSharedLink(link);
+
+      this.auditLogs.unshift({
+        id: 'LOG-SLA-' + Date.now() + '-' + Math.random().toString(36).substring(2, 5),
+        userId: 'anonymous_visitor',
+        userName: 'Visiteur Externe (Lien Partagé)',
+        userRole: 'VIEWER',
+        action: 'SHARED_LINK_ACCESSED',
+        targetCollection: 'shared_links',
+        targetId: link.token,
+        description: `Consultation publique du lien [${link.title}] (Accès #${link.accessCount})`,
+        metadata: {
+          token: link.token,
+          accessCount: link.accessCount
+        },
+        timestamp: now.toISOString()
+      });
+      this.saveAuditToStorage();
+    }
+
+    // Ensure stock dataset is loaded
+    let allItems = Array.from(this.stock.values());
+    if (allItems.length === 0) {
+      this.loadSeedStock();
+      allItems = Array.from(this.stock.values());
+    }
+
+    // Filter by warehouse
+    if (link.filters.warehouseId && link.filters.warehouseId !== 'ALL') {
+      allItems = allItems.filter(s => s.warehouseId === link.filters.warehouseId);
+    }
+
+    // Filter by text search
+    if (link.filters.searchQuery) {
+      const q = link.filters.searchQuery.toLowerCase().trim();
+      allItems = allItems.filter(s => 
+        s.materialCode.toLowerCase().includes(q) ||
+        s.materialName.toLowerCase().includes(q) ||
+        (s.chineseName && s.chineseName.toLowerCase().includes(q)) ||
+        (s.specification && s.specification.toLowerCase().includes(q)) ||
+        s.binLocation.toLowerCase().includes(q)
+      );
+    }
+
+    // Filter by bin / rack
+    if (link.filters.binLocation) {
+      const binQ = link.filters.binLocation.toLowerCase().trim();
+      allItems = allItems.filter(s => s.binLocation.toLowerCase().includes(binQ));
+    }
+
+    // Filter by status
+    if (link.filters.status === 'IN_STOCK') {
+      allItems = allItems.filter(s => s.availableQuantity > 0);
+    } else if (link.filters.status === 'OUT_OF_STOCK') {
+      allItems = allItems.filter(s => s.availableQuantity <= 0);
+    } else if (link.filters.status === 'LOW_STOCK') {
+      allItems = allItems.filter(s => s.availableQuantity > 0 && s.availableQuantity <= 5);
+    }
+
+    // Filter by category / plant
+    if (link.filters.category) {
+      const catQ = link.filters.category.toLowerCase().trim();
+      allItems = allItems.filter(s => {
+        const mat = this.materials.get(s.materialId);
+        return (mat?.plant && mat.plant.toLowerCase().includes(catQ)) ||
+               (s.specification && s.specification.toLowerCase().includes(catQ));
+      });
+    }
+
+    // Projection: ONLY return fields explicitly allowed in visibleColumns
+    const visibleCols = new Set(link.visibleColumns);
+    const projectedItems: Partial<StockItem>[] = allItems.map(item => {
+      const res: Partial<StockItem> = {
+        id: item.id
+      };
+      if (visibleCols.has('materialCode')) res.materialCode = item.materialCode;
+      if (visibleCols.has('materialName')) res.materialName = item.materialName;
+      if (visibleCols.has('chineseName')) res.chineseName = item.chineseName;
+      if (visibleCols.has('specification')) res.specification = item.specification;
+      if (visibleCols.has('warehouseId')) res.warehouseId = item.warehouseId;
+      if (visibleCols.has('binLocation')) res.binLocation = item.binLocation;
+      if (visibleCols.has('quantity')) res.quantity = item.quantity;
+      if (visibleCols.has('availableQuantity')) res.availableQuantity = item.availableQuantity;
+      if (visibleCols.has('uom')) res.uom = item.uom;
+      if (visibleCols.has('unitPrice')) res.unitPrice = item.unitPrice;
+      if (visibleCols.has('totalValue')) res.totalValue = item.totalValue;
+      if (visibleCols.has('remarks')) res.remarks = item.remarks;
+      if (visibleCols.has('photo')) res.imageUrl = item.imageUrl;
+      return res;
+    });
+
+    return {
+      link,
+      isExpired: false,
+      isRevoked: false,
+      items: projectedItems
+    };
+  }
+
   public revokeSharedLink(linkId: string, performedBy: User): boolean {
     const link = this.sharedLinks.get(linkId);
     if (!link) return false;
 
     link.status = 'REVOKED';
     this.saveSharedLinksToStorage();
+    firebaseSync.pushSharedLink(link);
 
     this.auditLogs.unshift({
       id: 'LOG-SLR-' + Date.now(),
@@ -1976,6 +2188,7 @@ class DataService {
 
     this.sharedLinks.delete(linkId);
     this.saveSharedLinksToStorage();
+    firebaseSync.deleteSharedLink(linkId);
 
     this.auditLogs.unshift({
       id: 'LOG-SLD-' + Date.now(),
