@@ -10,7 +10,9 @@ import {
   AlertTriangle, 
   Ban, 
   Image as ImageIcon,
-  Package
+  Package,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 
 interface SharedPublicViewProps {
@@ -32,7 +34,21 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
   const [sortField, setSortField] = useState<string>('materialCode');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
-  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
+    try {
+      const saved = localStorage.getItem('wms_sharedpublic_view_mode');
+      return saved === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetViewMode = (mode: 'cards' | 'table') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('wms_sharedpublic_view_mode', mode);
+    } catch (e) {}
+  };
   const pageSize = 20;
 
   useEffect(() => {
@@ -308,34 +324,38 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
                 />
               </div>
 
-              {/* Mobile View Switcher (Cards / Tableau) */}
-              <div className="md:hidden flex items-center self-end bg-zinc-200/80 p-0.5 rounded-full border border-zinc-300 shrink-0">
+              {/* View Switcher (Cards / Tableau) */}
+              <div className="flex items-center self-end bg-zinc-200/80 p-0.5 rounded-full border border-zinc-300 shrink-0">
                 <button
-                  onClick={() => setMobileViewMode('cards')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    mobileViewMode === 'cards'
+                  type="button"
+                  onClick={() => handleSetViewMode('cards')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95 ${
+                    viewMode === 'cards'
                       ? 'bg-zinc-900 text-white shadow-xs'
                       : 'text-zinc-700 hover:text-zinc-900'
                   }`}
                 >
-                  {t.btn_cards || 'Cartes'}
+                  <LayoutGrid className="w-3.5 h-3.5" />
+                  <span>{t.btn_cards || 'Cartes'}</span>
                 </button>
                 <button
-                  onClick={() => setMobileViewMode('table')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    mobileViewMode === 'table'
+                  type="button"
+                  onClick={() => handleSetViewMode('table')}
+                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95 ${
+                    viewMode === 'table'
                       ? 'bg-zinc-900 text-white shadow-xs'
                       : 'text-zinc-700 hover:text-zinc-900'
                   }`}
                 >
-                  {t.btn_table || 'Tableau'}
+                  <TableIcon className="w-3.5 h-3.5" />
+                  <span>{t.btn_table || 'Tableau'}</span>
                 </button>
               </div>
             </div>
 
-            {/* Mobile Tactile Cards */}
-            {mobileViewMode === 'cards' && (
-              <div className="md:hidden space-y-3">
+            {/* Tactile Cards */}
+            {viewMode === 'cards' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
                 {paginatedItems.map(item => (
                   <div
                     key={item.id}
@@ -445,7 +465,8 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
             )}
 
             {/* Data Table */}
-            <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs`}>
+            {viewMode === 'table' && (
+              <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
                   <thead>
@@ -670,6 +691,7 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
                 </table>
               </div>
             </div>
+            )}
 
             {/* Pagination */}
             {filteredAndSortedItems.length > 0 && (

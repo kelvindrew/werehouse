@@ -21,7 +21,9 @@ import {
   Calendar,
   Layers,
   ArrowRight,
-  RefreshCw
+  RefreshCw,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 
 interface IssuesViewProps {
@@ -42,7 +44,21 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedWarehouse, setSelectedWarehouse] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
-  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
+    try {
+      const saved = localStorage.getItem('wms_issues_view_mode');
+      return saved === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetViewMode = (mode: 'cards' | 'table') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('wms_issues_view_mode', mode);
+    } catch (e) {}
+  };
   const [isQuickIssueOpen, setIsQuickIssueOpen] = useState(false);
 
   // Modal states
@@ -130,7 +146,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-28">
       
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-zinc-200 dark:border-zinc-800 pb-4">
@@ -148,7 +164,35 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible) */}
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('cards')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'cards'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>{t.btn_cards || 'Cartes'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('table')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'table'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>{t.btn_table || 'Tableau'}</span>
+            </button>
+          </div>
+
           <button
             onClick={() => setIsQuickIssueOpen(true)}
             className="px-3.5 py-2 text-xs font-mono font-bold bg-lime hover:bg-lime/90 text-zinc-950 transition-all flex items-center gap-1.5 rounded-lg shadow-2xs"
@@ -324,37 +368,13 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
           </button>
         )}
 
-        {/* Mobile View Toggle: Cartes / Tableau */}
-        <div className="flex sm:hidden items-center justify-between w-full pt-2 border-t border-zinc-100">
-          <span className="text-[11px] font-mono font-semibold text-zinc-500">Affichage :</span>
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200">
-            <button
-              type="button"
-              onClick={() => setMobileViewMode('cards')}
-              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
-                mobileViewMode === 'cards' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
-              }`}
-            >
-              Cartes
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileViewMode('table')}
-              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
-                mobileViewMode === 'table' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
-              }`}
-            >
-              Tableau
-            </button>
-          </div>
-        </div>
       </div>
 
-      {/* Vouchers Table / Mobile Cards */}
+      {/* Vouchers Table / Tactile Cards */}
       <div className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs overflow-hidden">
-        {/* Mobile Tactile Cards */}
-        {mobileViewMode === 'cards' && (
-          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+        {/* Tactile Cards (Active by default) */}
+        {viewMode === 'cards' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 p-3.5 bg-zinc-50/60">
             {filteredVouchers.map((v) => {
               const isConfirmed = v.status === 'CONFIRMED';
               const isCancelled = v.status === 'CANCELLED';
@@ -447,7 +467,8 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
           </div>
         )}
 
-        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
+        {viewMode === 'table' && (
+          <div className="overflow-x-auto">
           <table className="w-full text-xs text-left">
           <thead className="bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 font-mono text-[11px] uppercase border-b border-zinc-200 dark:border-zinc-800">
             <tr>
@@ -571,6 +592,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
           </tbody>
         </table>
         </div>
+        )}
       </div>
 
       {/* Issue Voucher Modal (Create / Edit / Physical Verify / Confirm) */}

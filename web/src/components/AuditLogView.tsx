@@ -1,13 +1,27 @@
 import React, { useState, useMemo } from 'react';
 import { dataService } from '../lib/dataService';
 import { useAuth } from '../context/AuthContext';
-import { History, Search, ShieldCheck } from 'lucide-react';
+import { History, Search, ShieldCheck, LayoutGrid, Table as TableIcon } from 'lucide-react';
 
 export const AuditLogView: React.FC = () => {
   const { t } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [actionFilter, setActionFilter] = useState('');
-  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
+    try {
+      const saved = localStorage.getItem('wms_audit_view_mode');
+      return saved === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetViewMode = (mode: 'cards' | 'table') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('wms_audit_view_mode', mode);
+    } catch (e) {}
+  };
   const auditLogs = dataService.getAuditLogs(500);
 
   const filteredLogs = useMemo(() => {
@@ -56,13 +70,43 @@ export const AuditLogView: React.FC = () => {
           </p>
         </div>
 
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 font-mono shadow-xs self-start sm:self-auto">
-          <ShieldCheck className="w-4 h-4 text-emerald-600" />
-          <span>{filteredLogs.length} {t.audit_events_count}</span>
+        <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
+          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible) */}
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('cards')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'cards'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>{t.btn_cards || 'Cartes'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('table')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'table'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>{t.btn_table || 'Tableau'}</span>
+            </button>
+          </div>
+
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 font-mono shadow-xs">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>{filteredLogs.length} {t.audit_events_count}</span>
+          </div>
         </div>
       </div>
 
-      {/* Filter Bar with Mobile Switcher */}
+      {/* Filter Bar with Search & Action Filter */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-zinc-200/80 shadow-xs">
         <div className="flex-1 relative">
           <Search className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -91,36 +135,12 @@ export const AuditLogView: React.FC = () => {
             <option value="LOCATION_UPDATED">{t.audit_action_location_updated}</option>
             <option value="LOCATION_DELETED">{t.audit_action_location_deleted}</option>
           </select>
-
-          {/* Mobile Switcher (Cartes / Tableau) */}
-          <div className="md:hidden flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200 shrink-0">
-            <button
-              onClick={() => setMobileViewMode('cards')}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                mobileViewMode === 'cards'
-                  ? 'bg-zinc-900 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              {t.btn_cards || 'Cartes'}
-            </button>
-            <button
-              onClick={() => setMobileViewMode('table')}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                mobileViewMode === 'table'
-                  ? 'bg-zinc-900 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              {t.btn_table || 'Tableau'}
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Mobile Tactile Cards */}
-      {mobileViewMode === 'cards' && (
-        <div className="md:hidden space-y-3">
+      {/* Tactile Cards */}
+      {viewMode === 'cards' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {filteredLogs.map(log => (
             <div
               key={log.id}
@@ -174,7 +194,8 @@ export const AuditLogView: React.FC = () => {
       )}
 
       {/* Audit Table */}
-      <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden`}>
+      {viewMode === 'table' && (
+        <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase font-semibold">
@@ -226,6 +247,7 @@ export const AuditLogView: React.FC = () => {
           </table>
         </div>
       </div>
+      )}
     </div>
   );
 };

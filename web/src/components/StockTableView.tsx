@@ -21,7 +21,9 @@ import {
   Scan,
   Tablet,
   X,
-  Camera
+  Camera,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 import { SharedLinkFilters } from '@shared/types/models';
 import { AutocompleteInput } from './AutocompleteInput';
@@ -63,7 +65,21 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
 
   const [sortField, setSortField] = useState<SortField>('totalValue');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
+    try {
+      const saved = localStorage.getItem('wms_stock_view_mode');
+      return saved === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetViewMode = (mode: 'cards' | 'table') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('wms_stock_view_mode', mode);
+    } catch (e) {}
+  };
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -205,7 +221,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
   const totalValuationUSD = filteredItems.reduce((acc, s) => acc + s.totalValue, 0);
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-28">
       {/* Header bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-200">
         <div>
@@ -218,14 +234,42 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible on all screens!) */}
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('cards')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'cards'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>{t.btn_cards || 'Cartes'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('table')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'table'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>{t.btn_table || 'Tableau'}</span>
+            </button>
+          </div>
+
           <button
             onClick={() => handleOpenMaterialTour()}
             className="inline-flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-colors"
             title={t.btn_material_tour}
           >
             <Camera className="w-3.5 h-3.5 text-zinc-300" />
-            <span>{t.btn_material_tour}</span>
+            <span className="hidden sm:inline">{t.btn_material_tour}</span>
           </button>
 
           {onOpenShareModal && (
@@ -240,7 +284,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               title={t.btn_share_this_view}
             >
               <Share2 className="w-3.5 h-3.5 text-zinc-600" />
-              <span>{t.btn_share_this_view}</span>
+              <span className="hidden sm:inline">{t.btn_share_this_view}</span>
             </button>
           )}
           <button
@@ -248,7 +292,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
             className="inline-flex items-center gap-1.5 bg-white hover:bg-zinc-50 text-zinc-800 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-colors border border-zinc-300 shadow-2xs"
           >
             <Download className="w-3.5 h-3.5 text-zinc-600" />
-            <span>{t.btn_export_excel}</span>
+            <span className="hidden sm:inline">{t.btn_export_excel}</span>
           </button>
         </div>
       </div>
@@ -374,36 +418,14 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               {t.reset_filters}
             </button>
           )}
-
-          {/* Mobile View Toggle: Cartes / Tableau */}
-          <div className="flex md:hidden items-center ml-auto bg-zinc-200/70 p-0.5 rounded-full border border-zinc-300">
-            <button
-              type="button"
-              onClick={() => setMobileViewMode('cards')}
-              className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full transition-all ${
-                mobileViewMode === 'cards' ? 'bg-carbon text-white shadow-2xs' : 'text-zinc-600'
-              }`}
-            >
-              Cartes
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileViewMode('table')}
-              className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full transition-all ${
-                mobileViewMode === 'table' ? 'bg-carbon text-white shadow-2xs' : 'text-zinc-600'
-              }`}
-            >
-              Tableau
-            </button>
-          </div>
         </div>
       </div>
 
-      {/* Stock Table / Mobile Cards (Liquid Glass Card) */}
+      {/* Stock Table / Tactile Cards (Liquid Glass Card) */}
       <div className="liquid-glass-card overflow-hidden">
-        {/* Mobile Tactile Cards View (Active by default on mobile) */}
-        {mobileViewMode === 'cards' && (
-          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+        {/* Tactile Cards View (Active by default) */}
+        {viewMode === 'cards' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 p-3.5 bg-zinc-50/60">
             {paginatedItems.map((item) => {
               const isLow = item.availableQuantity > 0 && item.availableQuantity <= 5;
               const isZero = item.availableQuantity <= 0;
@@ -546,7 +568,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
           </div>
         )}
 
-        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
+        {viewMode === 'table' && (
+          <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 uppercase font-mono text-[11px]">
               <tr>
@@ -831,6 +854,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
             </tbody>
           </table>
         </div>
+        )}
 
         {/* Pagination Bar */}
         <div className="bg-zinc-50 px-4 py-3 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-600">

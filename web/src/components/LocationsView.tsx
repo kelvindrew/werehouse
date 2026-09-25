@@ -18,7 +18,9 @@ import {
   Wrench,
   AlertTriangle,
   Camera,
-  Eye
+  Eye,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 import { WarehouseVisualTourModal } from './WarehouseVisualTourModal';
 
@@ -40,7 +42,21 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
+    try {
+      const saved = localStorage.getItem('wms_locations_view_mode');
+      return saved === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetViewMode = (mode: 'cards' | 'table') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('wms_locations_view_mode', mode);
+    } catch (e) {}
+  };
   const [locations, setLocations] = useState<StorageLocation[]>(() => dataService.getLocations());
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [tourLocationCode, setTourLocationCode] = useState<string>('B1');
@@ -130,7 +146,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
   };
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-5 pb-28">
       {/* Top Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-2xl border border-zinc-200/80 shadow-xs">
         <div>
@@ -149,7 +165,35 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible on all screen sizes) */}
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('cards')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'cards'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>{t.btn_cards || 'Cartes'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('table')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'table'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>{t.btn_table || 'Tableau'}</span>
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => handleOpenTour()}
@@ -269,38 +313,13 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
             <option value="INACTIVE">{t.inactive_status}</option>
           </select>
         </div>
-
-        {/* Mobile View Toggle: Cartes / Tableau */}
-        <div className="flex sm:hidden items-center justify-between w-full pt-2 border-t border-zinc-100">
-          <span className="text-[11px] font-mono font-semibold text-zinc-500">Affichage :</span>
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200">
-            <button
-              type="button"
-              onClick={() => setMobileViewMode('cards')}
-              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
-                mobileViewMode === 'cards' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
-              }`}
-            >
-              Cartes
-            </button>
-            <button
-              type="button"
-              onClick={() => setMobileViewMode('table')}
-              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
-                mobileViewMode === 'table' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
-              }`}
-            >
-              Tableau
-            </button>
-          </div>
-        </div>
       </div>
 
-      {/* Directory Table / Mobile Cards */}
+      {/* Directory Table / Tactile Cards */}
       <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
-        {/* Mobile Tactile Locations Cards */}
-        {mobileViewMode === 'cards' && (
-          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+        {/* Tactile Locations Cards (Active by default) */}
+        {viewMode === 'cards' && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 p-3.5 bg-zinc-50/60">
             {filteredLocations.map(loc => {
               const isCore = loc.code === 'B1' || loc.code === 'B2';
               return (
@@ -413,7 +432,8 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
           </div>
         )}
 
-        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
+        {viewMode === 'table' && (
+          <div className="overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead className="bg-zinc-50 text-zinc-600 text-xs font-semibold uppercase tracking-wider border-b border-zinc-200">
               <tr>
@@ -568,6 +588,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
             </tbody>
           </table>
         </div>
+        )}
       </div>
 
       {/* Interactive Warehouse Visual Tour Modal */}

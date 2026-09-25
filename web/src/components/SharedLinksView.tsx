@@ -11,7 +11,9 @@ import {
   ExternalLink, 
   Trash2, 
   Ban, 
-  Search
+  Search,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 
 export const SharedLinksView: React.FC = () => {
@@ -21,7 +23,21 @@ export const SharedLinksView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
-  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
+    try {
+      const saved = localStorage.getItem('wms_sharedlinks_view_mode');
+      return saved === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetViewMode = (mode: 'cards' | 'table') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('wms_sharedlinks_view_mode', mode);
+    } catch (e) {}
+  };
 
   // Auto-refresh links state
   useEffect(() => {
@@ -128,13 +144,43 @@ export const SharedLinksView: React.FC = () => {
           </div>
         </div>
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 min-h-[44px] bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold rounded-full shadow-xs transition-colors shrink-0 w-full sm:w-auto active:scale-95"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>{t.btn_generate_share_link}</span>
-        </button>
+        <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
+          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible) */}
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('cards')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'cards'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              <span>{t.btn_cards || 'Cartes'}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => handleSetViewMode('table')}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
+                viewMode === 'table'
+                  ? 'bg-zinc-950 text-white shadow-xs'
+                  : 'text-zinc-600 hover:text-zinc-900'
+              }`}
+            >
+              <TableIcon className="w-3.5 h-3.5" />
+              <span>{t.btn_table || 'Tableau'}</span>
+            </button>
+          </div>
+
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 min-h-[44px] bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold rounded-full shadow-xs transition-colors shrink-0 flex-1 sm:flex-initial active:scale-95"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>{t.btn_generate_share_link}</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -162,30 +208,6 @@ export const SharedLinksView: React.FC = () => {
             <option value="EXPIRED">{t.status_expired}</option>
             <option value="REVOKED">{t.status_revoked}</option>
           </select>
-
-          {/* Mobile View Switcher (Cards / Tableau) */}
-          <div className="md:hidden flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200 shrink-0">
-            <button
-              onClick={() => setMobileViewMode('cards')}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                mobileViewMode === 'cards'
-                  ? 'bg-zinc-900 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              {t.btn_cards || 'Cartes'}
-            </button>
-            <button
-              onClick={() => setMobileViewMode('table')}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                mobileViewMode === 'table'
-                  ? 'bg-zinc-900 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              {t.btn_table || 'Tableau'}
-            </button>
-          </div>
         </div>
 
         <div className="bg-zinc-50 border border-zinc-200 rounded-full px-4 py-1.5 flex items-center justify-between text-xs text-zinc-600 shadow-xs shrink-0">
@@ -196,9 +218,9 @@ export const SharedLinksView: React.FC = () => {
         </div>
       </div>
 
-      {/* Mobile Tactile Cards */}
-      {mobileViewMode === 'cards' && (
-        <div className="md:hidden space-y-3">
+      {/* Tactile Cards */}
+      {viewMode === 'cards' && (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
           {filteredLinks.map(link => {
             const dynStatus = getDynamicStatus(link);
             return (
@@ -330,7 +352,8 @@ export const SharedLinksView: React.FC = () => {
       )}
 
       {/* Links Table */}
-      <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden`}>
+      {viewMode === 'table' && (
+        <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase font-semibold">
@@ -510,6 +533,7 @@ export const SharedLinksView: React.FC = () => {
           </table>
         </div>
       </div>
+      )}
 
       {/* Generate Share Modal */}
       <GenerateShareModal

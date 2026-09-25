@@ -8,7 +8,9 @@ import {
   UploadCloud, 
   CheckCircle2, 
   AlertTriangle, 
-  ShieldCheck
+  ShieldCheck,
+  LayoutGrid,
+  Table as TableIcon
 } from 'lucide-react';
 
 export const ExcelImportView: React.FC = () => {
@@ -19,7 +21,21 @@ export const ExcelImportView: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState<'B1' | 'B2'>('B1');
   const [commitSuccess, setCommitSuccess] = useState(false);
-  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
+    try {
+      const saved = localStorage.getItem('wms_excel_view_mode');
+      return saved === 'table' ? 'table' : 'cards';
+    } catch {
+      return 'cards';
+    }
+  });
+
+  const handleSetViewMode = (mode: 'cards' | 'table') => {
+    setViewMode(mode);
+    try {
+      localStorage.setItem('wms_excel_view_mode', mode);
+    } catch (e) {}
+  };
 
   const activeSummary = summaries.find(s => s.sheetName.includes(activeTab)) || summaries[0];
 
@@ -192,34 +208,38 @@ export const ExcelImportView: React.FC = () => {
                 <span>{t('audit_report_title')}</span>
               </h3>
 
-              {/* Mobile View Switcher (Cards / Tableau) */}
-              <div className="md:hidden flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200 shrink-0">
+              {/* View Switcher (Cards / Tableau) */}
+              <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200 shrink-0">
                 <button
-                  onClick={() => setMobileViewMode('cards')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    mobileViewMode === 'cards'
+                  type="button"
+                  onClick={() => handleSetViewMode('cards')}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all active:scale-95 ${
+                    viewMode === 'cards'
                       ? 'bg-zinc-900 text-white shadow-xs'
                       : 'text-zinc-600 hover:text-zinc-900'
                   }`}
                 >
-                  {t.btn_cards || 'Cartes'}
+                  <LayoutGrid className="w-3 h-3" />
+                  <span>{t.btn_cards || 'Cartes'}</span>
                 </button>
                 <button
-                  onClick={() => setMobileViewMode('table')}
-                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                    mobileViewMode === 'table'
+                  type="button"
+                  onClick={() => handleSetViewMode('table')}
+                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all active:scale-95 ${
+                    viewMode === 'table'
                       ? 'bg-zinc-900 text-white shadow-xs'
                       : 'text-zinc-600 hover:text-zinc-900'
                   }`}
                 >
-                  {t.btn_table || 'Tableau'}
+                  <TableIcon className="w-3 h-3" />
+                  <span>{t.btn_table || 'Tableau'}</span>
                 </button>
               </div>
             </div>
 
-            {/* Mobile Cards for Issues */}
-            {mobileViewMode === 'cards' && (
-              <div className="md:hidden space-y-2.5">
+            {/* Tactile Cards for Issues */}
+            {viewMode === 'cards' && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                 {activeSummary.issues.map((iss, idx) => (
                   <div
                     key={idx}
@@ -253,8 +273,9 @@ export const ExcelImportView: React.FC = () => {
               </div>
             )}
 
-            {/* Desktop Table */}
-            <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} border border-zinc-200 rounded-xl overflow-hidden max-h-72 overflow-y-auto`}>
+            {/* Table */}
+            {viewMode === 'table' && (
+              <div className="border border-zinc-200 rounded-xl overflow-hidden max-h-72 overflow-y-auto">
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-zinc-200 bg-zinc-50 text-zinc-600 font-mono text-[11px]">
@@ -297,6 +318,7 @@ export const ExcelImportView: React.FC = () => {
                 </tbody>
               </table>
             </div>
+            )}
           </div>
         </div>
       )}
