@@ -11,29 +11,31 @@ export const ExportView: React.FC = () => {
   const exportMovements = () => dataService.exportMovementsToExcel('ALL');
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 pb-28">
       {/* Header */}
-      <div className="pb-3 border-b border-zinc-200">
-        <h2 className="text-lg font-bold text-zinc-900 flex items-center gap-2">
-          <Download className="w-5 h-5 text-zinc-800" />
+      <div className="bg-white p-4 sm:p-5 rounded-2xl border border-zinc-200/80 shadow-xs">
+        <h2 className="text-lg font-bold text-zinc-900 flex items-center gap-2.5">
+          <span className="p-2 bg-zinc-900 text-white rounded-xl shadow-xs">
+            <Download className="w-4 h-4" />
+          </span>
           <span>{t('export_view_title')}</span>
         </h2>
-        <p className="text-xs text-zinc-500 mt-0.5">
+        <p className="text-xs text-zinc-500 mt-1">
           {t('export_view_subtitle')}
         </p>
       </div>
 
       {/* Export Cards Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
         {/* Export Stock Global */}
-        <div className="bg-white border border-zinc-200 rounded p-4 flex flex-col justify-between hover:border-zinc-400 transition">
+        <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xs hover:border-zinc-300 transition-all">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-zinc-100 text-zinc-800 border border-zinc-200 rounded">
+            <div className="flex items-center gap-3 mb-2.5">
+              <div className="p-2.5 bg-zinc-900 text-white rounded-xl shadow-xs">
                 <Layers className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-zinc-900 text-xs">{t('export_global_title')}</h3>
+                <h3 className="font-bold text-zinc-900 text-sm">{t('export_global_title')}</h3>
                 <p className="text-[11px] text-zinc-500 font-mono">{t('export_global_meta')}</p>
               </div>
             </div>
@@ -43,7 +45,7 @@ export const ExportView: React.FC = () => {
           </div>
           <button
             onClick={exportStockGlobal}
-            className="mt-4 w-full py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded text-xs font-semibold flex items-center justify-center gap-2 transition"
+            className="mt-4 w-full min-h-[44px] py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xs"
           >
             <Download className="w-4 h-4" />
             <span>{t('btn_download_stock_global')}</span>
@@ -51,14 +53,14 @@ export const ExportView: React.FC = () => {
         </div>
 
         {/* Export Stock B1 */}
-        <div className="bg-white border border-zinc-200 rounded p-4 flex flex-col justify-between hover:border-zinc-400 transition">
+        <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xs hover:border-zinc-300 transition-all">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-zinc-100 text-zinc-800 border border-zinc-200 rounded">
+            <div className="flex items-center gap-3 mb-2.5">
+              <div className="p-2.5 bg-zinc-100 text-zinc-800 border border-zinc-200 rounded-xl shadow-xs">
                 <Building2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-zinc-900 text-xs">{t('export_b1_title')}</h3>
+                <h3 className="font-bold text-zinc-900 text-sm">{t('export_b1_title')}</h3>
                 <p className="text-[11px] text-zinc-500 font-mono">{t('export_b1_meta')}</p>
               </div>
             </div>
@@ -68,7 +70,7 @@ export const ExportView: React.FC = () => {
           </div>
           <button
             onClick={exportStockB1}
-            className="mt-4 w-full py-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 rounded text-xs font-semibold flex items-center justify-center gap-2 transition"
+            className="mt-4 w-full min-h-[44px] py-2.5 px-4 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xs"
           >
             <Download className="w-4 h-4" />
             <span>{t('btn_download_stock_b1')}</span>
@@ -76,14 +78,14 @@ export const ExportView: React.FC = () => {
         </div>
 
         {/* Export Stock B2 */}
-        <div className="bg-white border border-zinc-200 rounded p-4 flex flex-col justify-between hover:border-zinc-400 transition">
+        <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xs hover:border-zinc-300 transition-all">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-zinc-100 text-zinc-800 border border-zinc-200 rounded">
+            <div className="flex items-center gap-3 mb-2.5">
+              <div className="p-2.5 bg-zinc-100 text-zinc-800 border border-zinc-200 rounded-xl shadow-xs">
                 <Building2 className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-zinc-900 text-xs">{t('export_b2_title')}</h3>
+                <h3 className="font-bold text-zinc-900 text-sm">{t('export_b2_title')}</h3>
                 <p className="text-[11px] text-zinc-500 font-mono">{t('export_b2_meta')}</p>
               </div>
             </div>
@@ -93,7 +95,7 @@ export const ExportView: React.FC = () => {
           </div>
           <button
             onClick={exportStockB2}
-            className="mt-4 w-full py-2 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 rounded text-xs font-semibold flex items-center justify-center gap-2 transition"
+            className="mt-4 w-full min-h-[44px] py-2.5 px-4 bg-white hover:bg-zinc-50 text-zinc-800 border border-zinc-300 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xs"
           >
             <Download className="w-4 h-4" />
             <span>{t('btn_download_stock_b2')}</span>
@@ -101,14 +103,14 @@ export const ExportView: React.FC = () => {
         </div>
 
         {/* Export Movement History */}
-        <div className="bg-white border border-zinc-200 rounded p-4 flex flex-col justify-between hover:border-zinc-400 transition">
+        <div className="bg-white border border-zinc-200/80 rounded-2xl p-4 sm:p-5 flex flex-col justify-between shadow-xs hover:border-zinc-300 transition-all">
           <div>
-            <div className="flex items-center gap-3 mb-2">
-              <div className="p-2 bg-zinc-100 text-zinc-800 border border-zinc-200 rounded">
+            <div className="flex items-center gap-3 mb-2.5">
+              <div className="p-2.5 bg-zinc-900 text-white rounded-xl shadow-xs">
                 <History className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-bold text-zinc-900 text-xs">{t('export_movements_title')}</h3>
+                <h3 className="font-bold text-zinc-900 text-sm">{t('export_movements_title')}</h3>
                 <p className="text-[11px] text-zinc-500 font-mono">{t('export_movements_meta')}</p>
               </div>
             </div>
@@ -118,7 +120,7 @@ export const ExportView: React.FC = () => {
           </div>
           <button
             onClick={exportMovements}
-            className="mt-4 w-full py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded text-xs font-semibold flex items-center justify-center gap-2 transition"
+            className="mt-4 w-full min-h-[44px] py-2.5 px-4 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 active:scale-95 transition-all shadow-xs"
           >
             <Download className="w-4 h-4" />
             <span>{t('btn_download_movements')}</span>

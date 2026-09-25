@@ -102,6 +102,8 @@ export interface TranslationDictionary {
   next_page: string;
 
   // Modals & Operations
+  btn_cards: string;
+  btn_table: string;
   btn_cancel: string;
   btn_confirm: string;
   btn_save: string;
@@ -696,6 +698,8 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     prev_page: 'Précédent',
     next_page: 'Suivant',
 
+    btn_cards: 'Cartes',
+    btn_table: 'Tableau',
     btn_cancel: 'Annuler',
     btn_confirm: 'Confirmer',
     btn_save: 'Enregistrer',
@@ -1275,6 +1279,8 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     prev_page: 'Previous',
     next_page: 'Next',
 
+    btn_cards: 'Cards',
+    btn_table: 'Table',
     btn_cancel: 'Cancel',
     btn_confirm: 'Confirm',
     btn_save: 'Save',
@@ -1854,6 +1860,8 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     prev_page: '上一页',
     next_page: '下一页',
 
+    btn_cards: '卡片',
+    btn_table: '表格',
     btn_cancel: '取消',
     btn_confirm: '确认',
     btn_save: '保存',

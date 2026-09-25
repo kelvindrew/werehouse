@@ -19,6 +19,7 @@ export const InventoryView: React.FC = () => {
   const [counts, setCounts] = useState<Record<string, number | ''>>({});
   const [adjustmentReasons, setAdjustmentReasons] = useState<Record<string, string>>({});
   const [feedbackMsg, setFeedbackMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
 
   const locations = useMemo(() => dataService.getLocations(), []);
 
@@ -176,11 +177,135 @@ export const InventoryView: React.FC = () => {
             inputClassName="rounded-full bg-zinc-50/80 border-zinc-200 text-xs py-1.5 px-3.5"
           />
         </div>
+
+        {/* Mobile View Toggle: Cartes / Tableau */}
+        <div className="flex sm:hidden items-center justify-between w-full pt-2 border-t border-zinc-100 sm:col-span-2">
+          <span className="text-[11px] font-mono font-semibold text-zinc-500">Affichage :</span>
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200">
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('cards')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'cards' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Cartes
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('table')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'table' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Tableau
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Inventory Table */}
+      {/* Inventory Table / Mobile Cards */}
       <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Tactile Inventory Cards */}
+        {mobileViewMode === 'cards' && (
+          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+            {filteredItems.slice(0, 50).map((item) => {
+              const countedRaw = counts[item.id];
+              const hasCount = countedRaw !== undefined && countedRaw !== '';
+              const countedQty = hasCount ? Number(countedRaw) : item.quantity;
+              const diffQty = countedQty - item.quantity;
+              const diffValue = Math.round(diffQty * item.unitPrice * 100) / 100;
+              const isDifferent = hasCount && diffQty !== 0;
+
+              return (
+                <div 
+                  key={item.id}
+                  className={`bg-white rounded-2xl p-3.5 border transition-all shadow-[0_4px_16px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)] ${
+                    isDifferent ? 'border-amber-400 bg-amber-50/40 ring-1 ring-amber-400/50' : 'border-zinc-200/90'
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono font-bold text-xs bg-zinc-100 text-zinc-900 px-2 py-0.5 rounded border border-zinc-300">
+                      📍 {item.binLocation}
+                    </span>
+                    <span className="font-mono font-bold text-xs text-zinc-900">
+                      {item.materialCode}
+                    </span>
+                  </div>
+
+                  <h4 className="text-xs font-semibold text-zinc-900 mt-1 line-clamp-1">
+                    {item.materialName}
+                  </h4>
+                  {item.specification && (
+                    <p className="text-[10px] text-zinc-500 font-mono truncate">
+                      {item.specification}
+                    </p>
+                  )}
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 grid grid-cols-2 gap-2 items-center text-xs">
+                    <div className="bg-zinc-50 p-2 rounded-xl border border-zinc-200/80">
+                      <span className="text-[10px] text-zinc-400 block uppercase font-mono">Stock Système</span>
+                      <span className="font-mono font-bold text-sm text-zinc-900">
+                        {item.quantity.toLocaleString()} {item.uom}
+                      </span>
+                    </div>
+
+                    <div className="bg-zinc-50 p-1.5 rounded-xl border border-zinc-200/80">
+                      <label className="text-[10px] text-zinc-500 block uppercase font-mono mb-1 font-semibold">Comptage Réel</label>
+                      <input
+                        type="number"
+                        step="any"
+                        min="0"
+                        placeholder={String(item.quantity)}
+                        value={countedRaw !== undefined ? countedRaw : ''}
+                        onChange={(e) => handleCountChange(item.id, e.target.value)}
+                        className={`w-full bg-white border px-2 py-1 rounded-lg text-center font-mono text-sm font-bold focus:outline-none ${
+                          isDifferent ? 'border-amber-500 text-amber-900 bg-amber-50' : 'border-zinc-300 text-zinc-900'
+                        }`}
+                      />
+                    </div>
+                  </div>
+
+                  {hasCount && isDifferent && (
+                    <div className="mt-2 p-2 rounded-xl bg-amber-100/70 border border-amber-200 flex items-center justify-between text-xs font-mono">
+                      <span className="text-[11px] font-bold text-amber-900">Écart détecté :</span>
+                      <span className={`font-bold ${diffQty > 0 ? 'text-emerald-700' : 'text-red-700'}`}>
+                        {diffQty > 0 ? '+' : ''}{diffQty} {item.uom} (${diffValue > 0 ? '+' : ''}{diffValue.toFixed(2)})
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 flex items-center gap-2">
+                    <input
+                      type="text"
+                      placeholder="Motif de l'écart..."
+                      value={adjustmentReasons[item.id] || ''}
+                      onChange={(e) => handleReasonChange(item.id, e.target.value)}
+                      className="flex-1 bg-zinc-50 border border-zinc-200 text-xs px-2.5 py-1.5 rounded-xl focus:bg-white focus:outline-none focus:border-zinc-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleSaveAdjustment(item)}
+                      disabled={!hasCount || !isDifferent}
+                      className="px-3.5 py-1.5 bg-zinc-950 text-lime rounded-xl text-xs font-bold disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-1 shadow-2xs active:scale-95 transition-all"
+                    >
+                      <Save className="w-3.5 h-3.5 text-lime" />
+                      <span>Valider</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+
+            {filteredItems.length === 0 && (
+              <div className="py-8 text-center text-zinc-400 font-mono text-xs">
+                {t.no_matching_stock}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase font-semibold">
               <tr>

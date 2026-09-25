@@ -8,6 +8,7 @@ export const MovementsTableView: React.FC = () => {
   const { selectedWarehouse, t } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
+  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 30;
 
@@ -90,11 +91,115 @@ export const MovementsTableView: React.FC = () => {
             <option value="INITIAL_IMPORT">INITIAL_IMPORT ({t.tab_import})</option>
           </select>
         </div>
+
+        {/* Mobile Switcher */}
+        <div className="flex sm:hidden items-center justify-between pt-2 border-t border-zinc-100 col-span-1">
+          <span className="text-[11px] font-mono font-semibold text-zinc-500">Affichage :</span>
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200">
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('cards')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'cards' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Cartes
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('table')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'table' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Tableau
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Table */}
+      {/* Movements Table / Mobile Cards */}
       <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Tactile Cards */}
+        {mobileViewMode === 'cards' && (
+          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+            {paginatedMovements.map((m) => {
+              const isPlus = m.movementType === 'RECEIPT' || m.movementType === 'TRANSFER_IN' || m.movementType === 'INITIAL_IMPORT';
+              return (
+                <div 
+                  key={m.id}
+                  className="bg-white rounded-2xl p-3.5 border border-zinc-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-all active:scale-[0.99]"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                      m.movementType === 'RECEIPT' || m.movementType === 'TRANSFER_IN'
+                        ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                        : m.movementType === 'ISSUE'
+                        ? 'bg-zinc-950 text-lime border border-zinc-900 shadow-2xs'
+                        : 'bg-blue-50 text-blue-800 border border-blue-200'
+                    }`}>
+                      {m.movementType}
+                    </span>
+                    <span className="text-[11px] font-mono text-zinc-400">
+                      {new Date(m.createdAt).toLocaleDateString()} {new Date(m.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+
+                  <div className="mt-2">
+                    <span className="font-mono font-bold text-xs text-zinc-950 block">
+                      {m.materialCode}
+                    </span>
+                    <p className="text-xs font-medium text-zinc-700 line-clamp-1 mt-0.5">
+                      {m.materialName}
+                    </p>
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5 font-mono text-[11px]">
+                      <span className="px-2 py-0.5 rounded bg-zinc-100 font-bold text-zinc-800">
+                        {m.warehouseId}
+                      </span>
+                      <span className="text-zinc-600 font-semibold">
+                        {m.binLocation}
+                      </span>
+                      {m.destinationWarehouseId && (
+                        <span className="text-zinc-400 text-[10px]">
+                          → {m.destinationWarehouseId}
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="text-right font-mono font-bold">
+                      <span className={`text-sm ${isPlus ? 'text-emerald-700' : 'text-zinc-950'}`}>
+                        {isPlus ? '+' : '-'}{m.quantity}
+                      </span>
+                      <span className="text-[10px] text-zinc-400 block font-normal">
+                        {m.previousQuantity} → {m.newQuantity}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 flex items-center justify-between text-[11px] text-zinc-500 font-mono">
+                    <span className="truncate max-w-[160px]">
+                      👤 {m.performedByName || 'Agent WMS'}
+                    </span>
+                    <span className="font-bold text-zinc-900">
+                      ${m.totalAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+
+            {paginatedMovements.length === 0 && (
+              <div className="py-8 text-center text-zinc-400 font-mono text-xs">
+                {t.no_matching_movements}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase font-semibold">
               <tr>
@@ -168,11 +273,11 @@ export const MovementsTableView: React.FC = () => {
         </div>
 
         {/* Pagination */}
-        <div className="bg-zinc-50 px-4 py-3 border-t border-zinc-200 flex items-center justify-between text-xs text-zinc-600 font-mono">
-          <span>
+        <div className="bg-zinc-50 px-4 py-3 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-zinc-600 font-mono">
+          <span className="text-center sm:text-left">
             {t.showing_items} {(currentPage - 1) * pageSize + 1} - {Math.min(currentPage * pageSize, filteredMovements.length)} {t.of_total} {filteredMovements.length}
           </span>
-          <div className="flex gap-2">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
               disabled={currentPage === 1}

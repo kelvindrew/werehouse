@@ -42,6 +42,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedWarehouse, setSelectedWarehouse] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
+  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
   const [isQuickIssueOpen, setIsQuickIssueOpen] = useState(false);
 
   // Modal states
@@ -322,11 +323,131 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
             Réinitialiser
           </button>
         )}
+
+        {/* Mobile View Toggle: Cartes / Tableau */}
+        <div className="flex sm:hidden items-center justify-between w-full pt-2 border-t border-zinc-100">
+          <span className="text-[11px] font-mono font-semibold text-zinc-500">Affichage :</span>
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200">
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('cards')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'cards' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Cartes
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('table')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'table' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Tableau
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Vouchers Table (Ron Design Canvas Card) */}
+      {/* Vouchers Table / Mobile Cards */}
       <div className="rounded-2xl border border-zinc-200/80 bg-white shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Tactile Cards */}
+        {mobileViewMode === 'cards' && (
+          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+            {filteredVouchers.map((v) => {
+              const isConfirmed = v.status === 'CONFIRMED';
+              const isCancelled = v.status === 'CANCELLED';
+
+              return (
+                <div 
+                  key={v.id}
+                  className="bg-white rounded-2xl p-3.5 border border-zinc-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-all active:scale-[0.99]"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedVoucherForDetail(v)}
+                      className="font-mono font-bold text-xs text-zinc-950 hover:underline flex items-center gap-1.5"
+                    >
+                      <FileText className="w-3.5 h-3.5 text-zinc-600" />
+                      <span>{v.voucherNumber}</span>
+                    </button>
+                    <div>
+                      {getStatusBadge(v.status)}
+                    </div>
+                  </div>
+
+                  <div className="mt-2 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono font-bold px-2 py-0.5 bg-zinc-100 rounded text-zinc-800 text-[10px]">
+                        {v.warehouseId}
+                      </span>
+                      <span className="font-semibold text-zinc-900 truncate">
+                        {v.buyerName}
+                      </span>
+                      {v.department && (
+                        <span className="text-[10px] text-zinc-500 font-mono">
+                          • {v.department}
+                        </span>
+                      )}
+                    </div>
+                    {v.reason && (
+                      <p className="text-[11px] text-zinc-500 mt-1 italic line-clamp-1">
+                        "{v.reason}"
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 flex items-center justify-between text-xs font-mono">
+                    <span className="text-zinc-600 font-bold">
+                      {v.totalIssuedQty} pcs <span className="text-zinc-400 font-normal">({v.items.length} réf.)</span>
+                    </span>
+                    <span className="text-[11px] text-zinc-400">
+                      {new Date(v.date).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedVoucherForDetail(v)}
+                      className="flex-1 py-1.5 px-2 bg-zinc-950 text-white hover:bg-zinc-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-2xs active:scale-95 transition-all"
+                    >
+                      <Printer className="w-3.5 h-3.5 text-lime" />
+                      <span>Imprimer A4</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setSelectedVoucherForDetail(v)}
+                      className="py-1.5 px-3 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Détail</span>
+                    </button>
+                    {!isConfirmed && !isCancelled && (
+                      <button
+                        type="button"
+                        onClick={() => handleContinueVoucher(v)}
+                        className="py-1.5 px-3 bg-zinc-100 hover:bg-zinc-200 text-blue-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
+                      >
+                        <span>Continuer</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {filteredVouchers.length === 0 && (
+              <div className="py-8 text-center text-zinc-400 font-mono text-xs">
+                Aucun bon de sortie ne correspond aux critères.
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
           <table className="w-full text-xs text-left">
           <thead className="bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 font-mono text-[11px] uppercase border-b border-zinc-200 dark:border-zinc-800">
             <tr>

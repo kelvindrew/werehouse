@@ -40,6 +40,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
   const [locations, setLocations] = useState<StorageLocation[]>(() => dataService.getLocations());
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [tourLocationCode, setTourLocationCode] = useState<string>('B1');
@@ -268,11 +269,151 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
             <option value="INACTIVE">{t.inactive_status}</option>
           </select>
         </div>
+
+        {/* Mobile View Toggle: Cartes / Tableau */}
+        <div className="flex sm:hidden items-center justify-between w-full pt-2 border-t border-zinc-100">
+          <span className="text-[11px] font-mono font-semibold text-zinc-500">Affichage :</span>
+          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200">
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('cards')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'cards' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Cartes
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('table')}
+              className={`px-3 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'table' ? 'bg-zinc-950 text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Tableau
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Directory Table */}
+      {/* Directory Table / Mobile Cards */}
       <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Tactile Locations Cards */}
+        {mobileViewMode === 'cards' && (
+          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+            {filteredLocations.map(loc => {
+              const isCore = loc.code === 'B1' || loc.code === 'B2';
+              return (
+                <div 
+                  key={loc.id}
+                  className="bg-white rounded-2xl p-3.5 border border-zinc-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-all active:scale-[0.99]"
+                >
+                  <div className="flex items-start gap-3">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTour(loc.code)}
+                      className="w-12 h-12 rounded-xl bg-zinc-100 border border-zinc-200/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] flex items-center justify-center overflow-hidden shrink-0 relative group"
+                      title="Visiter en 360°"
+                    >
+                      {loc.imageUrl ? (
+                        <img src={loc.imageUrl} alt={loc.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      ) : (
+                        <WarehouseIcon className="w-5 h-5 text-zinc-400" />
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors flex items-center justify-center">
+                        <Camera className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </button>
+
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1.5">
+                        <span className="font-mono font-bold text-xs text-zinc-950 bg-zinc-100 px-2 py-0.5 rounded border border-zinc-300">
+                          {loc.code}
+                        </span>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${
+                          loc.status === 'ACTIVE'
+                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                            : 'bg-zinc-100 text-zinc-500 border border-zinc-200'
+                        }`}>
+                          {loc.status === 'ACTIVE' ? 'Actif' : 'Inactif'}
+                        </span>
+                      </div>
+
+                      <h3 className="text-xs font-bold text-zinc-900 mt-1 truncate">
+                        {loc.name}
+                      </h3>
+                      {loc.description && (
+                        <p className="text-[11px] text-zinc-500 truncate mt-0.5">
+                          {loc.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 grid grid-cols-3 gap-2 text-center text-xs font-mono">
+                    <div className="bg-zinc-50 p-1.5 rounded-lg border border-zinc-100">
+                      <span className="text-[10px] text-zinc-400 block font-sans">Articles</span>
+                      <span className="font-bold text-zinc-900">{loc.totalItemsCount || 0}</span>
+                    </div>
+                    <div className="bg-zinc-50 p-1.5 rounded-lg border border-zinc-100">
+                      <span className="text-[10px] text-zinc-400 block font-sans">Unités</span>
+                      <span className="font-bold text-zinc-900">{(loc.totalQuantity || 0).toLocaleString()}</span>
+                    </div>
+                    <div className="bg-zinc-50 p-1.5 rounded-lg border border-zinc-100">
+                      <span className="text-[10px] text-zinc-400 block font-sans">Valeur</span>
+                      <span className="font-bold text-zinc-900">${Math.round(loc.totalValuationUSD || 0).toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => onSelectLocationForStock(loc.code)}
+                      className="flex-1 py-1.5 px-2 bg-zinc-950 text-lime rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-2xs active:scale-95 transition-all"
+                    >
+                      <span>Voir stock</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => handleOpenTour(loc.code)}
+                      className="py-1.5 px-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
+                      title="Visite 360°"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => onOpenEditModal(loc)}
+                      className="py-1.5 px-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
+                      title="Modifier"
+                    >
+                      <Edit2 className="w-3.5 h-3.5" />
+                    </button>
+                    {!isCore && (
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(loc)}
+                        className="py-1.5 px-2.5 bg-zinc-100 hover:bg-red-50 text-zinc-500 hover:text-red-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
+                        title="Supprimer"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {filteredLocations.length === 0 && (
+              <div className="py-8 text-center text-zinc-400 font-mono text-xs">
+                {t.no_locations_matching}
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
           <table className="w-full text-left text-sm">
             <thead className="bg-zinc-50 text-zinc-600 text-xs font-semibold uppercase tracking-wider border-b border-zinc-200">
               <tr>
