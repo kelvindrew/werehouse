@@ -63,6 +63,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
 
   const [sortField, setSortField] = useState<SortField>('totalValue');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+  const [mobileViewMode, setMobileViewMode] = useState<'cards' | 'table'>('cards');
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -373,12 +374,179 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               {t.reset_filters}
             </button>
           )}
+
+          {/* Mobile View Toggle: Cartes / Tableau */}
+          <div className="flex md:hidden items-center ml-auto bg-zinc-200/70 p-0.5 rounded-full border border-zinc-300">
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('cards')}
+              className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'cards' ? 'bg-carbon text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Cartes
+            </button>
+            <button
+              type="button"
+              onClick={() => setMobileViewMode('table')}
+              className={`px-2.5 py-0.5 text-[10px] font-bold rounded-full transition-all ${
+                mobileViewMode === 'table' ? 'bg-carbon text-white shadow-2xs' : 'text-zinc-600'
+              }`}
+            >
+              Tableau
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Stock Table (Liquid Glass Card) */}
+      {/* Stock Table / Mobile Cards (Liquid Glass Card) */}
       <div className="liquid-glass-card overflow-hidden">
-        <div className="overflow-x-auto">
+        {/* Mobile Tactile Cards View (Active by default on mobile) */}
+        {mobileViewMode === 'cards' && (
+          <div className="md:hidden space-y-3 p-3 bg-zinc-50/60">
+            {paginatedItems.map((item) => {
+              const isLow = item.availableQuantity > 0 && item.availableQuantity <= 5;
+              const isZero = item.availableQuantity <= 0;
+
+              return (
+                <div 
+                  key={item.id}
+                  className="bg-white rounded-2xl p-3.5 border border-zinc-200/90 shadow-[0_4px_16px_rgba(0,0,0,0.04),inset_0_1px_1px_rgba(255,255,255,0.9)] transition-all active:scale-[0.99]"
+                >
+                  {/* Top row: Squircle Image Well + Code/Name + Qty Pill */}
+                  <div className="flex items-start gap-3">
+                    {/* Tactile Squircle Well */}
+                    <div
+                      onClick={() => handleOpenMaterialTour(item)}
+                      className="w-12 h-12 rounded-xl bg-zinc-100 border border-zinc-200/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.06)] flex items-center justify-center overflow-hidden shrink-0 cursor-pointer relative group"
+                      title={t.btn_tour_item || "Visite Visuelle"}
+                    >
+                      {item.imageUrl ? (
+                        <img src={item.imageUrl} alt={item.materialCode} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                      ) : (
+                        <Package className="w-5 h-5 text-zinc-400" />
+                      )}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors flex items-center justify-center">
+                        <Camera className="w-3.5 h-3.5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </div>
+
+                    {/* Title & Specs */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => onOpenMaterialModal(item.materialId)}
+                          className="font-mono font-bold text-xs text-zinc-950 hover:underline truncate text-left"
+                        >
+                          {item.materialCode}
+                        </button>
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-mono font-black shrink-0 ${
+                          isZero
+                            ? 'bg-red-50 text-red-700 border border-red-200'
+                            : isLow
+                            ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                            : 'bg-lime-muted text-lime-text border border-lime/30'
+                        }`}>
+                          {item.quantity.toLocaleString()} {item.uom}
+                        </span>
+                      </div>
+
+                      <p 
+                        onClick={() => onOpenMaterialModal(item.materialId)}
+                        className="text-xs font-medium text-zinc-800 line-clamp-1 mt-0.5 cursor-pointer"
+                      >
+                        {item.materialName}
+                      </p>
+
+                      {item.chineseName && (
+                        <p className="text-[11px] text-zinc-400 truncate mt-0.5">
+                          {item.chineseName}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Sub-strip: Emplacement & Valeur */}
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <span className="px-2 py-0.5 rounded-md bg-zinc-100 text-zinc-700 font-mono font-bold text-[10px]">
+                        {item.warehouseId}
+                      </span>
+                      <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-mono font-bold text-[10px]">
+                        <MapPin className="w-2.5 h-2.5" />
+                        {item.binLocation || 'N/A'}
+                      </span>
+                    </div>
+
+                    <span className="font-mono font-bold text-[11px] text-zinc-900">
+                      ${item.totalValue.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 0 })} USD
+                    </span>
+                  </div>
+
+                  {/* Tactile Action Chips */}
+                  <div className="mt-2.5 pt-2 border-t border-zinc-100 grid grid-cols-4 gap-1.5">
+                    {canOperateStock && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => onQuickIssue(item)}
+                          className="py-1.5 px-1 bg-zinc-950 text-lime rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 shadow-2xs active:scale-95 transition-transform"
+                        >
+                          <ArrowUpFromLine className="w-3 h-3 text-lime" />
+                          <span>Sortie</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onQuickReceipt(item)}
+                          className="py-1.5 px-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                        >
+                          <ArrowDownToLine className="w-3 h-3 text-emerald-600" />
+                          <span>Entrée</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => onQuickTransfer(item)}
+                          className="py-1.5 px-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                        >
+                          <ArrowLeftRight className="w-3 h-3 text-blue-600" />
+                          <span>Transf.</span>
+                        </button>
+                      </>
+                    )}
+                    {onOpenLabelModal ? (
+                      <button
+                        type="button"
+                        onClick={() => onOpenLabelModal(item)}
+                        className="py-1.5 px-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-[11px] font-semibold flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                      >
+                        <QrCode className="w-3 h-3" />
+                        <span>QR</span>
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => onOpenMaterialModal(item.materialId)}
+                        className="py-1.5 px-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-[11px] font-semibold flex items-center justify-center gap-1 active:scale-95 transition-transform"
+                      >
+                        <Eye className="w-3 h-3" />
+                        <span>Détail</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+
+            {paginatedItems.length === 0 && (
+              <div className="py-8 text-center text-zinc-400">
+                <p className="text-xs">{t.no_matching_stock}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        <div className={`${mobileViewMode === 'cards' ? 'hidden md:block' : 'block'} overflow-x-auto`}>
           <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 uppercase font-mono text-[11px]">
               <tr>

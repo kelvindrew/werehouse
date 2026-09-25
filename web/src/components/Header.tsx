@@ -76,10 +76,10 @@ export const Header: React.FC<HeaderProps> = ({
       
       {/* Left: Dynamic Location Switcher Pills (Matching reference stores pill) */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center bg-zinc-200/50 p-1 rounded-full border border-zinc-300/60 shadow-inner">
+        <div className="flex items-center bg-zinc-200/50 p-0.5 sm:p-1 rounded-full border border-zinc-300/60 shadow-inner">
           <button
             onClick={() => setSelectedWarehouse('ALL')}
-            className={`px-3 py-1 text-xs font-semibold rounded-full transition-all ${
+            className={`px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-full transition-all ${
               selectedWarehouse === 'ALL'
                 ? 'bg-carbon text-white shadow-sm'
                 : 'text-zinc-600 hover:text-zinc-900'
@@ -89,23 +89,23 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
           <button
             onClick={() => setSelectedWarehouse('B1')}
-            className={`px-3 py-1 text-xs font-semibold rounded-full transition-all ${
+            className={`px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-full transition-all ${
               selectedWarehouse === 'B1'
                 ? 'bg-carbon text-white shadow-sm'
                 : 'text-zinc-600 hover:text-zinc-900'
             }`}
           >
-            B1 (MD01)
+            B1<span className="hidden sm:inline"> (MD01)</span>
           </button>
           <button
             onClick={() => setSelectedWarehouse('B2')}
-            className={`px-3 py-1 text-xs font-semibold rounded-full transition-all ${
+            className={`px-2.5 sm:px-3 py-1 text-xs font-semibold rounded-full transition-all ${
               selectedWarehouse === 'B2'
                 ? 'bg-carbon text-white shadow-sm'
                 : 'text-zinc-600 hover:text-zinc-900'
             }`}
           >
-            B2 (Zones A-E)
+            B2<span className="hidden sm:inline"> (Zones A-E)</span>
           </button>
 
           {/* Dropdown for other sites */}

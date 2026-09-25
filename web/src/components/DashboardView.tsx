@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { StockMovement, StorageLocation, StockItem } from '@shared/types/models';
 import { WarehouseVisualTourModal } from './WarehouseVisualTourModal';
+import { MobileActionGrid } from './MobileActionGrid';
 
 interface DashboardViewProps {
   onNavigateToStock: (filter?: string) => void;
@@ -40,8 +41,10 @@ interface DashboardViewProps {
   onOpenMaterialModal: (materialId: string) => void;
   onNavigateToLocations?: () => void;
   onOpenCreateLocation?: () => void;
-  onQuickReceipt?: (item: StockItem) => void;
-  onQuickIssue?: (item: StockItem) => void;
+  onQuickReceipt?: (item?: StockItem) => void;
+  onQuickIssue?: (item?: StockItem) => void;
+  onOpenTransfer?: () => void;
+  onOpenShareModal?: () => void;
 }
 
 export const DashboardView: React.FC<DashboardViewProps> = ({
@@ -52,6 +55,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   onOpenCreateLocation,
   onQuickReceipt,
   onQuickIssue,
+  onOpenTransfer,
+  onOpenShareModal,
 }) => {
   const { t, selectedWarehouse } = useAuth();
   const [kpis, setKpis] = useState(() => dataService.getKpis());
@@ -227,7 +232,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
   return (
     <div className="space-y-6 animate-fadeIn">
-      
+      {/* Mobile Quick Action Squircles Carousel (Inspired by Reference Image Top Row) */}
+      <MobileActionGrid
+        onOpenIssue={() => onQuickIssue?.()}
+        onOpenReceipt={() => onQuickReceipt?.()}
+        onOpenTransfer={() => onOpenTransfer?.()}
+        onOpenTour={() => handleOpenTour('B1')}
+        onOpenShare={() => onOpenShareModal?.()}
+        t={t}
+      />
+
       {/* ========================================================================= */}
       {/* EXECUTIVE CONTROL BAR (Decision-First: Timeframe & SLA Benchmarks)        */}
       {/* ========================================================================= */}

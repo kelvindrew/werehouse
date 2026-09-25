@@ -20,6 +20,7 @@ import { SharedPublicView } from './components/SharedPublicView';
 import { GenerateShareModal } from './components/GenerateShareModal';
 import { BarcodeLabelModal } from './components/BarcodeLabelModal';
 import { IssuesView } from './components/IssuesView';
+import { MobileFloatingDock } from './components/MobileFloatingDock';
 import { StockItem, SharedLinkFilters, StorageLocation } from '@shared/types/models';
 import { 
   LayoutDashboard, 
@@ -162,7 +163,7 @@ const AppContent: React.FC = () => {
         />
 
         {/* Main Content Area */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 pb-24 md:pb-8 overflow-y-auto">
+        <main className="flex-1 p-4 md:p-6 lg:p-8 pb-28 md:pb-8 overflow-y-auto">
           {currentTab === 'dashboard' && (
             <DashboardView
               onNavigateToStock={handleNavigateToStock}
@@ -172,6 +173,11 @@ const AppContent: React.FC = () => {
               onOpenCreateLocation={handleOpenCreateLocation}
               onQuickReceipt={handleQuickReceipt}
               onQuickIssue={handleQuickIssue}
+              onOpenTransfer={() => {
+                setActiveStockItem(null);
+                setIsTransferOpen(true);
+              }}
+              onOpenShareModal={() => handleOpenShareModal()}
             />
           )}
 
@@ -248,45 +254,15 @@ const AppContent: React.FC = () => {
         </main>
       </div>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-zinc-200 px-4 flex items-center justify-around z-30">
-        <button
-          onClick={() => setCurrentTab('dashboard')}
-          className={`flex flex-col items-center gap-1 text-[10px] font-semibold py-1 px-3 rounded transition-colors ${
-            currentTab === 'dashboard' ? 'text-zinc-900 font-bold' : 'text-zinc-500'
-          }`}
-        >
-          <LayoutDashboard className="w-4 h-4" />
-          <span>{t.tab_dashboard}</span>
-        </button>
-        <button
-          onClick={() => setCurrentTab('stock')}
-          className={`flex flex-col items-center gap-1 text-[10px] font-semibold py-1 px-3 rounded transition-colors ${
-            currentTab === 'stock' ? 'text-zinc-900 font-bold' : 'text-zinc-500'
-          }`}
-        >
-          <Boxes className="w-4 h-4" />
-          <span>{t.tab_stock}</span>
-        </button>
-        <button
-          onClick={() => setCurrentTab('issues')}
-          className={`flex flex-col items-center gap-1 text-[10px] font-semibold py-1 px-3 rounded transition-colors ${
-            currentTab === 'issues' ? 'text-zinc-900 font-bold' : 'text-zinc-500'
-          }`}
-        >
-          <ArrowUpFromLine className="w-4 h-4" />
-          <span>{t.tab_issues}</span>
-        </button>
-        <button
-          onClick={() => setCurrentTab('inventory')}
-          className={`flex flex-col items-center gap-1 text-[10px] font-semibold py-1 px-3 rounded transition-colors ${
-            currentTab === 'inventory' ? 'text-zinc-900 font-bold' : 'text-zinc-500'
-          }`}
-        >
-          <ClipboardCheck className="w-4 h-4" />
-          <span>{t.tab_inventory}</span>
-        </button>
-      </nav>
+      {/* Mobile Floating Tactile Dock with Raised Center Home Button */}
+      <MobileFloatingDock
+        currentTab={currentTab}
+        onSelectTab={(tab) => {
+          setStockInitialFilter(undefined);
+          setCurrentTab(tab);
+        }}
+        t={t}
+      />
 
       {/* Global Modals */}
       <MaterialDetailModal
