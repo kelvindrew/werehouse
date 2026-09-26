@@ -12,6 +12,9 @@ import {
   LayoutGrid,
   Table as TableIcon
 } from 'lucide-react';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 export const ExcelImportView: React.FC = () => {
   const { currentUser, t } = useAuth();
@@ -21,21 +24,7 @@ export const ExcelImportView: React.FC = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [activeTab, setActiveTab] = useState<'B1' | 'B2'>('B1');
   const [commitSuccess, setCommitSuccess] = useState(false);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_excel_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_excel_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_excel_view_mode');
 
   const activeSummary = summaries.find(s => s.sheetName.includes(activeTab)) || summaries[0];
 
@@ -209,32 +198,13 @@ export const ExcelImportView: React.FC = () => {
               </h3>
 
               {/* View Switcher (Cards / Tableau) */}
-              <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-200 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode('cards')}
-                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all active:scale-95 ${
-                    viewMode === 'cards'
-                      ? 'bg-zinc-900 text-white shadow-xs'
-                      : 'text-zinc-600 hover:text-zinc-900'
-                  }`}
-                >
-                  <LayoutGrid className="w-3 h-3" />
-                  <span>{t.btn_cards || 'Cartes'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode('table')}
-                  className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold transition-all active:scale-95 ${
-                    viewMode === 'table'
-                      ? 'bg-zinc-900 text-white shadow-xs'
-                      : 'text-zinc-600 hover:text-zinc-900'
-                  }`}
-                >
-                  <TableIcon className="w-3 h-3" />
-                  <span>{t.btn_table || 'Tableau'}</span>
-                </button>
-              </div>
+              <ViewModeSwitcher
+                viewMode={viewMode}
+                onChange={handleSetViewMode}
+                cardsLabel={t.btn_cards}
+                tableLabel={t.btn_table}
+                showMobileLabel
+              />
             </div>
 
             {/* Tactile Cards for Issues */}
@@ -275,8 +245,13 @@ export const ExcelImportView: React.FC = () => {
 
             {/* Table */}
             {viewMode === 'table' && (
-              <div className="border border-zinc-200 rounded-xl overflow-hidden max-h-72 overflow-y-auto">
-              <table className="w-full text-left text-xs">
+              <div className="space-y-3">
+                <MobileTableNotice
+                  onSwitchToCards={() => handleSetViewMode('cards')}
+                  cardsLabel={t.btn_cards}
+                />
+                <div className="border border-zinc-200 rounded-xl overflow-hidden max-h-72 overflow-y-auto">
+                  <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-zinc-200 bg-zinc-50 text-zinc-600 font-mono text-[11px]">
                     <th className="py-2.5 px-3">{t('col_excel_row')}</th>
@@ -317,6 +292,7 @@ export const ExcelImportView: React.FC = () => {
                   )}
                 </tbody>
               </table>
+            </div>
             </div>
             )}
           </div>

@@ -14,6 +14,9 @@ import {
   LayoutGrid,
   Table as TableIcon
 } from 'lucide-react';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 interface SharedPublicViewProps {
   token: string;
@@ -34,21 +37,7 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
   const [sortField, setSortField] = useState<string>('materialCode');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [currentPage, setCurrentPage] = useState(1);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_sharedpublic_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_sharedpublic_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_sharedpublic_view_mode');
   const pageSize = 20;
 
   useEffect(() => {
@@ -325,32 +314,13 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
               </div>
 
               {/* View Switcher (Cards / Tableau) */}
-              <div className="flex items-center self-end bg-zinc-200/80 p-0.5 rounded-full border border-zinc-300 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode('cards')}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95 ${
-                    viewMode === 'cards'
-                      ? 'bg-zinc-900 text-white shadow-xs'
-                      : 'text-zinc-700 hover:text-zinc-900'
-                  }`}
-                >
-                  <LayoutGrid className="w-3.5 h-3.5" />
-                  <span>{t.btn_cards || 'Cartes'}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleSetViewMode('table')}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all active:scale-95 ${
-                    viewMode === 'table'
-                      ? 'bg-zinc-900 text-white shadow-xs'
-                      : 'text-zinc-700 hover:text-zinc-900'
-                  }`}
-                >
-                  <TableIcon className="w-3.5 h-3.5" />
-                  <span>{t.btn_table || 'Tableau'}</span>
-                </button>
-              </div>
+              <ViewModeSwitcher
+                viewMode={viewMode}
+                onChange={handleSetViewMode}
+                cardsLabel={t.btn_cards}
+                tableLabel={t.btn_table}
+                showMobileLabel
+              />
             </div>
 
             {/* Tactile Cards */}
@@ -467,8 +437,14 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
             {/* Data Table */}
             {viewMode === 'table' && (
               <div className="bg-white border border-zinc-200 rounded-2xl overflow-hidden shadow-xs">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
+                <div className="p-3 pb-0">
+                  <MobileTableNotice
+                    onSwitchToCards={() => handleSetViewMode('cards')}
+                    cardsLabel={t.btn_cards}
+                  />
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs">
                   <thead>
                     <tr className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase select-none">
                       {isColVisible('photo') && (

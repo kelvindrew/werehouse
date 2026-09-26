@@ -10,6 +10,9 @@ import {
   Table as TableIcon
 } from 'lucide-react';
 import { AutocompleteInput } from './AutocompleteInput';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 export const InventoryView: React.FC = () => {
   const { currentUser, selectedWarehouse, setSelectedWarehouse, t } = useAuth();
@@ -21,21 +24,7 @@ export const InventoryView: React.FC = () => {
   const [counts, setCounts] = useState<Record<string, number | ''>>({});
   const [adjustmentReasons, setAdjustmentReasons] = useState<Record<string, string>>({});
   const [feedbackMsg, setFeedbackMsg] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_inventory_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_inventory_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_inventory_view_mode');
 
   const locations = useMemo(() => dataService.getLocations(), []);
 
@@ -130,33 +119,13 @@ export const InventoryView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-3 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible) */}
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('cards')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'cards'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>{t.btn_cards || 'Cartes'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('table')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'table'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>{t.btn_table || 'Tableau'}</span>
-            </button>
-          </div>
+          {/* Prominent View Mode Switcher: Cartes | Tableau */}
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+          />
 
           {/* Location Selector */}
           <div className="flex items-center space-x-2">
@@ -224,6 +193,18 @@ export const InventoryView: React.FC = () => {
           />
         </div>
 
+        <div className="sm:col-span-2 flex items-center justify-between pt-2 border-t border-zinc-100">
+          <span className="text-[11px] font-semibold text-zinc-500">
+            {filteredItems.length} article(s) à inventorier
+          </span>
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+            showMobileLabel
+          />
+        </div>
       </div>
 
       {/* Inventory Table / Tactile Cards */}
@@ -328,8 +309,15 @@ export const InventoryView: React.FC = () => {
         )}
 
         {viewMode === 'table' && (
-          <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <div>
+            <div className="p-3 pb-0">
+              <MobileTableNotice
+                onSwitchToCards={() => handleSetViewMode('cards')}
+                cardsLabel={t.btn_cards}
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase font-semibold">
               <tr>
                 <th className="py-3 px-3">{t.col_bin}</th>
@@ -444,7 +432,8 @@ export const InventoryView: React.FC = () => {
             </tbody>
           </table>
         </div>
-        )}
+      </div>
+      )}
       </div>
     </div>
   );

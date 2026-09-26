@@ -3,26 +3,15 @@ import { dataService } from '../lib/dataService';
 import { useAuth } from '../context/AuthContext';
 import { History, Search, Download, LayoutGrid, Table as TableIcon } from 'lucide-react';
 import { AutocompleteInput } from './AutocompleteInput';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 export const MovementsTableView: React.FC = () => {
   const { selectedWarehouse, t } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_movements_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_movements_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_movements_view_mode');
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 30;
 
@@ -69,33 +58,13 @@ export const MovementsTableView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible) */}
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('cards')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'cards'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>{t.btn_cards || 'Cartes'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('table')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'table'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>{t.btn_table || 'Tableau'}</span>
-            </button>
-          </div>
+          {/* Prominent View Mode Switcher: Cartes | Tableau */}
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+          />
 
           <button
             onClick={handleExport}
@@ -108,8 +77,8 @@ export const MovementsTableView: React.FC = () => {
       </div>
 
       {/* Filter Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 bg-white p-3.5 rounded-2xl border border-zinc-200/80 shadow-xs">
-        <div className="sm:col-span-2 relative">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-zinc-200/80 shadow-xs">
+        <div className="flex-1 relative">
           <AutocompleteInput
             field="materialName"
             placeholder={t.search_placeholder}
@@ -120,11 +89,11 @@ export const MovementsTableView: React.FC = () => {
           />
         </div>
 
-        <div>
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2.5">
           <select
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="w-full bg-zinc-50/80 border border-zinc-200 text-xs text-zinc-800 px-3.5 py-1.5 rounded-full font-semibold focus:bg-white focus:outline-none focus:border-zinc-900 transition-all"
+            className="bg-zinc-50/80 border border-zinc-200 text-xs text-zinc-800 px-3.5 py-1.5 rounded-full font-semibold focus:bg-white focus:outline-none focus:border-zinc-900 transition-all"
           >
             <option value="">{t.filter_all_movements}</option>
             <option value="RECEIPT">RECEIPT ({t.mov_receipt})</option>
@@ -134,6 +103,14 @@ export const MovementsTableView: React.FC = () => {
             <option value="ADJUSTMENT">ADJUSTMENT ({t.mov_adjustment})</option>
             <option value="INITIAL_IMPORT">INITIAL_IMPORT ({t.tab_import})</option>
           </select>
+
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+            showMobileLabel
+          />
         </div>
       </div>
 
@@ -219,8 +196,15 @@ export const MovementsTableView: React.FC = () => {
         )}
 
         {viewMode === 'table' && (
-          <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <div>
+            <div className="p-3 pb-0">
+              <MobileTableNotice
+                onSwitchToCards={() => handleSetViewMode('cards')}
+                cardsLabel={t.btn_cards}
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase font-semibold">
               <tr>
                 <th className="py-3 px-3">{t.col_date}</th>
@@ -291,7 +275,8 @@ export const MovementsTableView: React.FC = () => {
             </tbody>
           </table>
         </div>
-        )}
+      </div>
+      )}
 
         {/* Pagination */}
         <div className="bg-zinc-50 px-4 py-3 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-2.5 text-xs text-zinc-600 font-mono">

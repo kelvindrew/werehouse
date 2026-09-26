@@ -29,6 +29,9 @@ import { SharedLinkFilters } from '@shared/types/models';
 import { AutocompleteInput } from './AutocompleteInput';
 import { StockHoverCard } from './StockHoverCard';
 import { MaterialVisualTourModal } from './MaterialVisualTourModal';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 interface StockTableViewProps {
   onOpenMaterialModal: (materialId: string) => void;
@@ -65,21 +68,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
 
   const [sortField, setSortField] = useState<SortField>('totalValue');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_stock_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_stock_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_stock_view_mode');
 
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(25);
@@ -235,33 +224,13 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible on all screens!) */}
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('cards')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'cards'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>{t.btn_cards || 'Cartes'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('table')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'table'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>{t.btn_table || 'Tableau'}</span>
-            </button>
-          </div>
+          {/* Prominent View Mode Switcher: Cartes | Tableau */}
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+          />
 
           <button
             onClick={() => handleOpenMaterialTour()}
@@ -380,44 +349,54 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
           </div>
         </div>
 
-        {/* Checkbox filters strip */}
-        <div className="flex flex-wrap items-center gap-3 pt-1 border-t border-zinc-100 text-xs">
-          <label className="flex items-center gap-1.5 cursor-pointer select-none text-zinc-700">
-            <input
-              type="checkbox"
-              checked={onlyAvailable}
-              onChange={(e) => setOnlyAvailable(e.target.checked)}
-              className="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
-            />
-            <span>{t.available_gt_zero}</span>
-          </label>
+        {/* Checkbox filters strip & ViewModeSwitcher */}
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-zinc-100 text-xs">
+          <div className="flex flex-wrap items-center gap-3">
+            <label className="flex items-center gap-1.5 cursor-pointer select-none text-zinc-700">
+              <input
+                type="checkbox"
+                checked={onlyAvailable}
+                onChange={(e) => setOnlyAvailable(e.target.checked)}
+                className="rounded border-zinc-300 text-zinc-900 focus:ring-zinc-900"
+              />
+              <span>{t.available_gt_zero}</span>
+            </label>
 
-          <label className="flex items-center gap-1.5 cursor-pointer select-none text-amber-800">
-            <input
-              type="checkbox"
-              checked={onlyLowStock}
-              onChange={(e) => setOnlyLowStock(e.target.checked)}
-              className="rounded border-zinc-300 text-amber-600 focus:ring-amber-500"
-            />
-            <span className="font-medium">{t.low_stock_badge} (≤ 5)</span>
-          </label>
+            <label className="flex items-center gap-1.5 cursor-pointer select-none text-amber-800">
+              <input
+                type="checkbox"
+                checked={onlyLowStock}
+                onChange={(e) => setOnlyLowStock(e.target.checked)}
+                className="rounded border-zinc-300 text-amber-600 focus:ring-amber-500"
+              />
+              <span className="font-medium">{t.low_stock_badge} (≤ 5)</span>
+            </label>
 
-          {(searchTerm || binFilter || uomFilter || locationTypeFilter !== 'ALL' || onlyAvailable || onlyLowStock || selectedWarehouse !== 'ALL') && (
-            <button
-              onClick={() => {
-                setSearchTerm('');
-                setBinFilter('');
-                setUomFilter('');
-                setLocationTypeFilter('ALL');
-                setSelectedWarehouse('ALL');
-                setOnlyAvailable(false);
-                setOnlyLowStock(false);
-              }}
-              className="text-xs text-zinc-500 hover:text-zinc-900 underline ml-2"
-            >
-              {t.reset_filters}
-            </button>
-          )}
+            {(searchTerm || binFilter || uomFilter || locationTypeFilter !== 'ALL' || onlyAvailable || onlyLowStock || selectedWarehouse !== 'ALL') && (
+              <button
+                onClick={() => {
+                  setSearchTerm('');
+                  setBinFilter('');
+                  setUomFilter('');
+                  setLocationTypeFilter('ALL');
+                  setSelectedWarehouse('ALL');
+                  setOnlyAvailable(false);
+                  setOnlyLowStock(false);
+                }}
+                className="text-xs text-zinc-500 hover:text-zinc-900 underline ml-2"
+              >
+                {t.reset_filters}
+              </button>
+            )}
+          </div>
+
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+            showMobileLabel
+          />
         </div>
       </div>
 
@@ -569,8 +548,15 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
         )}
 
         {viewMode === 'table' && (
-          <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <div>
+            <div className="p-3 pb-0">
+              <MobileTableNotice
+                onSwitchToCards={() => handleSetViewMode('cards')}
+                cardsLabel={t.btn_cards}
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 uppercase font-mono text-[11px]">
               <tr>
                 <th className="py-3 px-3">
@@ -854,7 +840,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
             </tbody>
           </table>
         </div>
-        )}
+      </div>
+      )}
 
         {/* Pagination Bar */}
         <div className="bg-zinc-50 px-4 py-3 border-t border-zinc-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-zinc-600">

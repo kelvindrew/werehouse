@@ -25,6 +25,9 @@ import {
   LayoutGrid,
   Table as TableIcon
 } from 'lucide-react';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 interface IssuesViewProps {
   currentUser: User;
@@ -44,21 +47,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedWarehouse, setSelectedWarehouse] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_issues_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_issues_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_issues_view_mode');
   const [isQuickIssueOpen, setIsQuickIssueOpen] = useState(false);
 
   // Modal states
@@ -165,33 +154,13 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible) */}
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('cards')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'cards'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>{t.btn_cards || 'Cartes'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('table')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'table'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>{t.btn_table || 'Tableau'}</span>
-            </button>
-          </div>
+          {/* Prominent View Mode Switcher: Cartes | Tableau */}
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+          />
 
           <button
             onClick={() => setIsQuickIssueOpen(true)}
@@ -368,6 +337,16 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
           </button>
         )}
 
+        {/* Prominent View Mode Switcher in filter bar */}
+        <div className="ml-auto">
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+            showMobileLabel
+          />
+        </div>
       </div>
 
       {/* Vouchers Table / Tactile Cards */}
@@ -468,8 +447,15 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
         )}
 
         {viewMode === 'table' && (
-          <div className="overflow-x-auto">
-          <table className="w-full text-xs text-left">
+          <div>
+            <div className="p-3 pb-0">
+              <MobileTableNotice
+                onSwitchToCards={() => handleSetViewMode('cards')}
+                cardsLabel={t.btn_cards}
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs text-left">
           <thead className="bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 font-mono text-[11px] uppercase border-b border-zinc-200 dark:border-zinc-800">
             <tr>
               <th className="py-3 px-4">{t.issue_voucher_number}</th>
@@ -592,7 +578,8 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
           </tbody>
         </table>
         </div>
-        )}
+      </div>
+      )}
       </div>
 
       {/* Issue Voucher Modal (Create / Edit / Physical Verify / Confirm) */}

@@ -15,6 +15,9 @@ import {
   LayoutGrid,
   Table as TableIcon
 } from 'lucide-react';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 export const SharedLinksView: React.FC = () => {
   const { currentUser, t } = useAuth();
@@ -23,21 +26,7 @@ export const SharedLinksView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_sharedlinks_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_sharedlinks_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_sharedlinks_view_mode');
 
   // Auto-refresh links state
   useEffect(() => {
@@ -145,33 +134,13 @@ export const SharedLinksView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible) */}
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('cards')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'cards'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>{t.btn_cards || 'Cartes'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('table')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'table'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>{t.btn_table || 'Tableau'}</span>
-            </button>
-          </div>
+          {/* Prominent View Mode Switcher: Cartes | Tableau */}
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+          />
 
           <button
             onClick={() => setIsModalOpen(true)}
@@ -196,11 +165,11 @@ export const SharedLinksView: React.FC = () => {
           />
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between sm:justify-end gap-2.5">
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="flex-1 sm:flex-none bg-zinc-50/80 border border-zinc-200 text-xs text-zinc-800 px-3.5 py-2 sm:py-1.5 rounded-full font-semibold focus:bg-white focus:outline-none focus:border-zinc-900 transition-all"
+            className="bg-zinc-50/80 border border-zinc-200 text-xs text-zinc-800 px-3.5 py-2 sm:py-1.5 rounded-full font-semibold focus:bg-white focus:outline-none focus:border-zinc-900 transition-all"
           >
             <option value="ALL">{t.all_statuses} ({links.length})</option>
             <option value="ACTIVE">{t.status_active}</option>
@@ -208,13 +177,21 @@ export const SharedLinksView: React.FC = () => {
             <option value="EXPIRED">{t.status_expired}</option>
             <option value="REVOKED">{t.status_revoked}</option>
           </select>
-        </div>
 
-        <div className="bg-zinc-50 border border-zinc-200 rounded-full px-4 py-1.5 flex items-center justify-between text-xs text-zinc-600 shadow-xs shrink-0">
-          <span>{t.consultations_label}</span>
-          <span className="font-bold font-mono text-zinc-900 ml-2">
-            {links.reduce((acc, l) => acc + (l.accessCount || 0), 0)} {t.visits_count}
-          </span>
+          <div className="bg-zinc-50 border border-zinc-200 rounded-full px-4 py-1.5 flex items-center justify-between text-xs text-zinc-600 shadow-xs shrink-0">
+            <span>{t.consultations_label}</span>
+            <span className="font-bold font-mono text-zinc-900 ml-2">
+              {links.reduce((acc, l) => acc + (l.accessCount || 0), 0)} {t.visits_count}
+            </span>
+          </div>
+
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+            showMobileLabel
+          />
         </div>
       </div>
 
@@ -354,8 +331,14 @@ export const SharedLinksView: React.FC = () => {
       {/* Links Table */}
       {viewMode === 'table' && (
         <div className="bg-white border border-zinc-200/80 rounded-2xl shadow-xs overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
+          <div className="p-3 pb-0">
+            <MobileTableNotice
+              onSwitchToCards={() => handleSetViewMode('cards')}
+              cardsLabel={t.btn_cards}
+            />
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
             <thead className="bg-zinc-50 text-zinc-600 border-b border-zinc-200 font-mono text-[11px] uppercase font-semibold">
               <tr>
                 <th className="py-3 px-4">{t.col_link_title}</th>

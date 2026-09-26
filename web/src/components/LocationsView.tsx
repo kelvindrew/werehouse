@@ -23,6 +23,9 @@ import {
   Table as TableIcon
 } from 'lucide-react';
 import { WarehouseVisualTourModal } from './WarehouseVisualTourModal';
+import { useResponsiveViewMode } from '../hooks/useResponsiveViewMode';
+import { ViewModeSwitcher } from './ViewModeSwitcher';
+import { MobileTableNotice } from './MobileTableNotice';
 
 interface LocationsViewProps {
   currentUser: User;
@@ -42,21 +45,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('ALL');
   const [statusFilter, setStatusFilter] = useState<string>('ALL');
-  const [viewMode, setViewMode] = useState<'cards' | 'table'>(() => {
-    try {
-      const saved = localStorage.getItem('wms_locations_view_mode');
-      return saved === 'table' ? 'table' : 'cards';
-    } catch {
-      return 'cards';
-    }
-  });
-
-  const handleSetViewMode = (mode: 'cards' | 'table') => {
-    setViewMode(mode);
-    try {
-      localStorage.setItem('wms_locations_view_mode', mode);
-    } catch (e) {}
-  };
+  const [viewMode, handleSetViewMode] = useResponsiveViewMode('wms_locations_view_mode');
   const [locations, setLocations] = useState<StorageLocation[]>(() => dataService.getLocations());
   const [isTourOpen, setIsTourOpen] = useState(false);
   const [tourLocationCode, setTourLocationCode] = useState<string>('B1');
@@ -166,33 +155,13 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau (Always visible on all screen sizes) */}
-          <div className="flex items-center bg-zinc-100 p-0.5 rounded-full border border-zinc-300 shadow-2xs">
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('cards')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'cards'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <LayoutGrid className="w-3.5 h-3.5" />
-              <span>{t.btn_cards || 'Cartes'}</span>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleSetViewMode('table')}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-full transition-all active:scale-95 ${
-                viewMode === 'table'
-                  ? 'bg-zinc-950 text-white shadow-xs'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              <TableIcon className="w-3.5 h-3.5" />
-              <span>{t.btn_table || 'Tableau'}</span>
-            </button>
-          </div>
+          {/* Prominent View Mode Switcher: Cartes | Tableau */}
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+          />
 
           <button
             type="button"
@@ -282,36 +251,46 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
           />
         </div>
 
-        <div className="flex items-center space-x-2">
-          <div className="flex items-center space-x-1 text-xs text-zinc-500 font-medium pl-1">
-            <Filter className="w-3.5 h-3.5 text-zinc-400" />
-            <span className="hidden sm:inline">{t.site_location_type_col}:</span>
-          </div>
-          <select
-            value={typeFilter}
-            onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-full focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 outline-none text-zinc-700"
-          >
-            <option value="ALL">{t.all_types}</option>
-            <option value="WAREHOUSE">{t.type_warehouse}</option>
-            <option value="CONTAINER">{t.type_container}</option>
-            <option value="YARD">{t.type_yard}</option>
-            <option value="WORKSHOP">{t.type_workshop}</option>
-            <option value="TEMPORARY">{t.type_temporary}</option>
-            <option value="QUARANTINE">{t.type_quarantine}</option>
-            <option value="OFFICE">{t.type_office}</option>
-            <option value="OTHER">{t.type_other}</option>
-          </select>
+        <div className="flex flex-wrap items-center justify-between md:justify-end gap-2.5">
+          <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 text-xs text-zinc-500 font-medium pl-1">
+              <Filter className="w-3.5 h-3.5 text-zinc-400" />
+              <span className="hidden sm:inline">{t.site_location_type_col}:</span>
+            </div>
+            <select
+              value={typeFilter}
+              onChange={(e) => setTypeFilter(e.target.value)}
+              className="px-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-full focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 outline-none text-zinc-700 font-medium"
+            >
+              <option value="ALL">{t.all_types}</option>
+              <option value="WAREHOUSE">{t.type_warehouse}</option>
+              <option value="CONTAINER">{t.type_container}</option>
+              <option value="YARD">{t.type_yard}</option>
+              <option value="WORKSHOP">{t.type_workshop}</option>
+              <option value="TEMPORARY">{t.type_temporary}</option>
+              <option value="QUARANTINE">{t.type_quarantine}</option>
+              <option value="OFFICE">{t.type_office}</option>
+              <option value="OTHER">{t.type_other}</option>
+            </select>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-full focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 outline-none text-zinc-700"
-          >
-            <option value="ALL">{t.all_statuses}</option>
-            <option value="ACTIVE">{t.active_status}</option>
-            <option value="INACTIVE">{t.inactive_status}</option>
-          </select>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-1.5 text-xs bg-zinc-50/80 border border-zinc-200 rounded-full focus:bg-white focus:border-zinc-900 focus:ring-1 focus:ring-zinc-900 outline-none text-zinc-700 font-medium"
+            >
+              <option value="ALL">{t.all_statuses}</option>
+              <option value="ACTIVE">{t.active_status}</option>
+              <option value="INACTIVE">{t.inactive_status}</option>
+            </select>
+          </div>
+
+          <ViewModeSwitcher
+            viewMode={viewMode}
+            onChange={handleSetViewMode}
+            cardsLabel={t.btn_cards}
+            tableLabel={t.btn_table}
+            showMobileLabel
+          />
         </div>
       </div>
 
@@ -433,8 +412,15 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
         )}
 
         {viewMode === 'table' && (
-          <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+          <div>
+            <div className="p-3 pb-0">
+              <MobileTableNotice
+                onSwitchToCards={() => handleSetViewMode('cards')}
+                cardsLabel={t.btn_cards}
+              />
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
             <thead className="bg-zinc-50 text-zinc-600 text-xs font-semibold uppercase tracking-wider border-b border-zinc-200">
               <tr>
                 <th className="py-3 px-3 w-14 text-center">Photo</th>
@@ -588,7 +574,8 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
             </tbody>
           </table>
         </div>
-        )}
+      </div>
+      )}
       </div>
 
       {/* Interactive Warehouse Visual Tour Modal */}
