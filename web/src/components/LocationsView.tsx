@@ -268,7 +268,6 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
               <option value="YARD">{t.type_yard}</option>
               <option value="WORKSHOP">{t.type_workshop}</option>
               <option value="TEMPORARY">{t.type_temporary}</option>
-              <option value="QUARANTINE">{t.type_quarantine}</option>
               <option value="OFFICE">{t.type_office}</option>
               <option value="OTHER">{t.type_other}</option>
             </select>

@@ -209,7 +209,9 @@ class DataService {
     const cachedLocations = localStorage.getItem(STORAGE_KEY_LOCATIONS);
     if (cachedLocations) {
       try {
-        const parsed = JSON.parse(cachedLocations) as StorageLocation[];
+        const parsed = (JSON.parse(cachedLocations) as StorageLocation[]).filter(
+          l => l.code !== 'QUARANTINE' && l.id !== 'LOC-QUARANTINE' && (l as any).type !== 'QUARANTINE'
+        );
         parsed.forEach(l => {
           const def = DEFAULT_LOCATIONS.find(d => d.id === l.id || d.code === l.code);
           if (def) {
@@ -218,6 +220,7 @@ class DataService {
           }
           this.locations.set(l.id, l);
         });
+        this.saveLocationsToStorage();
       } catch (e) {
         this.initDefaultLocations();
       }

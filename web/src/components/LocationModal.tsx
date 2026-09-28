@@ -22,7 +22,6 @@ const LOCATION_TYPES: { type: LocationType; labelKey: keyof TranslationDictionar
   { type: 'RACK', labelKey: 'type_rack' },
   { type: 'SHELF', labelKey: 'type_shelf' },
   { type: 'TEMPORARY', labelKey: 'type_temporary' },
-  { type: 'QUARANTINE', labelKey: 'type_quarantine' },
   { type: 'OFFICE', labelKey: 'type_office' },
   { type: 'OTHER', labelKey: 'type_other' },
 ];

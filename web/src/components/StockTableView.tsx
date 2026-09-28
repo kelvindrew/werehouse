@@ -317,7 +317,6 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               <option value="YARD">{t.type_yard}</option>
               <option value="WORKSHOP">{t.type_workshop}</option>
               <option value="TEMPORARY">{t.type_temporary}</option>
-              <option value="QUARANTINE">{t.type_quarantine}</option>
             </select>
           </div>
 

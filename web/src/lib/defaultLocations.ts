@@ -121,20 +121,6 @@ export const DEFAULT_LOCATIONS: StorageLocation[] = [
     images: [
       'https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=1200&q=80'
     ]
-  },
-  {
-    id: 'LOC-QUARANTINE',
-    code: 'QUARANTINE',
-    name: 'Zone de quarantaine',
-    type: 'QUARANTINE',
-    description: 'Matériel en attente de conformité technique, test ou retour fournisseur',
-    physicalLocation: 'Enclos sécurisé B1',
-    status: 'ACTIVE',
-    createdAt: '2026-03-01T07:30:00.000Z',
-    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80',
-    images: [
-      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80'
-    ]
   }
 ];
 
