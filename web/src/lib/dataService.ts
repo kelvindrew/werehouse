@@ -249,6 +249,20 @@ class DataService {
       }
     } catch (e) {}
 
+    // Populate custom material edits if any (user manual overrides take precedence)
+    try {
+      const cachedEdits = localStorage.getItem('wms_material_custom_edits_v1');
+      if (cachedEdits) {
+        const editMap = JSON.parse(cachedEdits) as Record<string, Partial<Material>>;
+        for (const [matId, edits] of Object.entries(editMap)) {
+          const mat = this.materials.get(matId);
+          if (mat) {
+            Object.assign(mat, edits);
+          }
+        }
+      }
+    } catch (e) {}
+
     // Populate Bins
     (seedBins as unknown as BinLocation[]).forEach(b => {
       this.bins.set(b.id, b);
@@ -1178,6 +1192,73 @@ class DataService {
       }
       this.notify();
     }
+  }
+
+  /**
+   * Modifier toutes les informations d'un matériel (avec propagation au stock et journal d'audit)
+   */
+  public updateMaterial(params: {
+    materialId: string;
+    updates: Partial<Material>;
+    user?: User;
+  }): Material {
+    const mat = this.materials.get(params.materialId);
+    if (!mat) {
+      throw new Error(`Matériel introuvable : ${params.materialId}`);
+    }
+
+    const previousData = { ...mat };
+    Object.assign(mat, params.updates);
+
+    // Persister les modifications personnalisées
+    try {
+      const existing = JSON.parse(localStorage.getItem('wms_material_custom_edits_v1') || '{}');
+      existing[params.materialId] = { ...(existing[params.materialId] || {}), ...params.updates };
+      localStorage.setItem('wms_material_custom_edits_v1', JSON.stringify(existing));
+    } catch (e) {
+      console.warn('Erreur stockage matériel:', e);
+    }
+
+    // Propager aux lignes de stock qui référencent ce matériel
+    let stockUpdated = false;
+    for (const s of this.stock.values()) {
+      if (s.materialId === params.materialId) {
+        if (params.updates.materialCode) s.materialCode = params.updates.materialCode;
+        if (params.updates.name) s.materialName = params.updates.name;
+        if (params.updates.specification !== undefined) s.specification = params.updates.specification;
+        if (params.updates.uom) s.uom = params.updates.uom;
+        if (params.updates.standardPrice !== undefined) {
+          s.unitPrice = params.updates.standardPrice;
+          s.totalValue = Math.round(s.quantity * s.unitPrice * 100) / 100;
+        }
+        stockUpdated = true;
+      }
+    }
+    if (stockUpdated) {
+      this.saveStockToStorage();
+    }
+
+    // Journal d'audit
+    if (params.user) {
+      const auditLog: AuditLog = {
+        id: `AUD-MAT-UPD-${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        userId: params.user.id,
+        userName: params.user.name,
+        userRole: params.user.role,
+        action: 'MATERIAL_UPDATED',
+        targetCollection: 'materials',
+        targetId: mat.id,
+        description: `Mise à jour fiche matériel [${mat.materialCode}] ${mat.name}`,
+        previousValue: previousData as unknown as Record<string, unknown>,
+        newValue: mat as unknown as Record<string, unknown>
+      };
+      this.auditLogs.unshift(auditLog);
+      this.saveAuditToStorage();
+    }
+
+    this.notify();
+    return mat;
   }
 
   // Stock Operations (Strict validation & Audit)
