@@ -5,9 +5,7 @@ import {
   Boxes, 
   ArrowUpFromLine, 
   ArrowLeftRight, 
-  MapPin, 
-  Building2,
-  Share2
+  Building2
 } from 'lucide-react';
 import { TranslationDictionary } from '../lib/i18n';
 
@@ -35,114 +33,108 @@ export const MobileFloatingDock: React.FC<MobileFloatingDockProps> = ({
     onSelectTab(tab);
   };
 
+  const tabs: {
+    id: NavigationTab;
+    label: string;
+    icon: React.ComponentType<{ className?: string }>;
+    isCenterAction?: boolean;
+  }[] = [
+    {
+      id: 'stock',
+      label: t.tab_stock || 'Stocks',
+      icon: Boxes
+    },
+    {
+      id: 'issues',
+      label: t.tab_issues || 'Sorties',
+      icon: ArrowUpFromLine
+    },
+    {
+      id: 'inventory',
+      label: t.tab_inventory || 'Inventaire',
+      icon: ClipboardCheck,
+      isCenterAction: true
+    },
+    {
+      id: 'receipts',
+      label: t.tab_receipts || 'Flux',
+      icon: ArrowLeftRight
+    },
+    {
+      id: 'locations',
+      label: t.tab_locations || 'Magasins',
+      icon: Building2
+    }
+  ];
+
   return (
-    <div className="md:hidden fixed bottom-4 left-3 right-3 max-w-md mx-auto z-40 pointer-events-none">
+    <div className="md:hidden fixed bottom-2.5 xs:bottom-3 sm:bottom-4 inset-x-2.5 xs:inset-x-3.5 sm:inset-x-4 max-w-md mx-auto z-40 pointer-events-none pb-[env(safe-area-inset-bottom,0px)]">
       <nav 
-        aria-label="Navigation Mobile"
-        className="pointer-events-auto relative px-3 py-1.5 rounded-full backdrop-blur-2xl bg-white/90 dark:bg-zinc-950/90 border border-white/80 dark:border-zinc-800 shadow-[0_12px_36px_rgba(0,0,0,0.14),0_2px_8px_rgba(0,0,0,0.06),inset_0_1px_1px_rgba(255,255,255,0.9)] flex items-center justify-between"
+        aria-label="Navigation Principale Mobile"
+        className="pointer-events-auto relative w-full p-1 xs:p-1.5 rounded-2xl xs:rounded-3xl backdrop-blur-2xl bg-zinc-950/92 dark:bg-zinc-950/95 text-white border border-white/10 shadow-[0_16px_40px_rgba(0,0,0,0.38),0_2px_8px_rgba(0,0,0,0.2),inset_0_1px_1px_rgba(255,255,255,0.12)] flex items-center justify-between gap-0.5 xs:gap-1"
       >
-        {/* Tab 1: Stocks */}
-        <button
-          type="button"
-          onClick={() => handleTabClick('stock')}
-          className={`flex-1 flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 ${
-            currentTab === 'stock'
-              ? 'text-zinc-950 dark:text-white font-black'
-              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 font-medium'
-          }`}
-        >
-          <div className={`p-1.5 rounded-full transition-colors ${
-            currentTab === 'stock' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-2xs' : ''
-          }`}>
-            <Boxes className="w-5 h-5 stroke-[2.2]" />
-          </div>
-          <span className="text-[9px] tracking-tight mt-0.5 font-mono">
-            {t.tab_stock || 'Stocks'}
-          </span>
-        </button>
+        {tabs.map((tab) => {
+          const isActive = currentTab === tab.id;
+          const Icon = tab.icon;
 
-        {/* Tab 2: Sorties / Issues */}
-        <button
-          type="button"
-          onClick={() => handleTabClick('issues')}
-          className={`flex-1 flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 ${
-            currentTab === 'issues'
-              ? 'text-zinc-950 dark:text-white font-black'
-              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 font-medium'
-          }`}
-        >
-          <div className={`p-1.5 rounded-full transition-colors ${
-            currentTab === 'issues' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-2xs' : ''
-          }`}>
-            <ArrowUpFromLine className="w-5 h-5 stroke-[2.2]" />
-          </div>
-          <span className="text-[9px] tracking-tight mt-0.5 font-mono">
-            {t.tab_issues || 'Sorties'}
-          </span>
-        </button>
+          if (tab.isCenterAction) {
+            // Featured Center Action: Fluid, beautifully integrated, no ugly protruding bezel
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => handleTabClick(tab.id)}
+                aria-label={tab.label}
+                aria-current={isActive ? 'page' : undefined}
+                className={`flex-1 min-w-0 py-1.5 xs:py-2 px-1 xs:px-2 rounded-xl xs:rounded-2xl flex flex-col items-center justify-center transition-all duration-200 active:scale-92 ${
+                  isActive
+                    ? 'bg-lime text-zinc-950 shadow-[0_0_20px_rgba(200,255,0,0.45)] ring-1 ring-lime/60 font-black'
+                    : 'bg-zinc-800/80 hover:bg-zinc-800 text-lime/90 hover:text-lime font-bold border border-lime/20'
+                }`}
+              >
+                <Icon className={`w-4 h-4 xs:w-5 xs:h-5 stroke-[2.4] transition-transform ${
+                  isActive ? 'scale-110' : ''
+                }`} />
+                <span className="text-[9px] xs:text-[10px] tracking-tight font-mono font-black mt-0.5 truncate max-w-full">
+                  {tab.label}
+                </span>
+              </button>
+            );
+          }
 
-        {/* Tab 3: CENTER FLOATING RAISED INVENTORY BUTTON (Optimized for Mobile Stock Taking) */}
-        <div className="relative -top-5 px-1 shrink-0">
-          {/* Concentric outer halo / recess bezel */}
-          <div className="p-1 rounded-full bg-[#f4f5f8] border border-white/80 shadow-[0_4px_12px_rgba(0,0,0,0.08),inset_0_2px_4px_rgba(0,0,0,0.06)]">
+          // Standard Navigation Tabs
+          return (
             <button
+              key={tab.id}
               type="button"
-              onClick={() => handleTabClick('inventory')}
-              aria-label={t.tab_inventory || 'Inventaire Physique'}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-[0_8px_20px_rgba(0,0,0,0.18),inset_0_2px_3px_rgba(255,255,255,0.8)] ${
-                currentTab === 'inventory'
-                  ? 'bg-carbon text-lime ring-2 ring-lime/70 shadow-[0_8px_25px_rgba(200,255,0,0.38)]'
-                  : 'bg-white hover:bg-zinc-50 text-zinc-800'
+              onClick={() => handleTabClick(tab.id)}
+              aria-label={tab.label}
+              aria-current={isActive ? 'page' : undefined}
+              className={`flex-1 min-w-0 py-1.5 xs:py-2 px-1 rounded-xl xs:rounded-2xl flex flex-col items-center justify-center transition-all duration-200 active:scale-92 ${
+                isActive
+                  ? 'bg-white/12 text-white font-bold'
+                  : 'text-zinc-400 hover:text-zinc-200 font-medium'
               }`}
             >
-              <ClipboardCheck className={`w-6 h-6 stroke-[2.4] transition-transform ${
-                currentTab === 'inventory' ? 'scale-110 text-lime' : 'text-zinc-800'
-              }`} />
+              <div className="relative">
+                <Icon className={`w-4 h-4 xs:w-4.5 xs:h-4.5 stroke-[2] transition-colors ${
+                  isActive ? 'text-lime' : 'text-zinc-400'
+                }`} />
+                {isActive && (
+                  <span className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-lime" />
+                )}
+              </div>
+              <span className={`text-[9px] xs:text-[10px] tracking-tight font-mono mt-0.5 truncate max-w-full ${
+                isActive ? 'text-white font-bold' : 'text-zinc-400'
+              }`}>
+                {tab.label}
+              </span>
             </button>
-          </div>
-        </div>
-
-        {/* Tab 4: Mouvements / Flux */}
-        <button
-          type="button"
-          onClick={() => handleTabClick('receipts')}
-          className={`flex-1 flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 ${
-            currentTab === 'receipts'
-              ? 'text-zinc-950 dark:text-white font-black'
-              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 font-medium'
-          }`}
-        >
-          <div className={`p-1.5 rounded-full transition-colors ${
-            currentTab === 'receipts' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-2xs' : ''
-          }`}>
-            <ArrowLeftRight className="w-5 h-5 stroke-[2.2]" />
-          </div>
-          <span className="text-[9px] tracking-tight mt-0.5 font-mono">
-            {t.tab_receipts || 'Flux'}
-          </span>
-        </button>
-
-        {/* Tab 5: Emplacements / Magasins */}
-        <button
-          type="button"
-          onClick={() => handleTabClick('locations')}
-          className={`flex-1 flex flex-col items-center justify-center py-1 transition-all duration-200 active:scale-90 ${
-            currentTab === 'locations'
-              ? 'text-zinc-950 dark:text-white font-black'
-              : 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 font-medium'
-          }`}
-        >
-          <div className={`p-1.5 rounded-full transition-colors ${
-            currentTab === 'locations' ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-950 dark:text-white shadow-2xs' : ''
-          }`}>
-            <Building2 className="w-5 h-5 stroke-[2.2]" />
-          </div>
-          <span className="text-[9px] tracking-tight mt-0.5 font-mono">
-            {t.tab_locations || 'Magasins'}
-          </span>
-        </button>
+          );
+        })}
       </nav>
     </div>
   );
 };
+
 export default MobileFloatingDock;

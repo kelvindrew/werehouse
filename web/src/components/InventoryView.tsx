@@ -457,17 +457,17 @@ export const InventoryView: React.FC = () => {
 
         {/* Selected Location Summary Gate */}
         {selectedLocationObj && (
-          <div className="bg-lime/10 border-2 border-lime/40 rounded-3xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold uppercase tracking-wider text-zinc-700">Magasin sélectionné :</span>
-                <span className="font-mono font-bold text-sm bg-zinc-900 text-lime px-2 py-0.5 rounded-md">
+          <div className="bg-lime/10 border-2 border-lime/40 rounded-2xl sm:rounded-3xl p-3.5 xs:p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4 shadow-sm">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1.5 xs:gap-2">
+                <span className="text-[11px] xs:text-xs font-bold uppercase tracking-wider text-zinc-700">Magasin :</span>
+                <span className="font-mono font-bold text-xs xs:text-sm bg-zinc-900 text-lime px-2 py-0.5 rounded-md">
                   {selectedLocationObj.code}
                 </span>
-                <span className="font-bold text-zinc-950 text-sm">{selectedLocationObj.name}</span>
+                <span className="font-bold text-zinc-950 text-xs xs:text-sm truncate">{selectedLocationObj.name}</span>
               </div>
-              <p className="text-xs text-zinc-600 mt-1">
-                📍 {selectedLocationObj.physicalLocation} • <span className="font-bold text-zinc-900">{pendingStockCount} références</span> prêtes à être vérifiées physiquement.
+              <p className="text-[11px] xs:text-xs text-zinc-600 mt-1 line-clamp-2">
+                📍 {selectedLocationObj.physicalLocation} • <span className="font-bold text-zinc-900">{pendingStockCount} références</span> à vérifier.
               </p>
             </div>
 
@@ -475,11 +475,11 @@ export const InventoryView: React.FC = () => {
             <button
               type="button"
               onClick={handleStartInventory}
-              className="w-full sm:w-auto px-6 py-4 bg-zinc-950 hover:bg-zinc-900 text-lime font-black text-sm sm:text-base rounded-2xl flex items-center justify-center gap-2 shadow-[0_8px_25px_rgba(0,0,0,0.25)] active:scale-95 transition-all shrink-0 cursor-pointer"
+              className="w-full sm:w-auto px-4 xs:px-6 py-3 xs:py-3.5 bg-zinc-950 hover:bg-zinc-900 text-lime font-black text-xs xs:text-sm sm:text-base rounded-xl xs:rounded-2xl flex items-center justify-center gap-2 shadow-[0_8px_25px_rgba(0,0,0,0.25)] active:scale-95 transition-all shrink-0 cursor-pointer"
             >
-              <Play className="w-4 h-4 fill-lime" />
-              <span>{t.inventory_btn_start || "Valider et commencer l'inventaire"}</span>
-              <ArrowRight className="w-4 h-4 text-lime" />
+              <Play className="w-4 h-4 fill-lime shrink-0" />
+              <span className="truncate">{t.inventory_btn_start || "Valider et commencer l'inventaire"}</span>
+              <ArrowRight className="w-4 h-4 text-lime shrink-0" />
             </button>
           </div>
         )}
@@ -1018,39 +1018,37 @@ export const InventoryView: React.FC = () => {
         </div>
       )}
 
-      {/* Floating Bottom Session Recap for Mobile & Desktop */}
-      <div className="fixed bottom-20 md:bottom-6 left-3 right-3 max-w-4xl mx-auto z-30 pointer-events-none">
-        <div className="pointer-events-auto bg-zinc-950/95 text-white backdrop-blur-xl border border-zinc-800 p-3.5 rounded-3xl shadow-[0_16px_36px_rgba(0,0,0,0.35)] flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3 text-xs font-mono">
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-lime"></span>
-              <span className="text-zinc-300">Site :</span>
-              <span className="font-bold text-lime">{activeWarehouse}</span>
-            </div>
-            <span className="text-zinc-600 hidden sm:inline">•</span>
-            <div className="hidden sm:flex items-center gap-1.5">
-              <span className="text-zinc-300">Vérifiés :</span>
-              <span className="font-bold text-white">{stats.okCount + stats.diffCount}/{stats.total}</span>
-            </div>
-            {stats.diffCount > 0 && (
-              <>
-                <span className="text-zinc-600">•</span>
-                <span className="text-amber-400 font-bold">{stats.diffCount} écart(s)</span>
-              </>
-            )}
+      {/* Session Recap Card (Cleanly adapted to all screen sizes without covering content) */}
+      <div className="mt-8 mb-4 p-4 xs:p-5 rounded-2xl sm:rounded-3xl bg-zinc-950 text-white border border-zinc-800 shadow-xl flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3.5 sm:gap-4">
+        <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 text-xs font-mono">
+          <div className="flex items-center gap-1.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-lime animate-pulse"></span>
+            <span className="text-zinc-400">Site :</span>
+            <span className="font-bold text-lime text-xs xs:text-sm">{activeWarehouse}</span>
           </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={handleChangeWarehouse}
-              className="px-4 py-2 bg-lime hover:bg-lime/90 text-zinc-950 font-black text-xs rounded-2xl active:scale-95 transition-all shadow-md flex items-center gap-1"
-            >
-              <CheckCheck className="w-3.5 h-3.5" />
-              <span>{t.inventory_finish_session || 'Clôturer la session'}</span>
-            </button>
+          <span className="text-zinc-600">•</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-zinc-400">Vérifiés :</span>
+            <span className="font-bold text-white text-xs xs:text-sm">{stats.okCount + stats.diffCount} / {stats.total}</span>
           </div>
+          {stats.diffCount > 0 && (
+            <>
+              <span className="text-zinc-600">•</span>
+              <span className="text-amber-400 font-bold bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-800/60">
+                {stats.diffCount} écart(s)
+              </span>
+            </>
+          )}
         </div>
+
+        <button
+          type="button"
+          onClick={handleChangeWarehouse}
+          className="w-full sm:w-auto px-5 py-3 bg-lime hover:bg-lime/90 text-zinc-950 font-black text-xs xs:text-sm rounded-xl xs:rounded-2xl active:scale-95 transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer shrink-0"
+        >
+          <CheckCheck className="w-4 h-4 text-zinc-950" />
+          <span>{t.inventory_finish_session || 'Clôturer la session'}</span>
+        </button>
       </div>
     </div>
   );
