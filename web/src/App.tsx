@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { Header } from './components/Header';
 import { Sidebar, NavigationTab } from './components/Sidebar';
-import { DashboardView } from './components/DashboardView';
 import { StockTableView } from './components/StockTableView';
 import { LocationsView } from './components/LocationsView';
 import { LocationModal } from './components/LocationModal';
@@ -35,7 +34,7 @@ import {
 
 const AppContent: React.FC = () => {
   const { currentUser, setSelectedWarehouse, t } = useAuth();
-  const [currentTab, setCurrentTab] = useState<NavigationTab>('dashboard');
+  const [currentTab, setCurrentTab] = useState<NavigationTab>('stock');
   const [stockInitialFilter, setStockInitialFilter] = useState<string | undefined>(undefined);
 
   // Modals state
@@ -164,22 +163,6 @@ const AppContent: React.FC = () => {
 
         {/* Main Content Area */}
         <main className="flex-1 p-4 md:p-6 lg:p-8 pb-28 md:pb-8 overflow-y-auto">
-          {currentTab === 'dashboard' && (
-            <DashboardView
-              onNavigateToStock={handleNavigateToStock}
-              onNavigateToMovements={() => setCurrentTab('receipts')}
-              onOpenMaterialModal={(id) => setSelectedMaterialId(id)}
-              onNavigateToLocations={() => setCurrentTab('locations')}
-              onOpenCreateLocation={handleOpenCreateLocation}
-              onQuickReceipt={handleQuickReceipt}
-              onQuickIssue={handleQuickIssue}
-              onOpenTransfer={() => {
-                setActiveStockItem(null);
-                setIsTransferOpen(true);
-              }}
-              onOpenShareModal={() => handleOpenShareModal()}
-            />
-          )}
 
           {currentTab === 'stock' && (
             <StockTableView

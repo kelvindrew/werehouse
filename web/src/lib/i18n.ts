@@ -183,6 +183,19 @@ export interface TranslationDictionary {
   btn_validate_inventory: string;
   inventory_updated: string;
   no_discrepancy: string;
+  inventory_step1_title: string;
+  inventory_step1_subtitle: string;
+  inventory_btn_start: string;
+  inventory_session_active: string;
+  inventory_change_wh: string;
+  inventory_progress: string;
+  inventory_match_theory: string;
+  inventory_confirm_line: string;
+  inventory_filter_all: string;
+  inventory_filter_pending: string;
+  inventory_filter_diff: string;
+  inventory_filter_ok: string;
+  inventory_finish_session: string;
 
   // Excel Import & Export
   import_title: string;
@@ -774,6 +787,19 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     btn_validate_inventory: 'Valider et Ajuster le Stock',
     inventory_updated: 'Inventaire réconcilié avec succès !',
     no_discrepancy: 'Aucun écart détecté sur cette sélection',
+    inventory_step1_title: 'Étape 1 : Choix du magasin à inventorier',
+    inventory_step1_subtitle: 'Sélectionnez le magasin ou le conteneur à auditer avant de démarrer le comptage terrain.',
+    inventory_btn_start: 'Valider et commencer l\'inventaire',
+    inventory_session_active: 'Inventaire en cours',
+    inventory_change_wh: 'Changer de magasin',
+    inventory_progress: 'Progression du comptage',
+    inventory_match_theory: '= Théorique',
+    inventory_confirm_line: 'Valider la ligne',
+    inventory_filter_all: 'Tous',
+    inventory_filter_pending: 'À vérifier',
+    inventory_filter_diff: 'Écarts',
+    inventory_filter_ok: 'Conformes',
+    inventory_finish_session: 'Clôturer la session',
 
     import_title: 'Import & Synchronisation Excel',
     import_desc: 'Mise à jour des stocks depuis le classeur Excel (drew.xlsx)',
@@ -1355,6 +1381,19 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     btn_validate_inventory: 'Validate & Adjust Stock',
     inventory_updated: 'Inventory reconciled successfully!',
     no_discrepancy: 'No discrepancies detected in current selection',
+    inventory_step1_title: 'Step 1: Select Warehouse for Inventory',
+    inventory_step1_subtitle: 'Select the warehouse or container to audit before starting physical count on mobile.',
+    inventory_btn_start: 'Validate & Start Inventory',
+    inventory_session_active: 'Active Inventory Session',
+    inventory_change_wh: 'Change Warehouse',
+    inventory_progress: 'Count Progress',
+    inventory_match_theory: '= System',
+    inventory_confirm_line: 'Validate Line',
+    inventory_filter_all: 'All',
+    inventory_filter_pending: 'Pending',
+    inventory_filter_diff: 'Discrepancies',
+    inventory_filter_ok: 'Compliant',
+    inventory_finish_session: 'Finish Session',
 
     import_title: 'Excel Import & Sync',
     import_desc: 'Update warehouse stock from Excel master workbook (drew.xlsx)',
@@ -1936,6 +1975,19 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     btn_validate_inventory: '确认盘点并调账',
     inventory_updated: '库存盘点调账完成！',
     no_discrepancy: '当前所选物料无账实差异',
+    inventory_step1_title: '第一步：选择盘点仓库',
+    inventory_step1_subtitle: '在手机端开始实物盘点前，请先选定目标仓库或集装箱站点并确认。',
+    inventory_btn_start: '确认并开始盘点',
+    inventory_session_active: '正在盘点中',
+    inventory_change_wh: '切换仓库',
+    inventory_progress: '盘点进度',
+    inventory_match_theory: '= 账面数',
+    inventory_confirm_line: '确认物料行',
+    inventory_filter_all: '全部',
+    inventory_filter_pending: '待盘点',
+    inventory_filter_diff: '有差异',
+    inventory_filter_ok: '账实相符',
+    inventory_finish_session: '结束本轮盘点',
 
     import_title: 'Excel 台账导入与同步',
     import_desc: '从现有 Excel 台账 (drew.xlsx) 快速更新与同步库存',

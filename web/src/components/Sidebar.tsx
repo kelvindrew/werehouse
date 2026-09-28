@@ -44,14 +44,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
 
   const sections = [
     {
-      group: 'DISCOVER',
+      group: 'MAGASINS & SITES',
       items: [
-        {
-          id: 'dashboard' as NavigationTab,
-          label: t.tab_dashboard,
-          icon: LayoutDashboard,
-          visible: true
-        },
         {
           id: 'locations' as NavigationTab,
           label: t.nav_locations_title || 'Magasins & Sites',
@@ -61,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
       ]
     },
     {
-      group: 'INVENTORY',
+      group: 'GESTION DU STOCK',
       items: [
         {
           id: 'stock' as NavigationTab,
@@ -70,9 +64,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
           visible: true
         },
         {
-          id: 'receipts' as NavigationTab,
-          label: t.tab_receipts,
-          icon: ArrowDownToLine,
+          id: 'inventory' as NavigationTab,
+          label: t.tab_inventory,
+          icon: ClipboardCheck,
           visible: canOperateStock
         },
         {
@@ -82,16 +76,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
           visible: canOperateStock
         },
         {
+          id: 'receipts' as NavigationTab,
+          label: t.tab_receipts,
+          icon: ArrowDownToLine,
+          visible: canOperateStock
+        },
+        {
           id: 'transfers' as NavigationTab,
           label: t.tab_transfers,
           icon: ArrowLeftRight,
           visible: canOperateStock
-        },
-        {
-          id: 'inventory' as NavigationTab,
-          label: t.tab_inventory,
-          icon: ClipboardCheck,
-          visible: canSupervise
         }
       ]
     },

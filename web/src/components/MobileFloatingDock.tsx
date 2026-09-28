@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationTab } from './Sidebar';
 import { 
-  Home, 
+  ClipboardCheck, 
   Boxes, 
   ArrowUpFromLine, 
   ArrowLeftRight, 
@@ -81,22 +81,22 @@ export const MobileFloatingDock: React.FC<MobileFloatingDockProps> = ({
           </span>
         </button>
 
-        {/* Tab 3: CENTER FLOATING RAISED HOME BUTTON (Exactly as Reference Image) */}
+        {/* Tab 3: CENTER FLOATING RAISED INVENTORY BUTTON (Optimized for Mobile Stock Taking) */}
         <div className="relative -top-5 px-1 shrink-0">
           {/* Concentric outer halo / recess bezel */}
           <div className="p-1 rounded-full bg-[#f4f5f8] border border-white/80 shadow-[0_4px_12px_rgba(0,0,0,0.08),inset_0_2px_4px_rgba(0,0,0,0.06)]">
             <button
               type="button"
-              onClick={() => handleTabClick('dashboard')}
-              aria-label="Tableau de bord / Accueil"
+              onClick={() => handleTabClick('inventory')}
+              aria-label={t.tab_inventory || 'Inventaire Physique'}
               className={`w-14 h-14 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-[0_8px_20px_rgba(0,0,0,0.18),inset_0_2px_3px_rgba(255,255,255,0.8)] ${
-                currentTab === 'dashboard'
+                currentTab === 'inventory'
                   ? 'bg-carbon text-lime ring-2 ring-lime/70 shadow-[0_8px_25px_rgba(200,255,0,0.38)]'
                   : 'bg-white hover:bg-zinc-50 text-zinc-800'
               }`}
             >
-              <Home className={`w-6 h-6 stroke-[2.4] transition-transform ${
-                currentTab === 'dashboard' ? 'scale-110 text-lime' : 'text-zinc-800'
+              <ClipboardCheck className={`w-6 h-6 stroke-[2.4] transition-transform ${
+                currentTab === 'inventory' ? 'scale-110 text-lime' : 'text-zinc-800'
               }`} />
             </button>
           </div>
