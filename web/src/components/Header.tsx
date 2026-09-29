@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { UserRole } from '@shared/types/models';
 import { LANGUAGE_OPTIONS } from '../lib/i18n';
@@ -18,7 +18,8 @@ import {
   Check,
   X,
   Globe,
-  ShieldCheck
+  ShieldCheck,
+  Plus
 } from 'lucide-react';
 import { firebaseSync, SyncStatus } from '../lib/firebaseSync';
 
@@ -67,6 +68,8 @@ export const Header: React.FC<HeaderProps> = ({
   const [hasNotifications, setHasNotifications] = useState(true);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>(() => firebaseSync.getStatus());
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isWarehouseMenuOpen, setIsWarehouseMenuOpen] = useState(false);
+  const warehouseMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const unsubData = dataService.subscribe(() => {
@@ -81,117 +84,279 @@ export const Header: React.FC<HeaderProps> = ({
     };
   }, []);
 
+  // Handle outside click & Escape key to close warehouse dropdown menu
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent | TouchEvent) => {
+      if (warehouseMenuRef.current && !warehouseMenuRef.current.contains(event.target as Node)) {
+        setIsWarehouseMenuOpen(false);
+      }
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsWarehouseMenuOpen(false);
+      }
+    };
+    if (isWarehouseMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isWarehouseMenuOpen]);
+
+  // Existing locations separation
+  const b1Location = locations.find(l => l.code === 'B1');
+  const b2Location = locations.find(l => l.code === 'B2');
+  const otherLocations = locations.filter(l => l.code !== 'B1' && l.code !== 'B2');
+
+  const getCurrentWarehouseLabel = () => {
+    if (selectedWarehouse === 'ALL') return t.all_warehouses || 'Tous les magasins';
+    if (selectedWarehouse === 'B1') return 'B1 (MD01)';
+    if (selectedWarehouse === 'B2') return 'B2 (Zones A-E)';
+    const loc = locations.find(l => l.code === selectedWarehouse);
+    if (loc) return `${loc.code} — ${loc.name}`;
+    return selectedWarehouse;
+  };
+
+  const getShortWarehouseLabel = () => {
+    if (selectedWarehouse === 'ALL') return 'Tous sites';
+    if (selectedWarehouse === 'B1') return 'B1';
+    if (selectedWarehouse === 'B2') return 'B2';
+    const loc = locations.find(l => l.code === selectedWarehouse);
+    return loc ? loc.code : selectedWarehouse;
+  };
+
   return (
     <>
       <header className="h-16 liquid-glass border-b border-white/80 px-2.5 sm:px-4 md:px-6 flex items-center justify-between sticky top-0 z-30 shadow-xs transition-all">
         
         {/* ========================================================================= */}
-        {/* LEFT: Warehouse / Site Selector                                           */}
+        {/* LEFT: Warehouse / Site Selector (Modern Dropdown Menu)                     */}
         {/* ========================================================================= */}
-        <div className="flex items-center gap-1.5 sm:gap-2">
-          {/* Mobile Warehouse Pill (< md): Compact, single pill with native select */}
-          <div className="flex md:hidden relative items-center">
-            <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-carbon text-white rounded-full text-xs font-bold shadow-xs active:scale-95 transition-transform">
-              <Building2 className="w-3.5 h-3.5 text-lime shrink-0" />
-              <span className="font-mono text-[11px] truncate max-w-[85px]">
-                {selectedWarehouse === 'ALL' ? 'Tous sites' : selectedWarehouse}
-              </span>
-              <ChevronDown className="w-3 h-3 text-zinc-400 shrink-0" />
+        <div className="relative" ref={warehouseMenuRef}>
+          <button
+            type="button"
+            onClick={() => setIsWarehouseMenuOpen(prev => !prev)}
+            className={`flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-full border transition-all shadow-xs active:scale-95 ${
+              isWarehouseMenuOpen
+                ? 'bg-zinc-950 text-white border-zinc-950 ring-2 ring-zinc-900/10'
+                : 'bg-white hover:bg-zinc-50 text-zinc-900 border-zinc-300/80 hover:border-zinc-400'
+            }`}
+            aria-expanded={isWarehouseMenuOpen}
+            aria-label={t.warehouse_view || 'Sélectionner un site ou magasin'}
+          >
+            <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-colors ${
+              isWarehouseMenuOpen ? 'bg-zinc-800' : 'bg-zinc-100'
+            }`}>
+              <Building2 className={`w-3.5 h-3.5 ${isWarehouseMenuOpen ? 'text-lime' : 'text-zinc-700'}`} />
             </div>
-            <select
-              aria-label={t.warehouse_view}
-              value={selectedWarehouse}
-              onChange={(e) => {
-                if (e.target.value === '__ADD_LOCATION__') {
-                  onOpenCreateLocation?.();
-                } else {
-                  setSelectedWarehouse(e.target.value);
-                }
-              }}
-              className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
-            >
-              <option value="ALL">Tous les magasins</option>
-              <option value="B1">B1 (MD01)</option>
-              <option value="B2">B2 (Zones A-E)</option>
-              {locations.filter(l => l.code !== 'B1' && l.code !== 'B2').map(loc => (
-                <option key={loc.id} value={loc.code}>{loc.code} — {loc.name}</option>
-              ))}
-              {onOpenCreateLocation && (
-                <option value="__ADD_LOCATION__">+ {t.btn_add_location || 'Nouveau site...'}</option>
-              )}
-            </select>
-          </div>
 
-          {/* Desktop Warehouse Pills (>= md): Full multi-button bar */}
-          <div className="hidden md:flex items-center bg-zinc-200/50 p-1 rounded-full border border-zinc-300/60 shadow-inner">
-            <button
-              onClick={() => setSelectedWarehouse('ALL')}
-              className={`px-3 py-1 text-xs font-semibold rounded-full transition-all ${
-                selectedWarehouse === 'ALL'
-                  ? 'bg-carbon text-white shadow-sm'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              Tous
-            </button>
-            <button
-              onClick={() => setSelectedWarehouse('B1')}
-              className={`px-3 py-1 text-xs font-semibold rounded-full transition-all ${
-                selectedWarehouse === 'B1'
-                  ? 'bg-carbon text-white shadow-sm'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              B1 (MD01)
-            </button>
-            <button
-              onClick={() => setSelectedWarehouse('B2')}
-              className={`px-3 py-1 text-xs font-semibold rounded-full transition-all ${
-                selectedWarehouse === 'B2'
-                  ? 'bg-carbon text-white shadow-sm'
-                  : 'text-zinc-600 hover:text-zinc-900'
-              }`}
-            >
-              B2 (Zones A-E)
-            </button>
+            {/* Mobile short code */}
+            <span className="font-mono text-xs font-bold sm:hidden truncate max-w-[85px]">
+              {getShortWarehouseLabel()}
+            </span>
+            {/* Tablet & Desktop full label */}
+            <span className="font-mono text-xs font-bold hidden sm:inline truncate max-w-[170px] md:max-w-[220px]">
+              {getCurrentWarehouseLabel()}
+            </span>
 
-            {/* Dropdown for other sites */}
-            <div className="relative pl-1 border-l border-zinc-300/80 flex items-center">
-              <select
-                aria-label={t.warehouse_view}
-                value={selectedWarehouse}
-                onChange={(e) => {
-                  if (e.target.value === '__ADD_LOCATION__') {
-                    onOpenCreateLocation?.();
-                  } else {
-                    setSelectedWarehouse(e.target.value);
-                  }
-                }}
-                className={`text-xs font-semibold py-1 pl-2 pr-5 rounded-full outline-none cursor-pointer appearance-none transition-all ${
-                  selectedWarehouse !== 'ALL' && selectedWarehouse !== 'B1' && selectedWarehouse !== 'B2'
-                    ? 'bg-carbon text-white shadow-sm'
-                    : 'bg-transparent text-zinc-600 hover:text-zinc-900'
-                }`}
-              >
-                <option value="ALL" className="text-zinc-900 bg-white">Autres sites...</option>
-                {onOpenCreateLocation && (
-                  <option value="__ADD_LOCATION__" className="text-zinc-900 font-bold bg-zinc-100">
-                    + {t.btn_add_location || 'Nouveau site...'}
-                  </option>
+            <ChevronDown className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${
+              isWarehouseMenuOpen ? 'rotate-180 text-lime' : 'text-zinc-400'
+            }`} />
+          </button>
+
+          {/* Floating Modern Dropdown Menu */}
+          {isWarehouseMenuOpen && (
+            <div className="absolute left-0 top-full mt-2 w-[290px] sm:w-[340px] max-w-[calc(100vw-1.5rem)] bg-white rounded-2xl shadow-2xl border border-zinc-200/90 py-2 z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-md">
+              {/* Header */}
+              <div className="px-3 pb-2 border-b border-zinc-100 flex items-center justify-between">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400">
+                  {t.warehouse_view || 'Sites & Magasins'}
+                </span>
+                <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600">
+                  {locations.length + 1} options
+                </span>
+              </div>
+
+              {/* Items List */}
+              <div className="py-1 max-h-[70vh] sm:max-h-80 overflow-y-auto space-y-0.5 px-1.5">
+                {/* 1. Global: Tous les magasins */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedWarehouse('ALL');
+                    setIsWarehouseMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-xl transition-all ${
+                    selectedWarehouse === 'ALL'
+                      ? 'bg-zinc-950 text-white font-semibold shadow-xs'
+                      : 'hover:bg-zinc-100 text-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${
+                      selectedWarehouse === 'ALL' ? 'bg-zinc-800 text-lime' : 'bg-zinc-100 text-zinc-700'
+                    }`}>
+                      <Building2 className="w-4 h-4" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold leading-tight">Tous les magasins</div>
+                      <div className={`text-[10px] leading-tight truncate ${selectedWarehouse === 'ALL' ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                        Vue consolidée (Tous les sites)
+                      </div>
+                    </div>
+                  </div>
+                  {selectedWarehouse === 'ALL' && (
+                    <div className="w-5 h-5 rounded-full bg-lime/20 flex items-center justify-center shrink-0 ml-2">
+                      <Check className="w-3.5 h-3.5 text-lime stroke-[3]" />
+                    </div>
+                  )}
+                </button>
+
+                {/* 2. Magasins Principaux: B1 & B2 */}
+                <div className="px-2 pt-2.5 pb-1 text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400">
+                  Magasins Principaux
+                </div>
+
+                {/* B1 */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedWarehouse('B1');
+                    setIsWarehouseMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-xl transition-all ${
+                    selectedWarehouse === 'B1'
+                      ? 'bg-zinc-950 text-white font-semibold shadow-xs'
+                      : 'hover:bg-zinc-100 text-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold shrink-0 ${
+                      selectedWarehouse === 'B1' ? 'bg-zinc-800 text-lime' : 'bg-zinc-100 text-zinc-700'
+                    }`}>
+                      B1
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold leading-tight">B1 (MD01)</div>
+                      <div className={`text-[10px] leading-tight truncate ${selectedWarehouse === 'B1' ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                        {b1Location?.name || 'Magasin B1'} • {b1Location?.description || 'Pièces détachées, robinetterie & outillage'}
+                      </div>
+                    </div>
+                  </div>
+                  {selectedWarehouse === 'B1' && (
+                    <div className="w-5 h-5 rounded-full bg-lime/20 flex items-center justify-center shrink-0 ml-2">
+                      <Check className="w-3.5 h-3.5 text-lime stroke-[3]" />
+                    </div>
+                  )}
+                </button>
+
+                {/* B2 */}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSelectedWarehouse('B2');
+                    setIsWarehouseMenuOpen(false);
+                  }}
+                  className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-xl transition-all ${
+                    selectedWarehouse === 'B2'
+                      ? 'bg-zinc-950 text-white font-semibold shadow-xs'
+                      : 'hover:bg-zinc-100 text-zinc-800'
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className={`px-2 py-0.5 rounded text-[11px] font-mono font-bold shrink-0 ${
+                      selectedWarehouse === 'B2' ? 'bg-zinc-800 text-lime' : 'bg-zinc-100 text-zinc-700'
+                    }`}>
+                      B2
+                    </span>
+                    <div className="min-w-0">
+                      <div className="text-xs font-bold leading-tight">B2 (Zones A-E)</div>
+                      <div className={`text-[10px] leading-tight truncate ${selectedWarehouse === 'B2' ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                        {b2Location?.name || 'Magasin B2'} • {b2Location?.description || 'Consommables, électricité & maintenance'}
+                      </div>
+                    </div>
+                  </div>
+                  {selectedWarehouse === 'B2' && (
+                    <div className="w-5 h-5 rounded-full bg-lime/20 flex items-center justify-center shrink-0 ml-2">
+                      <Check className="w-3.5 h-3.5 text-lime stroke-[3]" />
+                    </div>
+                  )}
+                </button>
+
+                {/* 3. Containers & Autres Sites */}
+                {otherLocations.length > 0 && (
+                  <>
+                    <div className="px-2 pt-2.5 pb-1 text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400">
+                      {t.containers_and_sites_group || 'Containers & Autres Sites'}
+                    </div>
+                    {otherLocations.map(loc => {
+                      const isSelected = selectedWarehouse === loc.code;
+                      return (
+                        <button
+                          key={loc.id}
+                          type="button"
+                          onClick={() => {
+                            setSelectedWarehouse(loc.code);
+                            setIsWarehouseMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-2 text-left rounded-xl transition-all ${
+                            isSelected
+                              ? 'bg-zinc-950 text-white font-semibold shadow-xs'
+                              : 'hover:bg-zinc-100 text-zinc-800'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <span className={`px-1.5 py-0.5 rounded text-[10px] font-mono font-bold shrink-0 ${
+                              isSelected ? 'bg-zinc-800 text-lime' : 'bg-zinc-100 text-zinc-700'
+                            }`}>
+                              {loc.code}
+                            </span>
+                            <div className="min-w-0">
+                              <div className="text-xs font-medium leading-tight truncate">{loc.name}</div>
+                              {(loc.description || loc.physicalLocation) && (
+                                <div className={`text-[10px] leading-tight truncate ${isSelected ? 'text-zinc-400' : 'text-zinc-500'}`}>
+                                  {loc.description || loc.physicalLocation}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                          {isSelected && (
+                            <div className="w-5 h-5 rounded-full bg-lime/20 flex items-center justify-center shrink-0 ml-2">
+                              <Check className="w-3.5 h-3.5 text-lime stroke-[3]" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </>
                 )}
-                {locations.filter(l => l.code !== 'B1' && l.code !== 'B2').map(loc => (
-                  <option key={loc.id} value={loc.code} className="text-zinc-900 bg-white">
-                    {loc.code} — {loc.name}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className={`w-3.5 h-3.5 absolute right-1.5 top-1/2 -translate-y-1/2 pointer-events-none ${
-                selectedWarehouse !== 'ALL' && selectedWarehouse !== 'B1' && selectedWarehouse !== 'B2'
-                  ? 'text-white'
-                  : 'text-zinc-500'
-              }`} />
+              </div>
+
+              {/* 4. Action: Ajouter un emplacement */}
+              {onOpenCreateLocation && (
+                <div className="pt-1.5 mt-1 border-t border-zinc-100 px-1.5">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsWarehouseMenuOpen(false);
+                      onOpenCreateLocation();
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-xs font-semibold text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-xl transition-colors"
+                  >
+                    <div className="w-5 h-5 rounded-full bg-zinc-100 flex items-center justify-center text-zinc-600">
+                      <Plus className="w-3 h-3" />
+                    </div>
+                    <span>{t.btn_add_location || 'Nouveau site de stockage...'}</span>
+                  </button>
+                </div>
+              )}
             </div>
-          </div>
+          )}
         </div>
 
         {/* ========================================================================= */}
