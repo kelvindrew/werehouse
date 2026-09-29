@@ -60,14 +60,6 @@ export const AuditLogView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap self-start sm:self-auto">
-          {/* Prominent View Mode Switcher: Cartes | Tableau */}
-          <ViewModeSwitcher
-            viewMode={viewMode}
-            onChange={handleSetViewMode}
-            cardsLabel={t.btn_cards}
-            tableLabel={t.btn_table}
-          />
-
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 border border-zinc-200 text-xs text-zinc-700 font-mono shadow-xs">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <span>{filteredLogs.length} {t.audit_events_count}</span>

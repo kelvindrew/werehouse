@@ -224,14 +224,6 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau */}
-          <ViewModeSwitcher
-            viewMode={viewMode}
-            onChange={handleSetViewMode}
-            cardsLabel={t.btn_cards}
-            tableLabel={t.btn_table}
-          />
-
           <button
             onClick={() => handleOpenMaterialTour()}
             className="inline-flex items-center gap-1.5 bg-zinc-900 hover:bg-zinc-800 text-white px-3.5 py-1.5 rounded-full text-xs font-semibold shadow-xs transition-colors"

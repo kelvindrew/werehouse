@@ -154,14 +154,6 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau */}
-          <ViewModeSwitcher
-            viewMode={viewMode}
-            onChange={handleSetViewMode}
-            cardsLabel={t.btn_cards}
-            tableLabel={t.btn_table}
-          />
-
           <button
             onClick={() => setIsQuickIssueOpen(true)}
             className="px-3.5 py-2 text-xs font-mono font-bold bg-lime hover:bg-lime/90 text-zinc-950 transition-all flex items-center gap-1.5 rounded-lg shadow-2xs"

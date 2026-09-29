@@ -58,14 +58,6 @@ export const MovementsTableView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau */}
-          <ViewModeSwitcher
-            viewMode={viewMode}
-            onChange={handleSetViewMode}
-            cardsLabel={t.btn_cards}
-            tableLabel={t.btn_table}
-          />
-
           <button
             onClick={handleExport}
             className="inline-flex items-center gap-1.5 bg-white hover:bg-zinc-50 text-zinc-700 px-4 py-2 rounded-full text-xs font-semibold transition-colors border border-zinc-200/80 shadow-xs"

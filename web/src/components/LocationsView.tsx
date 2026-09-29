@@ -155,14 +155,6 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
-          {/* Prominent View Mode Switcher: Cartes | Tableau */}
-          <ViewModeSwitcher
-            viewMode={viewMode}
-            onChange={handleSetViewMode}
-            cardsLabel={t.btn_cards}
-            tableLabel={t.btn_table}
-          />
-
           <button
             type="button"
             onClick={() => handleOpenTour()}

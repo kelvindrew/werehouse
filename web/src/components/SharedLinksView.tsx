@@ -134,14 +134,6 @@ export const SharedLinksView: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap w-full sm:w-auto">
-          {/* Prominent View Mode Switcher: Cartes | Tableau */}
-          <ViewModeSwitcher
-            viewMode={viewMode}
-            onChange={handleSetViewMode}
-            cardsLabel={t.btn_cards}
-            tableLabel={t.btn_table}
-          />
-
           <button
             onClick={() => setIsModalOpen(true)}
             className="inline-flex items-center justify-center space-x-2 px-4 py-2.5 min-h-[44px] bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-semibold rounded-full shadow-xs transition-colors shrink-0 flex-1 sm:flex-initial active:scale-95"
