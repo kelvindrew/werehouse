@@ -44,7 +44,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
 
   const sections = [
     {
-      group: 'MAGASINS & SITES',
+      group: t.nav_group_sites || 'MAGASINS & SITES',
       items: [
         {
           id: 'locations' as NavigationTab,
@@ -55,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
       ]
     },
     {
-      group: 'GESTION DU STOCK',
+      group: t.nav_group_stock || 'GESTION DU STOCK',
       items: [
         {
           id: 'stock' as NavigationTab,
@@ -90,7 +90,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
       ]
     },
     {
-      group: 'REPORTS & DATA',
+      group: t.nav_group_reports || 'REPORTS & DATA',
       items: [
         {
           id: 'import' as NavigationTab,
@@ -195,7 +195,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentTab, onSelectTab }) => 
             </div>
 
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-carbon-muted text-lime border border-zinc-700 shrink-0">
-              {selectedWarehouse === 'ALL' ? 'TOUS' : selectedWarehouse}
+              {selectedWarehouse === 'ALL' ? (t.all_sites_short || 'TOUS').toUpperCase() : selectedWarehouse}
             </span>
           </div>
         </div>

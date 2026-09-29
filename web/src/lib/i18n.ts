@@ -612,6 +612,40 @@ export interface TranslationDictionary {
   btn_material_tour: string;
   btn_tour_item: string;
   tour_material_counter: string;
+
+  // Navigation sections & Common Controls
+  nav_group_sites: string;
+  nav_group_stock: string;
+  nav_group_reports: string;
+  all_sites_consolidated: string;
+  all_sites_short: string;
+  options_count_label: string;
+  b1_desc_short: string;
+  b2_desc_short: string;
+  user_profile_modal_title: string;
+  app_language_section: string;
+  role_permissions_section: string;
+  active_badge: string;
+  btn_done: string;
+  role_admin: string;
+  role_supervisor: string;
+  role_storekeeper: string;
+  role_viewer: string;
+  role_admin_desc: string;
+  role_supervisor_desc: string;
+  role_storekeeper_desc: string;
+  role_viewer_desc: string;
+  sync_connected: string;
+  sync_offline: string;
+  col_articles: string;
+  col_units: string;
+  col_val: string;
+  tour_360_title: string;
+  mobile_table_wide_notice: string;
+  view_mode_prefix: string;
+  view_mode_cards_tooltip: string;
+  view_mode_table_tooltip: string;
+  barcode_gun_ready: string;
 }
 
 export const translations: Record<SupportedLanguage, TranslationDictionary> = {
@@ -1206,7 +1240,41 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     material_tour_subtitle: 'Parcourez visuellement les pièces, outillages et composants en stock',
     btn_material_tour: 'Visite Visuelle du Matériel',
     btn_tour_item: 'Visite Visuelle',
-    tour_material_counter: 'Article {current} sur {total}'
+    tour_material_counter: 'Article {current} sur {total}',
+
+    // Navigation sections & Common Controls
+    nav_group_sites: 'Magasins & Sites',
+    nav_group_stock: 'Gestion du Stock',
+    nav_group_reports: 'Rapports & Données',
+    all_sites_consolidated: 'Vue consolidée (Tous les sites)',
+    all_sites_short: 'Tous sites',
+    options_count_label: 'options',
+    b1_desc_short: 'Magasin principal pièces détachées, robinetterie & outillage',
+    b2_desc_short: 'Magasin secondaire consommables, électricité & maintenance',
+    user_profile_modal_title: 'Profil & Rôle Utilisateur',
+    app_language_section: 'Langue de l\'application',
+    role_permissions_section: 'Rôle & Permissions WMS',
+    active_badge: 'Actif',
+    btn_done: 'Terminer',
+    role_admin: 'Super Admin',
+    role_supervisor: 'Superviseur',
+    role_storekeeper: 'Magasinier',
+    role_viewer: 'Observateur',
+    role_admin_desc: 'Contrôle total, configuration & gestion',
+    role_supervisor_desc: 'Validation des sorties & audits',
+    role_storekeeper_desc: 'Mouvements physiques & déstockage',
+    role_viewer_desc: 'Consultation seule en lecture',
+    sync_connected: 'Firestore Connecté',
+    sync_offline: 'Hors Ligne',
+    col_articles: 'Articles',
+    col_units: 'Unités',
+    col_val: 'Valeur',
+    tour_360_title: 'Visite 360°',
+    mobile_table_wide_notice: 'Tableau large : défilement horizontal nécessaire',
+    view_mode_prefix: 'Affichage :',
+    view_mode_cards_tooltip: 'Affichage en cartes verticales (Optimisé pour smartphone)',
+    view_mode_table_tooltip: 'Affichage en tableau complet',
+    barcode_gun_ready: 'Douchette prête'
   },
 
   en: {
@@ -1800,7 +1868,41 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     material_tour_subtitle: 'Visually browse industrial parts, equipment, and components in inventory',
     btn_material_tour: 'Material Visual Tour',
     btn_tour_item: 'Visual Tour',
-    tour_material_counter: 'Item {current} of {total}'
+    tour_material_counter: 'Item {current} of {total}',
+
+    // Navigation sections & Common Controls
+    nav_group_sites: 'Warehouses & Sites',
+    nav_group_stock: 'Stock Management',
+    nav_group_reports: 'Reports & Data',
+    all_sites_consolidated: 'Consolidated view (All sites)',
+    all_sites_short: 'All sites',
+    options_count_label: 'options',
+    b1_desc_short: 'Primary warehouse: spare parts, valves & heavy tools',
+    b2_desc_short: 'Secondary warehouse: consumables, electrical & maintenance',
+    user_profile_modal_title: 'User Profile & Role',
+    app_language_section: 'Application Language',
+    role_permissions_section: 'WMS Role & Permissions',
+    active_badge: 'Active',
+    btn_done: 'Done',
+    role_admin: 'Super Admin',
+    role_supervisor: 'Supervisor',
+    role_storekeeper: 'Storekeeper',
+    role_viewer: 'Auditor / Viewer',
+    role_admin_desc: 'Full control, system configuration & admin',
+    role_supervisor_desc: 'Issue approvals & inventory audits',
+    role_storekeeper_desc: 'Physical movements, picking & issue vouchers',
+    role_viewer_desc: 'Read-only view access',
+    sync_connected: 'Firestore Connected',
+    sync_offline: 'Offline Mode',
+    col_articles: 'Articles',
+    col_units: 'Units',
+    col_val: 'Valuation',
+    tour_360_title: '360° Tour',
+    mobile_table_wide_notice: 'Wide table: scroll horizontally to view all columns',
+    view_mode_prefix: 'View:',
+    view_mode_cards_tooltip: 'Vertical card view (Optimized for smartphones)',
+    view_mode_table_tooltip: 'Full table view',
+    barcode_gun_ready: 'Scanner ready'
   },
 
   zh: {
@@ -2394,7 +2496,41 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     material_tour_subtitle: '以高清全景实物图浏览在库备件、五金工具与机械组件',
     btn_material_tour: '物料图谱漫游',
     btn_tour_item: '图谱漫游',
-    tour_material_counter: '物资 {current} / {total}'
+    tour_material_counter: '物资 {current} / {total}',
+
+    // Navigation sections & Common Controls
+    nav_group_sites: '库区与站点',
+    nav_group_stock: '库存业务管理',
+    nav_group_reports: '报表与数据中心',
+    all_sites_consolidated: '全局综合视图 (全部库区与站点)',
+    all_sites_short: '所有站点',
+    options_count_label: '个选项',
+    b1_desc_short: 'B1 核心备件、阀门管件与重型工具主仓库',
+    b2_desc_short: 'B2 耗材、电工电气与日常维保配件仓库',
+    user_profile_modal_title: '用户个人资料与岗位角色',
+    app_language_section: '系统界面语言',
+    role_permissions_section: 'WMS 业务角色与操作权限',
+    active_badge: '当前激活',
+    btn_done: '完成设置',
+    role_admin: '超级管理员',
+    role_supervisor: '仓库主管',
+    role_storekeeper: '仓管员',
+    role_viewer: '巡检观察员',
+    role_admin_desc: '完全控制、系统配置与全局运维管理',
+    role_supervisor_desc: '出库领料终审、库存盘点复核与安全审计',
+    role_storekeeper_desc: '现场出入库执行、条码扫码拣货与库位移库',
+    role_viewer_desc: '仅供只读查看与数据报表核对',
+    sync_connected: 'Firestore 云端已连接',
+    sync_offline: '离线模式 (本地缓存)',
+    col_articles: '品类数',
+    col_units: '件数',
+    col_val: '估值',
+    tour_360_title: '360° 实景导览',
+    mobile_table_wide_notice: '数据表格较宽：请左右横向滑动查看所有字段',
+    view_mode_prefix: '显示模式：',
+    view_mode_cards_tooltip: '纵向卡片视图 (手机触摸操作优化)',
+    view_mode_table_tooltip: '完整数据表格视图',
+    barcode_gun_ready: '扫码枪就绪'
   }
 };
 

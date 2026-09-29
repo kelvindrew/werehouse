@@ -494,7 +494,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                           className="py-1.5 px-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform"
                         >
                           <ArrowDownToLine className="w-3 h-3 text-emerald-600" />
-                          <span>Entrée</span>
+                          <span>{t.action_receipt || 'Entrée'}</span>
                         </button>
                         <button
                           type="button"
@@ -502,7 +502,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                           className="py-1.5 px-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 active:scale-95 transition-transform"
                         >
                           <ArrowLeftRight className="w-3 h-3 text-blue-600" />
-                          <span>Transf.</span>
+                          <span>{t.action_transfer || 'Transf.'}</span>
                         </button>
                       </>
                     )}
@@ -522,7 +522,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                         className="py-1.5 px-1 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-[11px] font-semibold flex items-center justify-center gap-1 active:scale-95 transition-transform"
                       >
                         <Eye className="w-3 h-3" />
-                        <span>Détail</span>
+                        <span>{t.btn_details || 'Détail'}</span>
                       </button>
                     )}
                   </div>
@@ -718,7 +718,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                   title={t.action_receipt}
                                 >
                                   <ArrowDownToLine className="w-3.5 h-3.5" />
-                                  <span>+ Entrée</span>
+                                  <span>+ {t.action_receipt || 'Entrée'}</span>
                                 </button>
                                 <button
                                   onClick={() => onQuickIssue(item)}
@@ -726,7 +726,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                   title={t.action_issue}
                                 >
                                   <ArrowUpFromLine className="w-3.5 h-3.5 text-zinc-700" />
-                                  <span>- Sortie</span>
+                                  <span>- {t.action_issue || 'Sortie'}</span>
                                 </button>
                                 <button
                                   onClick={() => onQuickTransfer(item)}
@@ -734,7 +734,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                   title={t.action_transfer}
                                 >
                                   <ArrowLeftRight className="w-3.5 h-3.5 text-zinc-700" />
-                                  <span>⇄ Transférer</span>
+                                  <span>⇄ {t.action_transfer || 'Transférer'}</span>
                                 </button>
                               </>
                             )}
@@ -742,7 +742,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                               <button
                                 onClick={() => onOpenLabelModal(item)}
                                 className="p-2 text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100 border border-zinc-300 rounded transition-colors"
-                                title="Imprimer QR Code / Étiquette"
+                                title={t.btn_print_label || 'Imprimer QR Code / Étiquette'}
                               >
                                 <QrCode className="w-4 h-4" />
                               </button>
@@ -783,7 +783,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                               <button
                                 onClick={() => onOpenLabelModal(item)}
                                 className="p-1.5 text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 rounded transition-colors"
-                                title="Imprimer QR Code / Étiquette"
+                                title={t.btn_print_label || 'Imprimer QR Code / Étiquette'}
                               >
                                 <QrCode className="w-3.5 h-3.5" />
                               </button>
@@ -954,14 +954,14 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               }`}
             >
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Stock Faible</span>
+              <span>{t.low_stock_badge || 'Stock Faible'}</span>
             </button>
           </div>
 
           {/* Right: Hardware scanner status badge */}
           <div className="hidden md:flex items-center gap-1.5 text-xs text-zinc-400 font-mono shrink-0 pl-2 border-l border-zinc-700">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Douchette prête</span>
+            <span>{t.barcode_gun_ready || t.barcode_scanner_detected || 'Douchette prête'}</span>
           </div>
         </div>
       )}

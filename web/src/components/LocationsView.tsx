@@ -324,7 +324,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
                             ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                             : 'bg-zinc-100 text-zinc-500 border border-zinc-200'
                         }`}>
-                          {loc.status === 'ACTIVE' ? 'Actif' : 'Inactif'}
+                          {loc.status === 'ACTIVE' ? t.active_status : t.inactive_status}
                         </span>
                       </div>
 
@@ -341,15 +341,15 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
 
                   <div className="mt-2.5 pt-2 border-t border-zinc-100 grid grid-cols-3 gap-2 text-center text-xs font-mono">
                     <div className="bg-zinc-50 p-1.5 rounded-lg border border-zinc-100">
-                      <span className="text-[10px] text-zinc-400 block font-sans">Articles</span>
+                      <span className="text-[10px] text-zinc-400 block font-sans">{t.col_articles || 'Articles'}</span>
                       <span className="font-bold text-zinc-900">{loc.totalItemsCount || 0}</span>
                     </div>
                     <div className="bg-zinc-50 p-1.5 rounded-lg border border-zinc-100">
-                      <span className="text-[10px] text-zinc-400 block font-sans">Unités</span>
+                      <span className="text-[10px] text-zinc-400 block font-sans">{t.col_units || t.kpi_units || 'Unités'}</span>
                       <span className="font-bold text-zinc-900">{(loc.totalQuantity || 0).toLocaleString()}</span>
                     </div>
                     <div className="bg-zinc-50 p-1.5 rounded-lg border border-zinc-100">
-                      <span className="text-[10px] text-zinc-400 block font-sans">Valeur</span>
+                      <span className="text-[10px] text-zinc-400 block font-sans">{t.col_val || t.total_value_col || 'Valeur'}</span>
                       <span className="font-bold text-zinc-900">${Math.round(loc.totalValuationUSD || 0).toLocaleString()}</span>
                     </div>
                   </div>
@@ -360,14 +360,14 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
                       onClick={() => onSelectLocationForStock(loc.code)}
                       className="flex-1 py-1.5 px-2 bg-zinc-950 text-lime rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-2xs active:scale-95 transition-all"
                     >
-                      <span>Voir stock</span>
+                      <span>{t.view_stock_action || 'Voir stock'}</span>
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                     <button
                       type="button"
                       onClick={() => handleOpenTour(loc.code)}
                       className="py-1.5 px-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
-                      title="Visite 360°"
+                      title={t.tour_360_title || 'Visite 360°'}
                     >
                       <Camera className="w-3.5 h-3.5" />
                     </button>
@@ -375,7 +375,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
                       type="button"
                       onClick={() => onOpenEditModal(loc)}
                       className="py-1.5 px-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
-                      title="Modifier"
+                      title={t.btn_edit_location || 'Modifier'}
                     >
                       <Edit2 className="w-3.5 h-3.5" />
                     </button>
@@ -384,7 +384,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
                         type="button"
                         onClick={() => handleDelete(loc)}
                         className="py-1.5 px-2.5 bg-zinc-100 hover:bg-red-50 text-zinc-500 hover:text-red-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
-                        title="Supprimer"
+                        title={t.btn_delete_location || 'Supprimer'}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </button>

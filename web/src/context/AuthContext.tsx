@@ -73,29 +73,55 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [currentRole, setCurrentRole] = useState<UserRole>('ADMIN');
   const [selectedWarehouse, setSelectedWarehouse] = useState<string>('ALL');
+
+  // App-level global language: persistent across roles and page reloads
+  const [currentLanguage, setCurrentLanguageState] = useState<SupportedLanguage>(() => {
+    try {
+      const savedAppLang = localStorage.getItem('wms_app_language') as SupportedLanguage | null;
+      if (savedAppLang === 'fr' || savedAppLang === 'en' || savedAppLang === 'zh') {
+        return savedAppLang;
+      }
+      const legacyLang = localStorage.getItem('wms_language') as SupportedLanguage | null;
+      if (legacyLang === 'fr' || legacyLang === 'en' || legacyLang === 'zh') {
+        return legacyLang;
+      }
+      const savedUserLang = localStorage.getItem('wms_user_lang_USR-ADMIN-01') as SupportedLanguage | null;
+      if (savedUserLang === 'fr' || savedUserLang === 'en' || savedUserLang === 'zh') {
+        return savedUserLang;
+      }
+    } catch (e) {}
+    return 'fr';
+  });
+
   const [usersState, setUsersState] = useState<Record<UserRole, User>>(() => {
-    // Restore saved language per user from localStorage if available
     const initial = { ...DEFAULT_USERS };
     try {
       (Object.keys(initial) as UserRole[]).forEach((role) => {
-        const savedLang = localStorage.getItem(`wms_user_lang_${initial[role].id}`) as SupportedLanguage | null;
-        if (savedLang && (savedLang === 'fr' || savedLang === 'en' || savedLang === 'zh')) {
-          initial[role] = { ...initial[role], language: savedLang };
-        }
+        initial[role] = { ...initial[role], language: currentLanguage };
       });
-    } catch (e) {
-      // localStorage unavailable or restricted
-    }
+    } catch (e) {}
     return initial;
   });
 
-  const currentUser = usersState[currentRole];
-  const currentLanguage: SupportedLanguage = currentUser.language || 'fr';
+  // Ensure HTML element lang attribute matches currentLanguage
+  useEffect(() => {
+    try {
+      document.documentElement.lang = currentLanguage;
+    } catch (e) {}
+  }, [currentLanguage]);
+
+  const currentUser = {
+    ...usersState[currentRole],
+    language: currentLanguage
+  };
+
   const dictionary = getTranslation(currentLanguage);
-  const t: TranslationFunction = Object.assign(
-    (key: keyof TranslationDictionary) => dictionary[key] || (key as string),
-    dictionary
-  );
+  const t: TranslationFunction = React.useMemo(() => {
+    return Object.assign(
+      (key: keyof TranslationDictionary) => dictionary[key] || (key as string),
+      dictionary
+    );
+  }, [currentLanguage]);
 
   const canAdmin = currentRole === 'ADMIN';
   const canSupervise = currentRole === 'ADMIN' || currentRole === 'SUPERVISOR';
@@ -106,21 +132,27 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setLanguage = (lang: SupportedLanguage) => {
+    setCurrentLanguageState(lang);
+    try {
+      localStorage.setItem('wms_app_language', lang);
+      localStorage.setItem('wms_language', lang);
+      document.documentElement.lang = lang;
+    } catch (e) {}
+
+    // Synchronize all user roles so role changes never revert the chosen language
     setUsersState((prev) => {
-      const updatedUser = {
-        ...prev[currentRole],
-        language: lang,
-        updatedAt: new Date().toISOString()
-      };
-      try {
-        localStorage.setItem(`wms_user_lang_${updatedUser.id}`, lang);
-      } catch (e) {
-        // ignore
-      }
-      return {
-        ...prev,
-        [currentRole]: updatedUser
-      };
+      const updated: Record<UserRole, User> = { ...prev };
+      (Object.keys(updated) as UserRole[]).forEach((role) => {
+        updated[role] = {
+          ...updated[role],
+          language: lang,
+          updatedAt: new Date().toISOString()
+        };
+        try {
+          localStorage.setItem(`wms_user_lang_${updated[role].id}`, lang);
+        } catch (e) {}
+      });
+      return updated;
     });
   };
 
