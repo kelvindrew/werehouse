@@ -646,6 +646,16 @@ export interface TranslationDictionary {
   view_mode_cards_tooltip: string;
   view_mode_table_tooltip: string;
   barcode_gun_ready: string;
+  mat_edit_location_title: string;
+  mat_edit_location_desc: string;
+  mat_edit_warehouse: string;
+  mat_edit_bin: string;
+  mat_edit_transfer_warn: string;
+  mat_edit_interbin_notice: string;
+  mat_edit_location_unchanged: string;
+  mat_edit_stock_line_select: string;
+  mat_edit_transfer_qty: string;
+  mat_edit_advanced_loc_toggle: string;
 }
 
 export const translations: Record<SupportedLanguage, TranslationDictionary> = {
@@ -1274,7 +1284,17 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     view_mode_prefix: 'Affichage :',
     view_mode_cards_tooltip: 'Affichage en cartes verticales (Optimisé pour smartphone)',
     view_mode_table_tooltip: 'Affichage en tableau complet',
-    barcode_gun_ready: 'Douchette prête'
+    barcode_gun_ready: 'Douchette prête',
+    mat_edit_location_title: 'Emplacement & Localisation Physique',
+    mat_edit_location_desc: 'Modifiez le magasin ou l\'emplacement de rangement. Si vous changez de magasin, l\'opération sera automatiquement enregistrée comme un transfert officiel avec traçabilité.',
+    mat_edit_warehouse: 'Magasin / Site de Stockage',
+    mat_edit_bin: 'Emplacement / Casier / Rayon',
+    mat_edit_transfer_warn: 'Changement de magasin détecté : cette opération sera exécutée et consignée comme un transfert de stock officiel.',
+    mat_edit_interbin_notice: 'Déplacement de casier interne : le matériel sera réassigné au nouveau casier au sein du même magasin.',
+    mat_edit_location_unchanged: 'Emplacement actuel inchangé',
+    mat_edit_stock_line_select: 'Ligne de stock concernée',
+    mat_edit_transfer_qty: 'Quantité à transférer / déplacer',
+    mat_edit_advanced_loc_toggle: 'Détails d\'emplacement avancés (Zone, Rayon, Étagère...)'
   },
 
   en: {
@@ -1902,7 +1922,17 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     view_mode_prefix: 'View:',
     view_mode_cards_tooltip: 'Vertical card view (Optimized for smartphones)',
     view_mode_table_tooltip: 'Full table view',
-    barcode_gun_ready: 'Scanner ready'
+    barcode_gun_ready: 'Scanner ready',
+    mat_edit_location_title: 'Storage Location & Physical Bin',
+    mat_edit_location_desc: 'Modify the warehouse or physical bin location. If you choose a different warehouse, this will be automatically recorded as an official transfer with full audit trail.',
+    mat_edit_warehouse: 'Storage Warehouse / Site',
+    mat_edit_bin: 'Bin / Rack / Shelf Location',
+    mat_edit_transfer_warn: 'Warehouse change detected: this modification will be executed and recorded as an official stock transfer.',
+    mat_edit_interbin_notice: 'Internal bin relocation: material will be reassigned to the new bin within the same warehouse.',
+    mat_edit_location_unchanged: 'Current location unchanged',
+    mat_edit_stock_line_select: 'Target stock record',
+    mat_edit_transfer_qty: 'Quantity to transfer / relocate',
+    mat_edit_advanced_loc_toggle: 'Advanced location details (Zone, Rack, Shelf...)'
   },
 
   zh: {
@@ -2530,7 +2560,17 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     view_mode_prefix: '显示模式：',
     view_mode_cards_tooltip: '纵向卡片视图 (手机触摸操作优化)',
     view_mode_table_tooltip: '完整数据表格视图',
-    barcode_gun_ready: '扫码枪就绪'
+    barcode_gun_ready: '扫码枪就绪',
+    mat_edit_location_title: '存放位置与物理库位',
+    mat_edit_location_desc: '修改物料所在仓库或具体货位。若选择其他仓库，系统将自动作为正式库存调拨处理并生成出入库关联流水与安全审计记录。',
+    mat_edit_warehouse: '存放仓库 / 库区',
+    mat_edit_bin: '库位 / 货架 / 箱位代码',
+    mat_edit_transfer_warn: '检测到跨仓库变更：此项修改将自动作为正式库存调拨执行并记录。',
+    mat_edit_interbin_notice: '同库位重排：物料将在同一仓库内移动到新库位。',
+    mat_edit_location_unchanged: '当前存放位置保持不变',
+    mat_edit_stock_line_select: '目标库存记录',
+    mat_edit_transfer_qty: '移库/调拨数量',
+    mat_edit_advanced_loc_toggle: '详细库位字段 (区域、货架、层号...)'
   }
 };
 

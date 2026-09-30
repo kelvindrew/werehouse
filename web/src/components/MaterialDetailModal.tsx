@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { dataService } from '../lib/dataService';
 import { useAuth } from '../context/AuthContext';
-import { Material, StockItem, StockMovement } from '@shared/types/models';
+import { Material, StockItem, StockMovement, StorageLocation } from '@shared/types/models';
 import { 
   X, 
   Package, 
@@ -21,7 +21,13 @@ import {
   Check,
   AlertCircle,
   Save,
-  CheckCircle2
+  CheckCircle2,
+  ArrowLeftRight,
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  Boxes,
+  Sparkles
 } from 'lucide-react';
 
 interface MaterialDetailModalProps {
@@ -80,6 +86,22 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
     requiresMaterialCodeReview: false
   });
 
+  const [locations, setLocations] = useState<StorageLocation[]>(() => dataService.getLocations());
+
+  // Location & Transfer Edit state
+  const [selectedStockId, setSelectedStockId] = useState<string>('');
+  const [targetWarehouseId, setTargetWarehouseId] = useState<string>('B1');
+  const [targetBinLocation, setTargetBinLocation] = useState<string>('');
+  const [targetQuantity, setTargetQuantity] = useState<number | ''>('');
+  const [showAdvancedLocation, setShowAdvancedLocation] = useState(false);
+  const [targetZone, setTargetZone] = useState('');
+  const [targetRack, setTargetRack] = useState('');
+  const [targetShelf, setTargetShelf] = useState('');
+  const [targetRow, setTargetRow] = useState('');
+  const [targetPosition, setTargetPosition] = useState('');
+  const [targetContainerNumber, setTargetContainerNumber] = useState('');
+  const [targetLocationNotes, setTargetLocationNotes] = useState('');
+
   // Random Security Word verification state
   const [randomSecurityWord, setRandomSecurityWord] = useState('');
   const [inputSecurityWord, setInputSecurityWord] = useState('');
@@ -98,6 +120,8 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
 
       const movs = dataService.getStockMovements({ materialId, limit: 50 });
       setMovements(movs);
+
+      setLocations(dataService.getLocations());
     };
 
     load();
@@ -154,6 +178,21 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
       description: material.description || '',
       requiresMaterialCodeReview: !!material.requiresMaterialCodeReview
     });
+
+    const defaultStock = stockRecords.length > 0 ? stockRecords[0] : null;
+    setSelectedStockId(defaultStock ? defaultStock.id : '');
+    setTargetWarehouseId(defaultStock ? defaultStock.warehouseId : (material.plant === '3458' ? 'B1' : 'B1'));
+    setTargetBinLocation(defaultStock ? defaultStock.binLocation : '');
+    setTargetQuantity(defaultStock ? defaultStock.quantity : '');
+    setShowAdvancedLocation(false);
+    setTargetZone(defaultStock?.zone || '');
+    setTargetRack(defaultStock?.rack || '');
+    setTargetShelf(defaultStock?.shelf || '');
+    setTargetRow(defaultStock?.row || '');
+    setTargetPosition(defaultStock?.position || '');
+    setTargetContainerNumber(defaultStock?.containerNumber || '');
+    setTargetLocationNotes(defaultStock?.locationNotes || '');
+
     setRandomSecurityWord(generateSecurityWord());
     setInputSecurityWord('');
     setErrorMsg(null);
@@ -165,6 +204,52 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
     setIsEditing(false);
     setErrorMsg(null);
   };
+
+  const handleSelectStockRecord = (stockId: string) => {
+    setSelectedStockId(stockId);
+    const rec = stockRecords.find(s => s.id === stockId);
+    if (rec) {
+      setTargetWarehouseId(rec.warehouseId);
+      setTargetBinLocation(rec.binLocation);
+      setTargetQuantity(rec.quantity);
+      setTargetZone(rec.zone || '');
+      setTargetRack(rec.rack || '');
+      setTargetShelf(rec.shelf || '');
+      setTargetRow(rec.row || '');
+      setTargetPosition(rec.position || '');
+      setTargetContainerNumber(rec.containerNumber || '');
+      setTargetLocationNotes(rec.locationNotes || '');
+    }
+  };
+
+  const currentEditingStock = stockRecords.find(s => s.id === selectedStockId) || (stockRecords.length > 0 ? stockRecords[0] : null);
+  const originalWarehouseId = currentEditingStock ? currentEditingStock.warehouseId : '';
+  const originalBinLocation = currentEditingStock ? currentEditingStock.binLocation : '';
+
+  const isWarehouseChanged = !!originalWarehouseId && targetWarehouseId !== originalWarehouseId;
+  const isBinChanged = !!originalBinLocation && targetBinLocation.trim().toUpperCase() !== originalBinLocation.trim().toUpperCase();
+  const isLocationChanged = isWarehouseChanged || isBinChanged;
+
+  const targetStockBins = useMemo(() => {
+    return Array.from(
+      new Set(
+        dataService.getStock({ warehouseId: targetWarehouseId })
+          .map(s => s.binLocation)
+          .filter(b => b && !b.endsWith('-STD'))
+      )
+    ).slice(0, 6);
+  }, [targetWarehouseId]);
+
+  const fallbackBinSuggestions = useMemo(() => {
+    if (targetWarehouseId === 'B1') return ['MD01-A-01', 'R01-S01', 'R02-S01', 'MD01'];
+    if (targetWarehouseId === 'B2') return ['A1-S01', 'B2-S01', 'C1-S01', 'D1-S01'];
+    const matchedLoc = locations.find(l => l.code === targetWarehouseId);
+    if (matchedLoc?.type === 'CONTAINER') return ['CONT-GAUCHE', 'CONT-DROITE', 'CONT-FOND', 'ETAG-01'];
+    if (matchedLoc?.type === 'YARD') return ['ZONE-A', 'ZONE-B', 'PARC-01'];
+    return ['ZONE-01', 'RAYON-A', 'ETAGERE-1'];
+  }, [targetWarehouseId, locations]);
+
+  const combinedBinSuggestions = Array.from(new Set([...targetStockBins, ...fallbackBinSuggestions])).slice(0, 6);
 
   const handleRegenerateWord = () => {
     setRandomSecurityWord(generateSecurityWord());
@@ -198,6 +283,32 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
       return;
     }
 
+    // 3. Validation de l'emplacement et du magasin
+    let finalBin = targetBinLocation.trim().toUpperCase();
+    if (!finalBin) {
+      const parts = [
+        targetZone.trim(),
+        targetRack.trim(),
+        targetShelf.trim(),
+        targetRow.trim(),
+        targetPosition.trim(),
+        targetContainerNumber.trim()
+      ].filter(Boolean);
+      if (parts.length > 0) {
+        finalBin = parts.join('-');
+      }
+    }
+
+    if (!targetWarehouseId) {
+      setErrorMsg('Le magasin de stockage est obligatoire.');
+      return;
+    }
+
+    if (!finalBin) {
+      setErrorMsg("L'emplacement physique (casier / rayon / bin) est obligatoire.");
+      return;
+    }
+
     try {
       const updated = dataService.updateMaterial({
         materialId: material.id,
@@ -220,10 +331,39 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
         user: currentUser
       });
 
+      // Relocaliser le stock si l'emplacement a changé ou si aucun stock n'existait
+      let locationMessage = '';
+      if (isLocationChanged || !currentEditingStock) {
+        const qtyNum = targetQuantity === '' ? undefined : Number(targetQuantity);
+        const relocResult = dataService.relocateMaterialStock({
+          materialId: material.id,
+          sourceStockId: currentEditingStock?.id,
+          sourceWarehouseId: currentEditingStock?.warehouseId || targetWarehouseId,
+          sourceBinLocation: currentEditingStock?.binLocation || finalBin,
+          destinationWarehouseId: targetWarehouseId,
+          destinationBinLocation: finalBin,
+          quantity: qtyNum !== undefined && !isNaN(qtyNum) ? qtyNum : undefined,
+          destinationLocationId: locations.find(l => l.code === targetWarehouseId)?.id,
+          destinationZone: targetZone.trim() || undefined,
+          destinationRack: targetRack.trim() || undefined,
+          destinationShelf: targetShelf.trim() || undefined,
+          destinationRow: targetRow.trim() || undefined,
+          destinationPosition: targetPosition.trim() || undefined,
+          destinationContainerNumber: targetContainerNumber.trim() || undefined,
+          destinationLocationNotes: targetLocationNotes.trim() || undefined,
+          user: currentUser
+        });
+        locationMessage = relocResult.message;
+      }
+
       setMaterial(updated);
       setIsEditing(false);
-      setSuccessMsg('Fiche matériel mise à jour avec succès et répercutée sur le stock !');
-      setTimeout(() => setSuccessMsg(null), 5000);
+      setSuccessMsg(
+        locationMessage 
+          ? `Fiche mise à jour. ${locationMessage}`
+          : 'Fiche matériel mise à jour avec succès et répercutée sur le stock !'
+      );
+      setTimeout(() => setSuccessMsg(null), 6000);
     } catch (err: any) {
       setErrorMsg(err.message || 'Erreur lors de l\'enregistrement des modifications.');
     }
@@ -524,6 +664,328 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 <label htmlFor="requiresReview" className="text-xs font-semibold text-zinc-800 cursor-pointer select-none">
                   Marquer comme « Code temporaire nécessitant une révision »
                 </label>
+              </div>
+            </div>
+
+            {/* ========================================================================= */}
+            {/* EMPLACEMENT & LOCALISATION PHYSIQUE DU MATÉRIEL (AVEC GESTION DU TRANSFERT) */}
+            {/* ========================================================================= */}
+            <div className="bg-zinc-50/80 p-4 sm:p-5 rounded-3xl border border-zinc-200/90 space-y-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-zinc-950 text-lime flex items-center justify-center shrink-0 shadow-xs">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs sm:text-sm font-bold text-zinc-900">
+                      {t.mat_edit_location_title || 'Emplacement & Localisation Physique'}
+                    </h4>
+                    <p className="text-[11px] text-zinc-500 mt-0.5">
+                      {t.mat_edit_location_desc || "Modifiez le magasin ou l'emplacement de rangement. Si vous changez de magasin, l'opération sera automatiquement enregistrée comme un transfert officiel avec traçabilité."}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Status indicator badge */}
+                <div className="shrink-0 hidden sm:block">
+                  {isWarehouseChanged ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
+                      <ArrowLeftRight className="w-3 h-3 text-amber-700 animate-pulse" />
+                      <span>Transfert ({originalWarehouseId} ➔ {targetWarehouseId})</span>
+                    </span>
+                  ) : isBinChanged ? (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-900 border border-blue-300 shadow-2xs">
+                      <ArrowLeftRight className="w-3 h-3 text-blue-700" />
+                      <span>Déplacement casier</span>
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                      <Check className="w-3 h-3 text-emerald-600" />
+                      <span>{originalWarehouseId || 'Non assigné'}</span>
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Multiple stock lines selector (if article is stored in multiple places) */}
+              {stockRecords.length > 1 && (
+                <div className="bg-white p-3 rounded-2xl border border-zinc-200 shadow-2xs">
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1.5 flex items-center gap-1.5">
+                    <Boxes className="w-3.5 h-3.5 text-zinc-600" />
+                    <span>{t.mat_edit_stock_line_select || 'Ligne de stock concernée'} ({stockRecords.length})</span>
+                  </label>
+                  <select
+                    value={selectedStockId}
+                    onChange={(e) => handleSelectStockRecord(e.target.value)}
+                    className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-3 py-2 text-xs font-semibold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-950 cursor-pointer"
+                  >
+                    {stockRecords.map((s) => (
+                      <option key={s.id} value={s.id}>
+                        {s.warehouseId} — {s.binLocation} (Quantité: {s.quantity} {s.uom})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Single stock line or no stock chip */}
+              {stockRecords.length === 1 && (
+                <div className="flex flex-wrap items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-zinc-200 text-xs">
+                  <span className="text-zinc-500 font-medium">Emplacement actuel :</span>
+                  <span className="font-mono font-bold text-zinc-900 px-2 py-0.5 bg-zinc-100 rounded-md border border-zinc-300">
+                    {stockRecords[0].warehouseId} • {stockRecords[0].binLocation}
+                  </span>
+                  <span className="text-zinc-400">|</span>
+                  <span className="text-zinc-600 font-mono text-[11px]">
+                    Stock disponible : <strong className="text-zinc-900">{stockRecords[0].availableQuantity} {material.uom}</strong>
+                  </span>
+                </div>
+              )}
+
+              {stockRecords.length === 0 && (
+                <div className="bg-white px-3.5 py-2 rounded-xl border border-dashed border-zinc-300 text-xs text-zinc-500 flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-amber-400" />
+                  <span>Aucun stock physique enregistré pour ce matériel. Définissez son emplacement de stockage :</span>
+                </div>
+              )}
+
+              {/* Location Controls Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {/* 1. Magasin / Site de Stockage */}
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <Building2 className="w-3.5 h-3.5 text-zinc-600" />
+                      <span>{t.mat_edit_warehouse || 'Magasin / Site de Stockage'} <span className="text-red-500">*</span></span>
+                    </span>
+                    {originalWarehouseId && targetWarehouseId !== originalWarehouseId && (
+                      <span className="text-[10px] text-amber-700 font-mono font-bold">
+                        (Origine : {originalWarehouseId})
+                      </span>
+                    )}
+                  </label>
+                  <select
+                    value={targetWarehouseId}
+                    onChange={(e) => setTargetWarehouseId(e.target.value)}
+                    className={`w-full bg-white border rounded-xl px-3 py-2 text-xs font-bold transition-all focus:outline-none focus:ring-2 focus:ring-zinc-950 cursor-pointer ${
+                      targetWarehouseId !== originalWarehouseId && originalWarehouseId
+                        ? 'border-amber-400 text-amber-950 ring-2 ring-amber-400/30 bg-amber-50/20'
+                        : 'border-zinc-300 text-zinc-900'
+                    }`}
+                  >
+                    {locations.map((loc) => (
+                      <option key={loc.id} value={loc.code}>
+                        {loc.code} — {loc.name} {loc.description ? `(${loc.description.substring(0, 30)}...)` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 2. Emplacement / Casier / Rayon */}
+                <div>
+                  <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1 flex items-center justify-between">
+                    <span className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5 text-zinc-600" />
+                      <span>{t.mat_edit_bin || 'Emplacement / Casier / Rayon'} <span className="text-red-500">*</span></span>
+                    </span>
+                    {originalBinLocation && targetBinLocation.trim().toUpperCase() !== originalBinLocation.trim().toUpperCase() && (
+                      <span className="text-[10px] text-blue-700 font-mono font-bold">
+                        (Origine : {originalBinLocation})
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={targetBinLocation}
+                    onChange={(e) => setTargetBinLocation(e.target.value.toUpperCase())}
+                    placeholder="Ex: MD01-A-01, R02-S03, A1-S01..."
+                    className="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-xs font-mono font-bold text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-950 uppercase"
+                  />
+
+                  {/* Quick Bin Suggestions Pills */}
+                  {combinedBinSuggestions.length > 0 && (
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                      <span className="text-[10px] text-zinc-400 font-mono">Suggestions :</span>
+                      {combinedBinSuggestions.map((sugg) => (
+                        <button
+                          key={sugg}
+                          type="button"
+                          onClick={() => setTargetBinLocation(sugg)}
+                          className={`text-[10px] font-mono px-2 py-0.5 rounded-lg border transition-all cursor-pointer ${
+                            targetBinLocation === sugg
+                              ? 'bg-zinc-950 text-white border-zinc-950 font-bold'
+                              : 'bg-white hover:bg-zinc-100 text-zinc-700 border-zinc-200'
+                          }`}
+                        >
+                          {sugg}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Quantity to relocate / transfer (if article has stock and is moved) */}
+              {isLocationChanged && currentEditingStock && currentEditingStock.quantity > 0 && (
+                <div className="bg-white p-3 rounded-2xl border border-zinc-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                  <div>
+                    <span className="text-xs font-bold text-zinc-900 block">
+                      {t.mat_edit_transfer_qty || 'Quantité à transférer / déplacer'}
+                    </span>
+                    <span className="text-[11px] text-zinc-500">
+                      Disponible sur ce casier : <strong className="text-zinc-800">{currentEditingStock.availableQuantity} {material.uom}</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <input
+                      type="number"
+                      min="1"
+                      max={currentEditingStock.availableQuantity}
+                      value={targetQuantity}
+                      onChange={(e) => setTargetQuantity(e.target.value === '' ? '' : Number(e.target.value))}
+                      className="w-24 bg-zinc-50 border border-zinc-300 rounded-xl px-3 py-1.5 text-xs font-mono font-bold text-right text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-950"
+                    />
+                    <span className="text-xs font-bold text-zinc-700 font-mono">{material.uom}</span>
+                    <button
+                      type="button"
+                      onClick={() => setTargetQuantity(currentEditingStock.availableQuantity)}
+                      className="text-[11px] font-bold text-zinc-600 hover:text-zinc-950 underline px-1 cursor-pointer"
+                    >
+                      Tout
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* DYNAMIC TRANSFER / RELOCATION ALERT BANNER */}
+              {isWarehouseChanged ? (
+                <div className="bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-400 rounded-2xl p-4 text-xs text-amber-950 flex items-start gap-3 shadow-xs animate-in fade-in">
+                  <div className="w-8 h-8 rounded-full bg-amber-500 text-zinc-950 flex items-center justify-center shrink-0 font-bold shadow-xs">
+                    <ArrowLeftRight className="w-4 h-4 text-zinc-950" />
+                  </div>
+                  <div className="space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="font-black text-xs sm:text-sm uppercase tracking-wide text-amber-950">
+                        {t.mat_edit_transfer_warn || 'Transfert inter-magasins détecté'}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-black bg-amber-200 text-amber-900 border border-amber-300 shadow-2xs">
+                        {originalWarehouseId} ➔ {targetWarehouseId}
+                      </span>
+                    </div>
+                    <p className="text-amber-900 text-[11px] leading-relaxed">
+                      L'emplacement sélectionné n'est pas celui du magasin d'origine (actuellement <strong>{originalWarehouseId}</strong>).
+                      Cette modification sera enregistrée comme un <strong>transfert de stock officiel</strong> de <strong>{originalWarehouseId}</strong> ({originalBinLocation}) vers <strong>{targetWarehouseId}</strong> ({targetBinLocation || 'Nouveau casier'}).
+                      Deux mouvements inséparables (<code>TRANSFER_OUT</code> et <code>TRANSFER_IN</code>) seront créés et consignés dans l'historique et l'audit.
+                    </p>
+                  </div>
+                </div>
+              ) : isBinChanged ? (
+                <div className="bg-blue-50 border border-blue-300 rounded-2xl p-3.5 text-xs text-blue-950 flex items-start gap-3 shadow-xs animate-in fade-in">
+                  <div className="w-7 h-7 rounded-full bg-blue-500 text-white flex items-center justify-center shrink-0">
+                    <ArrowLeftRight className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <span className="font-bold text-xs text-blue-950 block">
+                      {t.mat_edit_interbin_notice || 'Déplacement de casier interne'} ({originalBinLocation} ➔ {targetBinLocation})
+                    </span>
+                    <p className="text-blue-800 text-[11px] mt-0.5">
+                      Le matériel sera réaffecté au nouveau casier au sein du magasin <strong>{targetWarehouseId}</strong>.
+                    </p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-white border border-zinc-200/90 rounded-2xl px-3.5 py-2.5 text-xs text-zinc-600 flex items-center gap-2 font-mono">
+                  <div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0" />
+                  <span>{t.mat_edit_location_unchanged || 'Emplacement actuel inchangé'} ({targetWarehouseId} - {targetBinLocation || 'N/A'})</span>
+                </div>
+              )}
+
+              {/* Collapsible Advanced Location Details Toggle */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvancedLocation(prev => !prev)}
+                  className="text-xs font-bold text-zinc-700 hover:text-zinc-950 flex items-center gap-1.5 transition-colors cursor-pointer select-none"
+                >
+                  {showAdvancedLocation ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+                  <span>{t.mat_edit_advanced_loc_toggle || "Détails d'emplacement avancés (Zone, Rayon, Étagère...)"}</span>
+                </button>
+
+                {showAdvancedLocation && (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 bg-white p-3.5 rounded-2xl border border-zinc-200 mt-2.5 animate-in fade-in">
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Zone</label>
+                      <input
+                        type="text"
+                        value={targetZone}
+                        onChange={(e) => setTargetZone(e.target.value)}
+                        placeholder="Ex: Zone A, MD01"
+                        className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Rayon (Rack)</label>
+                      <input
+                        type="text"
+                        value={targetRack}
+                        onChange={(e) => setTargetRack(e.target.value)}
+                        placeholder="Ex: R01, R12"
+                        className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Étagère (Shelf)</label>
+                      <input
+                        type="text"
+                        value={targetShelf}
+                        onChange={(e) => setTargetShelf(e.target.value)}
+                        placeholder="Ex: S01, S03"
+                        className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Rangée (Row)</label>
+                      <input
+                        type="text"
+                        value={targetRow}
+                        onChange={(e) => setTargetRow(e.target.value)}
+                        placeholder="Ex: L1, Rangée 4"
+                        className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Position / Bac</label>
+                      <input
+                        type="text"
+                        value={targetPosition}
+                        onChange={(e) => setTargetPosition(e.target.value)}
+                        placeholder="Ex: P02, C-04"
+                        className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">N° Conteneur</label>
+                      <input
+                        type="text"
+                        value={targetContainerNumber}
+                        onChange={(e) => setTargetContainerNumber(e.target.value)}
+                        placeholder="Ex: CONT-01"
+                        className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
+                      />
+                    </div>
+                    <div className="col-span-2">
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Remarques / Repères</label>
+                      <input
+                        type="text"
+                        value={targetLocationNotes}
+                        onChange={(e) => setTargetLocationNotes(e.target.value)}
+                        placeholder="Ex: Au sol près de la porte 2..."
+                        className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

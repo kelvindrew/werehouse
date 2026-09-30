@@ -290,6 +290,20 @@ class FirebaseSyncService {
   }
 
   /**
+   * Deletes a stock item from Firestore
+   */
+  public async deleteStockItem(stockId: string): Promise<void> {
+    if (!this.status.isOnline) return;
+    try {
+      await deleteDoc(doc(db, 'stock', stockId));
+      this.status.lastSyncTime = new Date();
+      this.notifyStatus();
+    } catch (err: any) {
+      console.warn('Firestore delete stock note:', err?.message);
+    }
+  }
+
+  /**
    * Pushes a movement to Firestore
    */
   public async pushMovement(movement: StockMovement): Promise<void> {

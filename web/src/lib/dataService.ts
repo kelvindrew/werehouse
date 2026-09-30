@@ -1261,6 +1261,220 @@ class DataService {
     return mat;
   }
 
+  /**
+   * Modifie l'emplacement / localisation d'un matériel depuis la fiche de modification.
+   * RÈGLE CRITIQUE : Si l'emplacement choisi n'est pas celui du magasin d'origine (autre magasin)
+   * ou si le casier change, l'opération est traitée et enregistrée comme un transfert de stock officiel
+   * avec création atomique de deux mouvements (TRANSFER_OUT / TRANSFER_IN), mise à jour du stock et traçabilité d'audit.
+   */
+  public relocateMaterialStock(params: {
+    materialId: string;
+    sourceStockId?: string;
+    sourceWarehouseId: string;
+    sourceBinLocation: string;
+    destinationWarehouseId: string;
+    destinationBinLocation: string;
+    quantity?: number;
+    destinationLocationId?: string;
+    destinationZone?: string;
+    destinationRack?: string;
+    destinationShelf?: string;
+    destinationRow?: string;
+    destinationPosition?: string;
+    destinationContainerNumber?: string;
+    destinationLocationNotes?: string;
+    user: User;
+    reason?: string;
+  }): {
+    success: boolean;
+    isTransfer: boolean;
+    transferId?: string;
+    movements?: StockMovement[];
+    message: string;
+  } {
+    const srcWh = (params.sourceWarehouseId || '').trim().toUpperCase();
+    const destWh = (params.destinationWarehouseId || '').trim().toUpperCase();
+    const srcBin = (params.sourceBinLocation || '').trim().toUpperCase();
+    const destBin = (params.destinationBinLocation || '').trim().toUpperCase();
+
+    if (!destWh) {
+      throw new Error('Le magasin de destination est obligatoire.');
+    }
+    if (!destBin) {
+      throw new Error("L'emplacement de destination (casier/rayon) est obligatoire.");
+    }
+
+    const mat = this.materials.get(params.materialId);
+    if (!mat) {
+      throw new Error(`Matériel introuvable : ${params.materialId}`);
+    }
+
+    // Si le magasin et le casier sont identiques, simple mise à jour des métadonnées d'emplacement
+    if (srcWh === destWh && srcBin === destBin) {
+      const currentStockId = params.sourceStockId || `${srcWh}_${params.materialId}_${srcBin}`;
+      const existingStock = this.stock.get(currentStockId);
+      if (existingStock) {
+        if (params.destinationLocationId) existingStock.locationId = params.destinationLocationId;
+        if (params.destinationZone !== undefined) existingStock.zone = params.destinationZone;
+        if (params.destinationRack !== undefined) existingStock.rack = params.destinationRack;
+        if (params.destinationShelf !== undefined) existingStock.shelf = params.destinationShelf;
+        if (params.destinationRow !== undefined) existingStock.row = params.destinationRow;
+        if (params.destinationPosition !== undefined) existingStock.position = params.destinationPosition;
+        if (params.destinationContainerNumber !== undefined) existingStock.containerNumber = params.destinationContainerNumber;
+        if (params.destinationLocationNotes !== undefined) existingStock.locationNotes = params.destinationLocationNotes;
+        existingStock.lastUpdated = new Date().toISOString();
+        this.saveStockToStorage();
+        firebaseSync.pushStockItems([existingStock]);
+        this.notify();
+      }
+      return {
+        success: true,
+        isTransfer: false,
+        message: 'Emplacement et localisation confirmés (inchangés).'
+      };
+    }
+
+    // Trouver le stock source
+    const sourceStockId = params.sourceStockId || `${srcWh}_${params.materialId}_${srcBin}`;
+    const sourceStock = this.stock.get(sourceStockId);
+
+    // Cas 1 : Le stock source existe et contient des unités (> 0)
+    if (sourceStock && sourceStock.quantity > 0) {
+      const qtyToMove = params.quantity !== undefined && params.quantity > 0 
+        ? Math.min(params.quantity, sourceStock.availableQuantity)
+        : sourceStock.availableQuantity;
+
+      if (qtyToMove <= 0) {
+        throw new Error(`Aucune quantité disponible à transférer pour ${sourceStock.materialCode} en ${srcBin}.`);
+      }
+
+      const isCrossWarehouse = srcWh !== destWh;
+      const transferReason = params.reason || (
+        isCrossWarehouse
+          ? `Transfert inter-magasins via modification fiche matériel (${srcWh} → ${destWh})`
+          : `Réassignation de casier interne (${srcBin} → ${destBin})`
+      );
+
+      const transferResult = this.performTransfer({
+        materialId: params.materialId,
+        sourceWarehouseId: srcWh,
+        sourceBinLocation: srcBin,
+        destinationWarehouseId: destWh,
+        destinationBinLocation: destBin,
+        quantity: qtyToMove,
+        reason: transferReason,
+        comments: `Transfert initié lors de la modification de la fiche matériel par ${params.user.name}`,
+        user: params.user,
+        destinationLocationId: params.destinationLocationId,
+        destinationZone: params.destinationZone,
+        destinationRack: params.destinationRack,
+        destinationShelf: params.destinationShelf,
+        destinationRow: params.destinationRow,
+        destinationPosition: params.destinationPosition,
+        destinationContainerNumber: params.destinationContainerNumber,
+        destinationLocationNotes: params.destinationLocationNotes
+      });
+
+      // Si la totalité du stock source a été déplacée, nettoyer l'ancien casier vide
+      if (sourceStock.quantity === 0) {
+        this.stock.delete(sourceStock.id);
+        firebaseSync.deleteStockItem(sourceStock.id);
+        this.saveStockToStorage();
+      }
+
+      return {
+        success: true,
+        isTransfer: true,
+        transferId: transferResult.transferId,
+        movements: transferResult.movements,
+        message: isCrossWarehouse
+          ? `Transfert inter-magasins de ${qtyToMove} ${sourceStock.uom} vers ${destWh} (${destBin}) validé et consigné dans l'historique !`
+          : `Déplacement de ${qtyToMove} ${sourceStock.uom} vers le casier ${destBin} (${destWh}) validé !`
+      };
+    }
+
+    // Cas 2 : Le matériel n'a pas encore de stock physique (quantité = 0) ou la ligne source était à 0
+    if (sourceStock && sourceStock.quantity === 0) {
+      this.stock.delete(sourceStock.id);
+      firebaseSync.deleteStockItem(sourceStock.id);
+    }
+
+    const destStockId = `${destWh}_${params.materialId}_${destBin}`;
+    const timestamp = new Date().toISOString();
+    const destLocation = params.destinationLocationId 
+      ? this.getLocationById(params.destinationLocationId)
+      : this.getLocationByCode(destWh);
+
+    if (this.stock.has(destStockId)) {
+      const existingDest = this.stock.get(destStockId)!;
+      if (params.destinationLocationId) existingDest.locationId = params.destinationLocationId;
+      if (params.destinationZone) existingDest.zone = params.destinationZone;
+      if (params.destinationRack) existingDest.rack = params.destinationRack;
+      if (params.destinationShelf) existingDest.shelf = params.destinationShelf;
+      if (params.destinationRow) existingDest.row = params.destinationRow;
+      if (params.destinationPosition) existingDest.position = params.destinationPosition;
+      if (params.destinationContainerNumber) existingDest.containerNumber = params.destinationContainerNumber;
+      if (params.destinationLocationNotes) existingDest.locationNotes = params.destinationLocationNotes;
+      existingDest.lastUpdated = timestamp;
+      this.saveStockToStorage();
+      firebaseSync.pushStockItems([existingDest]);
+    } else {
+      const newStock: StockItem = {
+        id: destStockId,
+        materialId: mat.id,
+        materialCode: mat.materialCode,
+        materialName: mat.name,
+        chineseName: mat.chineseName,
+        specification: mat.specification,
+        imageUrl: mat.imageUrl,
+        warehouseId: destWh,
+        locationId: params.destinationLocationId || destLocation?.id,
+        locationType: destLocation?.type,
+        zone: params.destinationZone,
+        rack: params.destinationRack,
+        shelf: params.destinationShelf,
+        row: params.destinationRow,
+        position: params.destinationPosition,
+        containerNumber: params.destinationContainerNumber,
+        locationNotes: params.destinationLocationNotes,
+        binLocation: destBin,
+        uom: mat.uom || 'EA',
+        quantity: 0,
+        reservedQuantity: 0,
+        availableQuantity: 0,
+        unitPrice: mat.standardPrice || 0,
+        totalValue: 0,
+        remarks: `Nouvelle localisation affectée : ${destWh} (${destBin})`,
+        lastUpdated: timestamp
+      };
+      this.stock.set(destStockId, newStock);
+      this.saveStockToStorage();
+      firebaseSync.pushStockItems([newStock]);
+    }
+
+    // Journal d'audit
+    this.auditLogs.unshift({
+      id: `AUD-LOC-RELOC-${Date.now()}`,
+      timestamp,
+      userId: params.user.id,
+      userName: params.user.name,
+      userRole: params.user.role,
+      action: 'STOCK_TRANSFER',
+      targetCollection: 'stock',
+      targetId: destStockId,
+      description: `Réassignation d'emplacement [${mat.materialCode}] : ${srcWh || 'N/A'} (${srcBin || 'N/A'}) → ${destWh} (${destBin})`,
+      newValue: { warehouseId: destWh, binLocation: destBin }
+    });
+    this.saveAuditToStorage();
+    this.notify();
+
+    return {
+      success: true,
+      isTransfer: srcWh !== '' && srcWh !== destWh,
+      message: `Emplacement assigné vers ${destWh} (${destBin}) avec succès !`
+    };
+  }
+
   // Stock Operations (Strict validation & Audit)
 
   /**
