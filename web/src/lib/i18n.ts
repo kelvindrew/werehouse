@@ -895,7 +895,7 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     metric_analyzed_rows: 'Lignes Analysées',
     metric_valid_rows: 'lignes valides retenues',
     metric_reconciled_qty: 'Quantité Réconciliée',
-    metric_conform_original: "✓ 100% conforme à l'original",
+    metric_conform_original: "100% conforme à l'original",
     metric_consolidated_dups: 'Doublons Consolidés',
     metric_cumulated_bins: 'Cumulés par BIN sans perte',
     metric_missing_codes: 'Lignes sans Code Matériel',
@@ -1533,7 +1533,7 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     metric_analyzed_rows: 'Analyzed Rows',
     metric_valid_rows: 'valid rows retained',
     metric_reconciled_qty: 'Reconciled Quantity',
-    metric_conform_original: '✓ 100% matches original',
+    metric_conform_original: '100% matches original',
     metric_consolidated_dups: 'Consolidated Duplicates',
     metric_cumulated_bins: 'Cumulated by BIN without loss',
     metric_missing_codes: 'Rows without Material Code',
@@ -2171,7 +2171,7 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     metric_analyzed_rows: '已解析行数',
     metric_valid_rows: '条有效行已采纳',
     metric_reconciled_qty: '已核对库存总量',
-    metric_conform_original: '✓ 100% 与原表完全一致',
+    metric_conform_original: '100% 与原表完全一致',
     metric_consolidated_dups: '合并同库位记录',
     metric_cumulated_bins: '按库位精准合并，零差错',
     metric_missing_codes: '无物料编码行',
@@ -2575,9 +2575,9 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
 };
 
 export const LANGUAGE_OPTIONS: { code: SupportedLanguage; label: string; flag: string; nativeName: string }[] = [
-  { code: 'fr', label: 'Français', flag: '🇫🇷', nativeName: 'Français' },
-  { code: 'en', label: 'English', flag: '🇬🇧', nativeName: 'English' },
-  { code: 'zh', label: 'Mandarin', flag: '🇨🇳', nativeName: '中文' }
+  { code: 'fr', label: 'Français', flag: 'FR', nativeName: 'Français' },
+  { code: 'en', label: 'English', flag: 'GB', nativeName: 'English' },
+  { code: 'zh', label: 'Mandarin', flag: 'CN', nativeName: '中文' }
 ];
 
 export const getTranslation = (lang: SupportedLanguage = 'fr'): TranslationDictionary => {

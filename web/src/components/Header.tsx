@@ -19,7 +19,11 @@ import {
   X,
   Globe,
   ShieldCheck,
-  Plus
+  Plus,
+  KeyRound,
+  Boxes,
+  Eye,
+  Shield
 } from 'lucide-react';
 import { firebaseSync, SyncStatus } from '../lib/firebaseSync';
 
@@ -35,11 +39,11 @@ interface HeaderProps {
   onSearchChange?: (val: string) => void;
 }
 
-const ROLE_DEFINITIONS: { role: UserRole; label: string; icon: string; desc: string }[] = [
-  { role: 'ADMIN', label: 'Super Admin', icon: '👑', desc: 'Contrôle total, configuration & gestion' },
-  { role: 'SUPERVISOR', label: 'Superviseur', icon: '🛡️', desc: 'Validation des sorties & audits' },
-  { role: 'STOREKEEPER', label: 'Magasinier', icon: '📦', desc: 'Mouvements physiques & déstockage' },
-  { role: 'VIEWER', label: 'Observateur', icon: '👁️', desc: 'Consultation seule en lecture' },
+const ROLE_DEFINITIONS: { role: UserRole; label: string; icon: React.ComponentType<{ className?: string }>; desc: string }[] = [
+  { role: 'ADMIN', label: 'Super Admin', icon: KeyRound, desc: 'Contrôle total, configuration & gestion' },
+  { role: 'SUPERVISOR', label: 'Superviseur', icon: ShieldCheck, desc: 'Validation des sorties & audits' },
+  { role: 'STOREKEEPER', label: 'Magasinier', icon: Boxes, desc: 'Mouvements physiques & déstockage' },
+  { role: 'VIEWER', label: 'Observateur', icon: Eye, desc: 'Consultation seule en lecture' },
 ];
 
 export const Header: React.FC<HeaderProps> = ({
@@ -131,10 +135,10 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const roleDefinitions = [
-    { role: 'ADMIN' as UserRole, label: 'Super Admin', icon: '👑', desc: t.role_admin_desc || 'Contrôle total, configuration & gestion' },
-    { role: 'SUPERVISOR' as UserRole, label: t.role_supervisor || 'Superviseur', icon: '🛡️', desc: t.role_supervisor_desc || 'Validation des sorties & audits' },
-    { role: 'STOREKEEPER' as UserRole, label: t.role_storekeeper || 'Magasinier', icon: '📦', desc: t.role_storekeeper_desc || 'Mouvements physiques & déstockage' },
-    { role: 'VIEWER' as UserRole, label: t.role_viewer || 'Observateur', icon: '👁️', desc: t.role_viewer_desc || 'Consultation seule en lecture' },
+    { role: 'ADMIN' as UserRole, label: t.role_admin || 'Super Admin', icon: KeyRound, desc: t.role_admin_desc || 'Contrôle total, configuration & gestion' },
+    { role: 'SUPERVISOR' as UserRole, label: t.role_supervisor || 'Superviseur', icon: ShieldCheck, desc: t.role_supervisor_desc || 'Validation des sorties & audits' },
+    { role: 'STOREKEEPER' as UserRole, label: t.role_storekeeper || 'Magasinier', icon: Boxes, desc: t.role_storekeeper_desc || 'Mouvements physiques & déstockage' },
+    { role: 'VIEWER' as UserRole, label: t.role_viewer || 'Observateur', icon: Eye, desc: t.role_viewer_desc || 'Consultation seule en lecture' },
   ];
 
   return (
@@ -440,12 +444,10 @@ export const Header: React.FC<HeaderProps> = ({
           )}
 
           {/* --- LANGUAGE SWITCHER --- */}
-          {/* On Mobile (< sm): Compact tactile dropdown pill with Flag & Code */}
+          {/* On Mobile (< sm): Compact tactile dropdown pill with Globe & Code */}
           <div className="flex sm:hidden relative items-center">
-            <div className="flex items-center gap-1 bg-white hover:bg-zinc-50 border border-zinc-300/90 px-2 py-1 rounded-full shadow-2xs text-xs font-bold text-zinc-800 active:scale-95 transition-transform">
-              <span className="text-[12px] leading-none">
-                {LANGUAGE_OPTIONS.find(l => l.code === currentLanguage)?.flag || '🌐'}
-              </span>
+            <div className="flex items-center gap-1.5 bg-white hover:bg-zinc-50 border border-zinc-300/90 px-2.5 py-1 rounded-full shadow-2xs text-xs font-bold text-zinc-800 active:scale-95 transition-transform">
+              <Globe className="w-3.5 h-3.5 text-zinc-700" />
               <span className="font-mono text-[10px] uppercase font-bold text-zinc-900">
                 {currentLanguage}
               </span>
@@ -459,7 +461,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               {LANGUAGE_OPTIONS.map((lang) => (
                 <option key={lang.code} value={lang.code}>
-                  {lang.flag} {lang.label}
+                  {lang.label} ({lang.code.toUpperCase()})
                 </option>
               ))}
             </select>
@@ -473,15 +475,14 @@ export const Header: React.FC<HeaderProps> = ({
                 <button
                   key={lang.code}
                   onClick={() => setLanguage(lang.code)}
-                  className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold transition-all ${
+                  className={`flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all ${
                     isSelected
                       ? 'bg-white text-zinc-900 shadow-xs font-bold'
                       : 'text-zinc-500 hover:text-zinc-900'
                   }`}
                   title={lang.label}
                 >
-                  <span className="text-[11px]">{lang.flag}</span>
-                  <span className="uppercase font-mono text-[9px] font-bold">{lang.code}</span>
+                  <span className="uppercase font-mono text-[10px] font-bold">{lang.code}</span>
                 </button>
               );
             })}
@@ -615,7 +616,11 @@ export const Header: React.FC<HeaderProps> = ({
                             : 'bg-zinc-50 hover:bg-zinc-100 text-zinc-800 border-zinc-200'
                         }`}
                       >
-                        <span className="text-xl">{lang.flag}</span>
+                        <span className={`text-[11px] font-mono font-black px-2 py-0.5 rounded ${
+                          isSelected ? 'bg-white/20 text-white' : 'bg-zinc-200/80 text-zinc-700'
+                        }`}>
+                          {lang.code.toUpperCase()}
+                        </span>
                         <span className="text-xs font-bold leading-tight">{lang.label}</span>
                         {isSelected && (
                           <span className="text-[9px] font-mono font-bold text-lime">{t.active_badge || 'Actif'}</span>
@@ -647,7 +652,11 @@ export const Header: React.FC<HeaderProps> = ({
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
-                          <span className="text-lg">{def.icon}</span>
+                          <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
+                            isActive ? 'bg-white/10 text-lime' : 'bg-zinc-200/80 text-zinc-700'
+                          }`}>
+                            <def.icon className="w-4 h-4 stroke-[2.2]" />
+                          </div>
                           <div>
                             <div className="text-xs font-bold flex items-center gap-1.5">
                               <span>{def.label}</span>

@@ -23,6 +23,9 @@ import {
   Save,
   CheckCircle2,
   ArrowLeftRight,
+  ArrowRight,
+  AlertTriangle,
+  ZoomIn,
   Building2,
   ChevronDown,
   ChevronUp,
@@ -65,6 +68,8 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
   const [stockRecords, setStockRecords] = useState<StockItem[]>([]);
   const [movements, setMovements] = useState<StockMovement[]>([]);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
+  const [isImageLightboxOpen, setIsImageLightboxOpen] = useState(false);
+  const [editImageUrl, setEditImageUrl] = useState<string>('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Edit Mode state
@@ -142,6 +147,16 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
     return acc;
   }, {} as Record<string, StockItem[]>);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isImageLightboxOpen) {
+        setIsImageLightboxOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isImageLightboxOpen]);
+
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -150,14 +165,10 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
     const reader = new FileReader();
     reader.onload = (evt) => {
       const dataUrl = evt.target?.result as string;
-      dataService.updateMaterialImage(material.id, dataUrl);
+      setEditImageUrl(dataUrl);
       setIsUploadingImage(false);
     };
     reader.readAsDataURL(file);
-  };
-
-  const handleRemoveImage = () => {
-    dataService.updateMaterialImage(material.id, '');
   };
 
   // Start Edit Mode
@@ -178,6 +189,8 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
       description: material.description || '',
       requiresMaterialCodeReview: !!material.requiresMaterialCodeReview
     });
+
+    setEditImageUrl(material.imageUrl || '');
 
     const defaultStock = stockRecords.length > 0 ? stockRecords[0] : null;
     setSelectedStockId(defaultStock ? defaultStock.id : '');
@@ -201,6 +214,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
   };
 
   const handleCancelEdit = () => {
+    setEditImageUrl('');
     setIsEditing(false);
     setErrorMsg(null);
   };
@@ -356,6 +370,11 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
         locationMessage = relocResult.message;
       }
 
+      if (editImageUrl !== (material.imageUrl || '')) {
+        dataService.updateMaterialImage(material.id, editImageUrl);
+        updated.imageUrl = editImageUrl;
+      }
+
       setMaterial(updated);
       setIsEditing(false);
       setSuccessMsg(
@@ -376,7 +395,15 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
         {/* Modal Header */}
         <div className="px-5 sm:px-6 py-4 border-b border-zinc-200 flex items-start justify-between bg-zinc-50">
           <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-2xl bg-zinc-100 text-zinc-900 border border-zinc-300 flex items-center justify-center overflow-hidden shrink-0 shadow-xs">
+            <div 
+              onClick={() => {
+                if (material.imageUrl) setIsImageLightboxOpen(true);
+              }}
+              className={`w-11 h-11 rounded-2xl bg-zinc-100 text-zinc-900 border border-zinc-300 flex items-center justify-center overflow-hidden shrink-0 shadow-xs ${
+                material.imageUrl ? 'cursor-pointer hover:ring-2 hover:ring-zinc-950 transition-all' : ''
+              }`}
+              title={material.imageUrl ? "Cliquer pour agrandir l'image" : undefined}
+            >
               {material.imageUrl ? (
                 <img src={material.imageUrl} alt={material.materialCode} className="w-full h-full object-cover" />
               ) : (
@@ -449,7 +476,14 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>{successMsg}</span>
             </div>
-            <button onClick={() => setSuccessMsg(null)} className="text-xs opacity-70 hover:opacity-100">✕</button>
+            <button 
+              type="button"
+              onClick={() => setSuccessMsg(null)} 
+              className="p-1 rounded-full text-emerald-700 hover:text-emerald-950 transition-colors"
+              aria-label="Fermer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
 
@@ -460,7 +494,14 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               <AlertCircle className="w-4 h-4 text-red-600 shrink-0" />
               <span>{errorMsg}</span>
             </div>
-            <button onClick={() => setErrorMsg(null)} className="text-xs opacity-70 hover:opacity-100">✕</button>
+            <button 
+              type="button"
+              onClick={() => setErrorMsg(null)} 
+              className="p-1 rounded-full text-red-700 hover:text-red-950 transition-colors"
+              aria-label="Fermer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
         )}
 
@@ -477,6 +518,103 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 <p className="text-blue-700 mt-0.5 leading-relaxed">
                   Vous modifiez directement la fiche signalétique de cet article. Les modifications apportées (code, nom, spécification, unité et prix standard) seront automatiquement synchronisées sur l'ensemble des casiers de stock associés et enregistrées dans le journal d'audit immuable.
                 </p>
+              </div>
+            </div>
+
+            {/* Photo de l'article (Édition) */}
+            <div className="bg-zinc-50/80 border border-zinc-200 rounded-3xl p-4 flex flex-col sm:flex-row items-center gap-4">
+              <div 
+                className={`w-28 h-28 rounded-2xl bg-white border border-zinc-300 flex items-center justify-center overflow-hidden shrink-0 shadow-xs relative group ${
+                  !editImageUrl ? 'cursor-pointer hover:border-zinc-500' : ''
+                }`}
+                onClick={() => {
+                  if (!editImageUrl) fileInputRef.current?.click();
+                }}
+              >
+                {editImageUrl ? (
+                  <>
+                    <img src={editImageUrl} alt="Aperçu photo" className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          fileInputRef.current?.click();
+                        }}
+                        className="p-1.5 bg-white text-zinc-900 rounded-lg hover:bg-zinc-100 cursor-pointer shadow"
+                        title="Changer la photo"
+                      >
+                        <Camera className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditImageUrl('');
+                        }}
+                        className="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer shadow"
+                        title="Supprimer la photo"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-zinc-400 p-2 text-center">
+                    <Camera className="w-7 h-7 mb-1 text-zinc-400" />
+                    <span className="text-[10px] font-bold">Ajouter une photo</span>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex-1 space-y-1.5 text-xs text-center sm:text-left">
+                <div className="flex items-center justify-center sm:justify-between flex-wrap gap-2">
+                  <span className="font-bold text-zinc-900 flex items-center gap-1.5">
+                    <ImageIcon className="w-4 h-4 text-zinc-700" />
+                    <span>Photo du matériel (Édition)</span>
+                  </span>
+                  {editImageUrl ? (
+                    <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-mono font-bold flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-600" />
+                      <span>Photo prête à être enregistrée</span>
+                    </span>
+                  ) : (
+                    <span className="text-[10px] bg-zinc-100 text-zinc-500 border border-zinc-200 px-2 py-0.5 rounded-full font-mono">
+                      Aucune photo sélectionnée
+                    </span>
+                  )}
+                </div>
+                <p className="text-zinc-500 text-[11px] leading-relaxed">
+                  Importez ou modifiez la photo de référence pour cet équipement. Elle sera enregistrée lors de la validation du formulaire avec le mot de sécurité.
+                </p>
+                <div className="pt-1 flex items-center justify-center sm:justify-start gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingImage}
+                    className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
+                  >
+                    <UploadCloud className="w-3.5 h-3.5 text-lime" />
+                    <span>{editImageUrl ? 'Remplacer la photo' : 'Importer une photo'}</span>
+                  </button>
+                  {editImageUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setEditImageUrl('')}
+                      className="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer active:scale-95"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Supprimer</span>
+                    </button>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageFileChange}
+                    className="hidden"
+                  />
+                </div>
               </div>
             </div>
 
@@ -691,7 +829,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                   {isWarehouseChanged ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-amber-100 text-amber-900 border border-amber-300 shadow-2xs">
                       <ArrowLeftRight className="w-3 h-3 text-amber-700 animate-pulse" />
-                      <span>Transfert ({originalWarehouseId} ➔ {targetWarehouseId})</span>
+                      <span className="inline-flex items-center gap-1">Transfert ({originalWarehouseId} <ArrowRight className="w-2.5 h-2.5 inline" /> {targetWarehouseId})</span>
                     </span>
                   ) : isBinChanged ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-900 border border-blue-300 shadow-2xs">
@@ -869,8 +1007,10 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                       <span className="font-black text-xs sm:text-sm uppercase tracking-wide text-amber-950">
                         {t.mat_edit_transfer_warn || 'Transfert inter-magasins détecté'}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-black bg-amber-200 text-amber-900 border border-amber-300 shadow-2xs">
-                        {originalWarehouseId} ➔ {targetWarehouseId}
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-black bg-amber-200 text-amber-900 border border-amber-300 shadow-2xs inline-flex items-center gap-1">
+                        <span>{originalWarehouseId}</span>
+                        <ArrowRight className="w-3 h-3 text-amber-800" />
+                        <span>{targetWarehouseId}</span>
                       </span>
                     </div>
                     <p className="text-amber-900 text-[11px] leading-relaxed">
@@ -886,8 +1026,9 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                     <ArrowLeftRight className="w-3.5 h-3.5" />
                   </div>
                   <div>
-                    <span className="font-bold text-xs text-blue-950 block">
-                      {t.mat_edit_interbin_notice || 'Déplacement de casier interne'} ({originalBinLocation} ➔ {targetBinLocation})
+                    <span className="font-bold text-xs text-blue-950 flex items-center gap-1">
+                      <span>{t.mat_edit_interbin_notice || 'Déplacement de casier interne'}</span>
+                      <span className="font-mono text-[11px] inline-flex items-center gap-1">({originalBinLocation} <ArrowRight className="w-2.5 h-2.5 inline" /> {targetBinLocation})</span>
                     </span>
                     <p className="text-blue-800 text-[11px] mt-0.5">
                       Le matériel sera réaffecté au nouveau casier au sein du magasin <strong>{targetWarehouseId}</strong>.
@@ -1066,16 +1207,19 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Feedback text */}
               <div className="mt-2 text-[11px] font-mono">
                 {isSecurityWordValid ? (
-                  <span className="text-emerald-700 font-bold flex items-center gap-1">
-                    ✓ Déverrouillage réussi : vous pouvez maintenant enregistrer la fiche.
+                  <span className="text-emerald-700 font-bold flex items-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>Déverrouillage réussi : vous pouvez maintenant enregistrer la fiche.</span>
                   </span>
                 ) : inputSecurityWord.length > 0 ? (
-                  <span className="text-amber-800 font-medium">
-                    ⚠️ Saisie actuelle : « {inputSecurityWord} » (attendu : « {randomSecurityWord} »)
+                  <span className="text-amber-800 font-medium flex items-center gap-1.5">
+                    <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>Saisie actuelle : « {inputSecurityWord} » (attendu : « {randomSecurityWord} »)</span>
                   </span>
                 ) : (
-                  <span className="text-zinc-500">
-                    🔒 Bouton d'enregistrement verrouillé tant que le mot n'est pas saisi.
+                  <span className="text-zinc-500 flex items-center gap-1.5">
+                    <Lock className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+                    <span>Bouton d'enregistrement verrouillé tant que le mot n'est pas saisi.</span>
                   </span>
                 )}
               </div>
@@ -1112,44 +1256,30 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
           <div className="p-5 sm:p-6 overflow-y-auto space-y-5">
             {/* Material Photo & Quick Details */}
             <div className="bg-zinc-50 border border-zinc-200 rounded-3xl p-4 flex flex-col sm:flex-row gap-5 items-center">
-              {/* Photo Preview */}
-              <div className="w-32 h-32 rounded-2xl bg-white border border-zinc-300 flex items-center justify-center overflow-hidden relative group shrink-0 shadow-xs">
+              {/* Photo Preview with Zoom on click */}
+              <div 
+                onClick={() => {
+                  if (material.imageUrl) setIsImageLightboxOpen(true);
+                }}
+                className={`w-32 h-32 rounded-2xl bg-white border border-zinc-300 flex items-center justify-center overflow-hidden relative group shrink-0 shadow-xs ${
+                  material.imageUrl ? 'cursor-pointer hover:border-zinc-800 transition-all' : ''
+                }`}
+                title={material.imageUrl ? "Cliquer pour agrandir l'image" : "Aucune photo"}
+              >
                 {material.imageUrl ? (
                   <>
-                    <img src={material.imageUrl} alt={material.materialCode} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition flex items-center justify-center gap-2">
-                      <button
-                        onClick={() => fileInputRef.current?.click()}
-                        className="p-1.5 bg-zinc-900 text-white rounded-lg hover:bg-zinc-800 cursor-pointer"
-                        title={t.btn_change_photo}
-                      >
-                        <Camera className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={handleRemoveImage}
-                        className="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer"
-                        title={t.btn_remove_photo}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                    <img src={material.imageUrl} alt={material.materialCode} className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
+                      <ZoomIn className="w-6 h-6 stroke-[2.5]" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider">Agrandir</span>
                     </div>
                   </>
                 ) : (
-                  <div 
-                    onClick={() => fileInputRef.current?.click()}
-                    className="flex flex-col items-center justify-center text-zinc-400 hover:text-zinc-600 cursor-pointer p-3 text-center"
-                  >
-                    <Camera className="w-7 h-7 mb-1" />
-                    <span className="text-[10px] font-medium">{t.btn_upload_photo}</span>
+                  <div className="flex flex-col items-center justify-center text-zinc-400 p-3 text-center">
+                    <Package className="w-8 h-8 mb-1 text-zinc-300" />
+                    <span className="text-[10px] font-medium text-zinc-400">Aucune photo</span>
                   </div>
                 )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageFileChange}
-                  className="hidden"
-                />
               </div>
 
               {/* Photo description & specs */}
@@ -1157,38 +1287,33 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-zinc-900 flex items-center gap-1.5">
                     <ImageIcon className="w-4 h-4 text-zinc-600" />
-                    <span>{t.photo_manager_title}</span>
+                    <span>{t.photo_manager_title || 'Photo & Identité Visuelle'}</span>
                   </span>
                   {material.imageUrl ? (
-                    <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-mono font-bold">
-                      ✓ {t.photo_attached_badge}
+                    <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full font-mono font-bold flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-600" />
+                      <span>{t.photo_attached_badge || 'Photo attachée'}</span>
                     </span>
                   ) : (
-                    <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="text-[11px] text-zinc-900 font-bold underline flex items-center gap-1 cursor-pointer"
-                    >
-                      <UploadCloud className="w-3.5 h-3.5" />
-                      <span>{t.btn_upload_photo} (JPG, PNG, WebP)</span>
-                    </button>
+                    <span className="text-[10px] bg-zinc-100 text-zinc-500 border border-zinc-200 px-2 py-0.5 rounded-full font-mono font-medium">
+                      Non renseignée
+                    </span>
                   )}
                 </div>
                 <p className="text-zinc-500 text-[11px] leading-relaxed">
-                  {t.photo_manager_desc}
+                  {material.imageUrl
+                    ? "Cliquez sur l'image pour l'afficher en grand écran et inspecter les détails du matériel. Pour modifier ou remplacer cette photo, utilisez le bouton « Modifier la fiche » en haut à droite."
+                    : "Aucune photo n'est actuellement associée à cet article. Pour ajouter une image de référence, passez par « Modifier la fiche »."}
                 </p>
                 {material.imageUrl && (
                   <div className="pt-1 flex items-center gap-2">
                     <button
-                      onClick={() => fileInputRef.current?.click()}
-                      className="px-2.5 py-1 bg-white hover:bg-zinc-50 text-zinc-700 rounded-xl text-[11px] font-bold border border-zinc-300 shadow-2xs cursor-pointer"
+                      type="button"
+                      onClick={() => setIsImageLightboxOpen(true)}
+                      className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-[11px] font-bold inline-flex items-center gap-1.5 shadow-2xs transition-all active:scale-95 cursor-pointer"
                     >
-                      {t.btn_change_photo}
-                    </button>
-                    <button
-                      onClick={handleRemoveImage}
-                      className="px-2.5 py-1 bg-white hover:bg-red-50 text-red-600 rounded-xl text-[11px] font-bold border border-red-200 shadow-2xs cursor-pointer"
-                    >
-                      {t.btn_remove_photo}
+                      <ZoomIn className="w-3.5 h-3.5 text-lime" />
+                      <span>Agrandir l'image</span>
                     </button>
                   </div>
                 )}
@@ -1415,6 +1540,47 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
           </div>
         )}
       </div>
+
+      {/* ========================================================================= */}
+      {/* IMAGE LIGHTBOX MODAL (ENLARGED VIEW)                                     */}
+      {/* ========================================================================= */}
+      {isImageLightboxOpen && material.imageUrl && (
+        <div 
+          className="fixed inset-0 z-60 flex items-center justify-center p-3 sm:p-6 bg-black/85 backdrop-blur-md animate-in fade-in duration-200"
+          onClick={() => setIsImageLightboxOpen(false)}
+        >
+          <div 
+            className="relative max-w-4xl max-h-[92vh] w-full flex flex-col items-center"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Lightbox Top Bar */}
+            <div className="w-full flex items-center justify-between text-white pb-3 px-2">
+              <div className="flex items-center gap-2">
+                <span className="font-mono font-bold text-sm sm:text-base text-lime">{material.materialCode}</span>
+                <span className="text-xs text-zinc-300 hidden sm:inline">— {material.name}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsImageLightboxOpen(false)}
+                className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
+                title="Fermer (Échap)"
+                aria-label="Fermer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Enlarged Image */}
+            <div className="relative rounded-2xl overflow-hidden bg-zinc-950/80 border border-white/10 shadow-2xl flex items-center justify-center max-h-[82vh] w-auto">
+              <img
+                src={material.imageUrl}
+                alt={material.materialCode}
+                className="max-h-[82vh] max-w-full w-auto h-auto object-contain rounded-xl select-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
