@@ -100,6 +100,93 @@ export function getStockStatus(item: StockItem): {
   };
 }
 
+interface StockThumbnailProps {
+  imageUrl?: string;
+  materialCode: string;
+  onClick: () => void;
+  title?: string;
+  size?: 'card' | 'table';
+}
+
+export const StockThumbnail: React.FC<StockThumbnailProps> = ({
+  imageUrl,
+  materialCode,
+  onClick,
+  title,
+  size = 'card'
+}) => {
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    setHasError(false);
+  }, [imageUrl]);
+
+  if (size === 'table') {
+    return (
+      <div
+        onClick={onClick}
+        className="w-8 h-8 min-w-[32px] max-w-[32px] min-h-[32px] max-h-[32px] aspect-square rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:border-zinc-900 transition-colors group/item relative"
+        title={title || "Agrandir / Visite visuelle"}
+        role="button"
+        tabIndex={0}
+        aria-label={`Photo de ${materialCode}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onClick();
+          }
+        }}
+      >
+        {imageUrl && !hasError ? (
+          <img
+            src={imageUrl}
+            alt={materialCode}
+            loading="lazy"
+            onError={() => setHasError(true)}
+            className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-200"
+          />
+        ) : (
+          <Package className="w-3.5 h-3.5 text-zinc-400 stroke-[1.8]" />
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div
+      onClick={onClick}
+      className="w-12 h-12 sm:w-14 sm:h-14 min-w-[48px] sm:min-w-[56px] max-w-[48px] sm:max-w-[56px] min-h-[48px] sm:min-h-[56px] max-h-[48px] sm:max-h-[56px] aspect-square rounded-2xl bg-zinc-100 border border-zinc-200/90 shadow-2xs flex items-center justify-center overflow-hidden shrink-0 cursor-pointer relative group/thumb hover:border-zinc-950 transition-colors"
+      title={title || "Visite Visuelle / Agrandir"}
+      tabIndex={0}
+      role="button"
+      aria-label={`Photo de ${materialCode}`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+    >
+      {imageUrl && !hasError ? (
+        <img
+          src={imageUrl}
+          alt={materialCode}
+          loading="lazy"
+          onError={() => setHasError(true)}
+          className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-200"
+        />
+      ) : (
+        <div className="flex flex-col items-center justify-center text-zinc-400">
+          <Package className="w-6 h-6 stroke-[1.8]" />
+        </div>
+      )}
+      <div className="absolute inset-0 bg-black/35 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+        <Camera className="w-3.5 h-3.5 text-white" />
+      </div>
+    </div>
+  );
+};
+
 export const StockTableView: React.FC<StockTableViewProps> = ({
   onOpenMaterialModal,
   onQuickReceipt,
@@ -818,36 +905,14 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                   {/* Top: Squircle Vignette + Material Reference + Full Name */}
                   <div>
                     <div className="flex items-start gap-3">
-                      {/* Harmonized Squircle Vignette */}
-                      <div
+                      {/* Harmonized Squircle Vignette with strictly constrained dimensions and robust image fallback */}
+                      <StockThumbnail
+                        imageUrl={item.imageUrl}
+                        materialCode={item.materialCode}
                         onClick={() => handleOpenMaterialTour(item)}
-                        className="w-13 h-13 rounded-2xl bg-zinc-100 border border-zinc-200/90 shadow-2xs flex items-center justify-center overflow-hidden shrink-0 cursor-pointer relative group/thumb hover:border-zinc-950 transition-colors"
                         title={t.btn_tour_item || "Visite Visuelle / Agrandir"}
-                        tabIndex={0}
-                        role="button"
-                        aria-label={`Photo de ${item.materialCode}`}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            handleOpenMaterialTour(item);
-                          }
-                        }}
-                      >
-                        {item.imageUrl ? (
-                          <img 
-                            src={item.imageUrl} 
-                            alt={item.materialCode} 
-                            className="w-full h-full object-cover group-hover/thumb:scale-105 transition-transform duration-200" 
-                          />
-                        ) : (
-                          <div className="flex flex-col items-center justify-center text-zinc-400">
-                            <Package className="w-6 h-6 stroke-[1.8]" />
-                          </div>
-                        )}
-                        <div className="absolute inset-0 bg-black/35 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
-                          <Camera className="w-3.5 h-3.5 text-white" />
-                        </div>
-                      </div>
+                        size="card"
+                      />
 
                       {/* Code, Site badge & Full Name (adapted to long texts) */}
                       <div className="flex-1 min-w-0">
@@ -1185,18 +1250,14 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                             onOpenVisualTour={handleOpenMaterialTour}
                           >
                             <div className="flex items-center gap-2">
-                              {/* Squircle Thumbnail */}
-                              <div
+                              {/* Squircle Thumbnail with strict dimensions & error fallback */}
+                              <StockThumbnail
+                                imageUrl={item.imageUrl}
+                                materialCode={item.materialCode}
                                 onClick={() => handleOpenMaterialTour(item)}
-                                className="w-8 h-8 rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:border-zinc-900 transition-colors group/item relative"
                                 title="Agrandir / Visite visuelle"
-                              >
-                                {item.imageUrl ? (
-                                  <img src={item.imageUrl} alt={item.materialCode} className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-200" />
-                                ) : (
-                                  <Package className="w-3.5 h-3.5 text-zinc-400" />
-                                )}
-                              </div>
+                                size="table"
+                              />
 
                               <div>
                                 <div className="flex items-center gap-1.5">

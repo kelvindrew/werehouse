@@ -164,6 +164,11 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
   }, [currentItem, currentMaterial]);
 
   const activePhotoUrl = photos[activePhotoIdx] || photos[0];
+  const [mainPhotoError, setMainPhotoError] = useState(false);
+
+  useEffect(() => {
+    setMainPhotoError(false);
+  }, [activePhotoUrl]);
 
   // Navigation handlers
   const handlePrevItem = () => {
@@ -357,12 +362,20 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
             <>
               {/* Material High-Definition Photo */}
               <div className="absolute inset-0 z-0 overflow-hidden bg-zinc-950 flex items-center justify-center">
-                <img
-                  key={activePhotoUrl}
-                  src={activePhotoUrl}
-                  alt={`${currentItem.materialCode} - ${currentItem.materialName}`}
-                  className="w-full h-full object-cover transition-opacity duration-300 animate-fadeIn"
-                />
+                {!mainPhotoError ? (
+                  <img
+                    key={activePhotoUrl}
+                    src={activePhotoUrl}
+                    alt={`${currentItem.materialCode} - ${currentItem.materialName}`}
+                    onError={() => setMainPhotoError(true)}
+                    className="w-full h-full object-cover transition-opacity duration-300 animate-fadeIn"
+                  />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-zinc-500 gap-3">
+                    <Package className="w-16 h-16 text-zinc-600 stroke-[1.5]" />
+                    <span className="text-xs text-zinc-400 font-mono">Image non disponible</span>
+                  </div>
+                )}
                 {/* Scrim gradients to guarantee high-contrast legibility */}
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/45 to-black/30 pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-transparent pointer-events-none h-28" />

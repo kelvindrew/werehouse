@@ -43,6 +43,11 @@ export const StockHoverCard: React.FC<StockHoverCardProps> = ({
 
   // All location stocks for this material
   const [allSiteStocks, setAllSiteStocks] = useState<StockItem[]>([]);
+  const [imgError, setImgError] = useState(false);
+
+  useEffect(() => {
+    setImgError(false);
+  }, [item.imageUrl]);
 
   const handleMouseEnter = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
@@ -98,11 +103,17 @@ export const StockHoverCard: React.FC<StockHoverCardProps> = ({
         >
           {/* Top Material Info Card */}
           <div className="flex items-start gap-3 pb-3 border-b border-zinc-200">
-            <div className="w-16 h-16 rounded-lg bg-zinc-100 border border-zinc-200 overflow-hidden shrink-0 flex items-center justify-center">
-              {item.imageUrl ? (
-                <img src={item.imageUrl} alt={item.materialCode} className="w-full h-full object-cover" />
+            <div className="w-16 h-16 min-w-[64px] max-w-[64px] min-h-[64px] max-h-[64px] aspect-square rounded-lg bg-zinc-100 border border-zinc-200 overflow-hidden shrink-0 flex items-center justify-center">
+              {item.imageUrl && !imgError ? (
+                <img 
+                  src={item.imageUrl} 
+                  alt={item.materialCode} 
+                  loading="lazy"
+                  onError={() => setImgError(true)}
+                  className="w-full h-full object-cover" 
+                />
               ) : (
-                <Package className="w-8 h-8 text-zinc-400" />
+                <Package className="w-8 h-8 text-zinc-400 stroke-[1.8]" />
               )}
             </div>
 

@@ -405,7 +405,12 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               title={material.imageUrl ? "Cliquer pour agrandir l'image" : undefined}
             >
               {material.imageUrl ? (
-                <img src={material.imageUrl} alt={material.materialCode} className="w-full h-full object-cover" />
+                <img 
+                  src={material.imageUrl} 
+                  alt={material.materialCode} 
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  className="w-full h-full object-cover" 
+                />
               ) : (
                 <Package className="w-5 h-5 text-zinc-500" />
               )}
@@ -1268,7 +1273,12 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               >
                 {material.imageUrl ? (
                   <>
-                    <img src={material.imageUrl} alt={material.materialCode} className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" />
+                    <img 
+                      src={material.imageUrl} 
+                      alt={material.materialCode} 
+                      onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                      className="w-full h-full object-cover transition-transform duration-200 group-hover:scale-105" 
+                    />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
                       <ZoomIn className="w-6 h-6 stroke-[2.5]" />
                       <span className="text-[10px] font-bold uppercase tracking-wider">Agrandir</span>
