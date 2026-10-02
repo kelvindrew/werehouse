@@ -100,6 +100,12 @@ export interface TranslationDictionary {
   page: string;
   prev_page: string;
   next_page: string;
+  results_count: string;
+  total_items_count: string;
+  stock_legend_title: string;
+  category_filter_label: string;
+  all_categories: string;
+  clear_all_filters: string;
 
   // Modals & Operations
   btn_cards: string;
@@ -754,6 +760,12 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     page: 'Page',
     prev_page: 'Précédent',
     next_page: 'Suivant',
+    results_count: 'résultat(s)',
+    total_items_count: 'articles au total',
+    stock_legend_title: 'Seuils de stock :',
+    category_filter_label: 'Catégorie',
+    all_categories: 'Toutes les catégories',
+    clear_all_filters: 'Tout effacer',
 
     btn_cards: 'Cartes',
     btn_table: 'Tableau',
@@ -1392,6 +1404,12 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     page: 'Page',
     prev_page: 'Previous',
     next_page: 'Next',
+    results_count: 'result(s)',
+    total_items_count: 'total items',
+    stock_legend_title: 'Stock thresholds:',
+    category_filter_label: 'Category',
+    all_categories: 'All Categories',
+    clear_all_filters: 'Reset All',
 
     btn_cards: 'Cards',
     btn_table: 'Table',
@@ -2030,6 +2048,12 @@ export const translations: Record<SupportedLanguage, TranslationDictionary> = {
     page: '页码',
     prev_page: '上一页',
     next_page: '下一页',
+    results_count: '条结果',
+    total_items_count: '种物料总数',
+    stock_legend_title: '库存状态阈值：',
+    category_filter_label: '物料类别',
+    all_categories: '所有类别',
+    clear_all_filters: '重置筛选',
 
     btn_cards: '卡片',
     btn_table: '表格',

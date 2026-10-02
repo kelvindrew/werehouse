@@ -993,6 +993,8 @@ class DataService {
     row?: string;
     position?: string;
     containerNumber?: string;
+    category?: string;
+    stockLevel?: 'ALL' | 'OUT_OF_STOCK' | 'LOW_STOCK' | 'NORMAL_STOCK';
     onlyAvailable?: boolean;
     onlyLowStock?: boolean;
   }): StockItem[] {
@@ -1008,6 +1010,25 @@ class DataService {
 
     if (filter?.locationType && filter.locationType !== 'ALL') {
       items = items.filter(s => s.locationType === filter.locationType);
+    }
+
+    if (filter?.category && filter.category !== 'ALL') {
+      const catQ = filter.category.toLowerCase().trim();
+      items = items.filter(s => {
+        const mat = this.materials.get(s.materialId);
+        const itemCat = (mat?.category || s.materialName.split(/[, \/-]/)[0]).trim().toLowerCase();
+        return itemCat === catQ;
+      });
+    }
+
+    if (filter?.stockLevel && filter.stockLevel !== 'ALL') {
+      if (filter.stockLevel === 'OUT_OF_STOCK') {
+        items = items.filter(s => s.availableQuantity <= 0);
+      } else if (filter.stockLevel === 'LOW_STOCK') {
+        items = items.filter(s => s.availableQuantity > 0 && s.availableQuantity <= 5);
+      } else if (filter.stockLevel === 'NORMAL_STOCK') {
+        items = items.filter(s => s.availableQuantity > 5);
+      }
     }
 
     if (filter?.zone) {
@@ -1063,6 +1084,7 @@ class DataService {
         s.materialCode.toLowerCase().includes(q) ||
         s.materialName.toLowerCase().includes(q) ||
         (s.chineseName && s.chineseName.toLowerCase().includes(q)) ||
+        (s.warehouseId && s.warehouseId.toLowerCase().includes(q)) ||
         s.binLocation.toLowerCase().includes(q) ||
         (s.specification && s.specification.toLowerCase().includes(q)) ||
         (s.zone && s.zone.toLowerCase().includes(q)) ||
@@ -1086,6 +1108,18 @@ class DataService {
 
   public getStockByMaterial(materialId: string): StockItem[] {
     return Array.from(this.stock.values()).filter(s => s.materialId === materialId);
+  }
+
+  public getMaterialCategories(): string[] {
+    const set = new Set<string>();
+    for (const item of this.stock.values()) {
+      const mat = this.materials.get(item.materialId);
+      const cat = (mat?.category || item.materialName.split(/[, \/-]/)[0]).trim().toUpperCase();
+      if (cat && cat.length > 1) {
+        set.add(cat);
+      }
+    }
+    return Array.from(set).sort();
   }
 
   public getStockItem(id: string): StockItem | undefined {
