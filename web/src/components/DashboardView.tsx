@@ -249,27 +249,27 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-carbon text-white text-xs font-bold">
             <Activity className="w-3.5 h-3.5 text-lime" />
-            <span>Cockpit Décisionnel</span>
+            <span>{t.dash_cockpit_title || 'Cockpit Décisionnel'}</span>
           </div>
           <div className="hidden md:flex items-center gap-2 text-xs font-semibold text-zinc-500 pl-2 border-l border-zinc-200">
             <span className="flex items-center gap-1 text-emerald-700 font-mono">
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              99.4% Précision Stock
+              {t.dash_stock_accuracy || '99.4% Précision Stock'}
             </span>
             <span>•</span>
-            <span className="text-zinc-600 font-mono">Dock-to-Stock: 14 min</span>
+            <span className="text-zinc-600 font-mono">{t.dash_dock_to_stock || 'Dock-to-Stock: 14 min'}</span>
             <span>•</span>
-            <span className="text-zinc-600 font-mono">SLA Sorties: 98.8%</span>
+            <span className="text-zinc-600 font-mono">{t.dash_issue_sla || 'SLA Sorties: 98.8%'}</span>
           </div>
         </div>
 
         {/* Timeframe Selector Pills */}
         <div className="flex items-center bg-zinc-200/50 p-0.5 rounded-full border border-zinc-300/60 self-start sm:self-auto">
           {[
-            { id: 'today', label: "Aujourd'hui" },
-            { id: '7days', label: '7 jours' },
-            { id: '30days', label: '30 jours' },
-            { id: 'year', label: 'Année 2026' }
+            { id: 'today', label: t.dash_tf_today || "Aujourd'hui" },
+            { id: '7days', label: t.dash_tf_7days || '7 jours' },
+            { id: '30days', label: t.dash_tf_30days || '30 jours' },
+            { id: 'year', label: t.dash_tf_year || 'Année 2026' }
           ].map((tf) => (
             <button
               key={tf.id}
@@ -295,7 +295,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="liquid-glass-card p-5 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-              <span>Valorisation Totale</span>
+              <span>{t.dash_total_valuation || 'Valorisation Totale'}</span>
               <DollarSign className="w-3.5 h-3.5 text-emerald-600" />
             </span>
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700">
@@ -320,11 +320,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="liquid-glass-card p-5 relative overflow-hidden group">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-              <span>Stock Physique Total</span>
+              <span>{t.dash_physical_stock || 'Stock Physique Total'}</span>
               <Boxes className="w-3.5 h-3.5 text-zinc-700" />
             </span>
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-lime-muted text-lime-text">
-              Actif
+              {t.dash_active_badge || 'Actif'}
             </span>
           </div>
           <div className="flex items-baseline justify-between mt-3">
@@ -333,11 +333,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs">
               <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-              <span>99.4% Dispo</span>
+              <span>{t.dash_avail_pct || '99.4% Dispo'}</span>
             </div>
           </div>
           <p className="text-[11px] text-zinc-500 mt-1 font-medium">
-            {kpis.totalItems.toLocaleString()} références sur {kpis.locationsCount.toLocaleString()} alvéoles
+            {kpis.totalItems.toLocaleString()} {t.dash_refs_locations || 'références sur'} {kpis.locationsCount.toLocaleString()} {t.dash_bins_count || 'alvéoles'}
           </p>
         </div>
 
@@ -348,7 +348,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         >
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-zinc-500 uppercase tracking-wider flex items-center gap-1.5">
-              <span>Flux Hebdomadaires</span>
+              <span>{t.dash_weekly_flows || 'Flux Hebdomadaires'}</span>
               <ArrowLeftRight className="w-3.5 h-3.5 text-zinc-700" />
             </span>
             <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
@@ -365,7 +365,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
           <p className="text-[11px] text-zinc-500 mt-1 font-medium">
-            Réceptions, sorties et transferts inter-sites
+            {t.dash_flows_desc || 'Réceptions, sorties et transferts inter-sites'}
           </p>
         </div>
 
@@ -377,23 +377,23 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold text-amber-800 uppercase tracking-wider flex items-center gap-1.5">
               <AlertTriangle className="w-4 h-4 text-amber-600 animate-bounce" />
-              <span>Alertes Réappro</span>
+              <span>{t.dash_reorder_alerts || 'Alertes Réappro'}</span>
             </span>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">
-              Priorité 1
+              {t.dash_priority_1 || 'Priorité 1'}
             </span>
           </div>
           <div className="flex items-baseline justify-between mt-3">
             <div className="text-2xl sm:text-3xl font-black text-amber-600 font-mono tracking-tight">
-              {kpis.lowStockCount} <span className="text-xs font-semibold text-zinc-400 font-sans">critiques</span>
+              {kpis.lowStockCount} <span className="text-xs font-semibold text-zinc-400 font-sans">{t.dash_critical_items || 'critiques'}</span>
             </div>
             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 shadow-2xs">
               <AlertCircle className="w-3 h-3 text-rose-600" />
-              <span>{outOfStockCount} ruptures</span>
+              <span>{outOfStockCount} {t.dash_ruptures_count || 'ruptures'}</span>
             </div>
           </div>
           <p className="text-[11px] text-zinc-500 mt-1 font-medium">
-            {outOfStockCount > 0 ? `${outOfStockCount} articles épuisés • Cliquez pour commander` : 'Aucune rupture critique détectée'}
+            {outOfStockCount > 0 ? `${outOfStockCount} ${t.dash_out_of_stock_action || 'articles épuisés • Cliquez pour commander'}` : (t.dash_no_critical_stock || 'Aucune rupture critique détectée')}
           </p>
         </div>
 
@@ -408,7 +408,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="lg:col-span-4 liquid-glass-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="font-bold text-sm text-zinc-900 tracking-tight">Répartition par Famille</h3>
+              <h3 className="font-bold text-sm text-zinc-900 tracking-tight">{t.dash_category_split || 'Répartition par Famille'}</h3>
               <span className="text-[11px] font-bold px-2 py-0.5 bg-zinc-100 rounded-full text-zinc-600">
                 drew.xlsx
               </span>
@@ -416,13 +416,13 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
             <div className="mt-4 flex items-center justify-between">
               <div>
-                <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block">Valeur Consolidée</span>
+                <span className="text-[10px] uppercase font-mono tracking-wider text-zinc-400 block">{t.dash_consolidated_val || 'Valeur Consolidée'}</span>
                 <span className="text-2xl font-black text-zinc-950 font-mono tracking-tight">
                   ${kpis.totalValuationUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}
                 </span>
               </div>
               <span className="text-xs font-bold text-zinc-600 bg-zinc-100 px-2 py-1 rounded-lg">
-                100% Actif
+                {t.dash_active_pct || '100% Actif'}
               </span>
             </div>
 
@@ -472,12 +472,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="pt-3 mt-3 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
-            <span>5 familles certifiées</span>
+            <span>5 {t.dash_category_split}</span>
             <button 
               onClick={() => onNavigateToStock()}
               className="text-zinc-900 font-bold hover:underline inline-flex items-center gap-1"
             >
-              <span>Voir inventaire</span>
+              <span>{t.tab_inventory}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -488,7 +488,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div>
-                <h3 className="font-bold text-sm text-zinc-900 tracking-tight">Vélocité & Flux Logistiques</h3>
+                <h3 className="font-bold text-sm text-zinc-900 tracking-tight">{t.dash_velocity_title}</h3>
                 <div className="flex items-baseline gap-2 mt-1">
                   <span className="text-2xl font-black text-zinc-950 font-mono">$8,870</span>
                   <span className="text-[11px] text-zinc-400 font-medium">flux journalier de pointe</span>
@@ -574,7 +574,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="pt-3 mt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
-            <span className="text-zinc-500">Tendance opérationnelle : <strong>+18%</strong> ce mois</span>
+            <span className="text-zinc-500">{t.dash_trend_label || 'Tendance opérationnelle :'} <strong>+18%</strong> ({t.dash_tf_30days})</span>
             <button
               onClick={onNavigateToMovements}
               className="text-zinc-900 font-bold hover:underline inline-flex items-center gap-1"
@@ -589,7 +589,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="lg:col-span-3 liquid-glass-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="font-bold text-sm text-zinc-900 tracking-tight">Occupation par Site</h3>
+              <h3 className="font-bold text-sm text-zinc-900 tracking-tight">{t.dash_site_occupancy_title}</h3>
               <button 
                 onClick={() => handleOpenTour()}
                 className="p-1 hover:bg-zinc-100 rounded-full text-zinc-400 hover:text-zinc-700 transition-colors"
@@ -608,11 +608,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="flex items-center justify-between cursor-pointer group hover:bg-zinc-50/60 p-1.5 -mx-1.5 rounded-xl transition-colors"
               >
                 <div>
-                  <div className="text-xs font-bold text-zinc-900 group-hover:text-zinc-950">Magasin B1 (MD01)</div>
+                  <div className="text-xs font-bold text-zinc-900 group-hover:text-zinc-950">{t.trans_wh_b1 || 'Magasin B1 (MD01)'}</div>
                   <div className="text-lg font-black font-mono text-zinc-950 leading-tight">
-                    {siteStats.b1.occupancy}% <span className="text-xs font-normal text-zinc-400">occupé</span>
+                    {siteStats.b1.occupancy}% <span className="text-xs font-normal text-zinc-400">{t.spatial_occupied || 'occupé'}</span>
                   </div>
-                  <span className="text-[10px] text-zinc-400">{siteStats.b1.qty.toLocaleString()} unités • ${(siteStats.b1.val / 1000000).toFixed(2)}M</span>
+                  <span className="text-[10px] text-zinc-400">{siteStats.b1.qty.toLocaleString()} {t.uom_pcs || 'unités'} • ${(siteStats.b1.val / 1000000).toFixed(2)}M</span>
                 </div>
                 <svg className="w-16 h-7" viewBox="0 0 60 25">
                   <path d="M 2 20 Q 20 22, 35 10 T 58 4" fill="none" stroke="#a3e635" strokeWidth="2.5" strokeLinecap="round" />
@@ -625,11 +625,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="flex items-center justify-between cursor-pointer group hover:bg-zinc-50/60 p-1.5 -mx-1.5 rounded-xl transition-colors"
               >
                 <div>
-                  <div className="text-xs font-bold text-zinc-900">Magasin B2 (Allées A-E)</div>
+                  <div className="text-xs font-bold text-zinc-900">{t.trans_wh_b2 || 'Magasin B2 (Allées A-E)'}</div>
                   <div className="text-lg font-black font-mono text-zinc-950 leading-tight">
-                    {siteStats.b2.occupancy}% <span className="text-xs font-normal text-zinc-400">occupé</span>
+                    {siteStats.b2.occupancy}% <span className="text-xs font-normal text-zinc-400">{t.spatial_occupied || 'occupé'}</span>
                   </div>
-                  <span className="text-[10px] text-zinc-400">{siteStats.b2.qty.toLocaleString()} unités • ${(siteStats.b2.val / 1000000).toFixed(2)}M</span>
+                  <span className="text-[10px] text-zinc-400">{siteStats.b2.qty.toLocaleString()} {t.uom_pcs || 'unités'} • ${(siteStats.b2.val / 1000000).toFixed(2)}M</span>
                 </div>
                 <svg className="w-16 h-7" viewBox="0 0 60 25">
                   <path d="M 2 5 Q 20 22, 35 8 T 58 18" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" />
@@ -642,11 +642,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="flex items-center justify-between cursor-pointer group hover:bg-zinc-50/60 p-1.5 -mx-1.5 rounded-xl transition-colors"
               >
                 <div>
-                  <div className="text-xs font-bold text-zinc-900">Containers Sécurisés</div>
+                  <div className="text-xs font-bold text-zinc-900">{t.dash_site_containers}</div>
                   <div className="text-lg font-black font-mono text-zinc-950 leading-tight">
-                    {siteStats.cont.occupancy}% <span className="text-xs font-normal text-zinc-400">occupé</span>
+                    {siteStats.cont.occupancy}% <span className="text-xs font-normal text-zinc-400">{t.spatial_occupied}</span>
                   </div>
-                  <span className="text-[10px] text-zinc-400">{siteStats.cont.qty} pièces critiques</span>
+                  <span className="text-[10px] text-zinc-400">{siteStats.cont.qty} {t.dash_critical_items}</span>
                 </div>
                 <svg className="w-16 h-7" viewBox="0 0 60 25">
                   <path d="M 2 12 Q 25 10, 40 14 T 58 11" fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" />
@@ -659,11 +659,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 className="flex items-center justify-between cursor-pointer group hover:bg-zinc-50/60 p-1.5 -mx-1.5 rounded-xl transition-colors"
               >
                 <div>
-                  <div className="text-xs font-bold text-zinc-900">Yard & Parc Extérieur</div>
+                  <div className="text-xs font-bold text-zinc-900">{t.dash_site_yard}</div>
                   <div className="text-lg font-black font-mono text-zinc-950 leading-tight">
-                    {siteStats.yard.occupancy}% <span className="text-xs font-normal text-zinc-400">occupé</span>
+                    {siteStats.yard.occupancy}% <span className="text-xs font-normal text-zinc-400">{t.spatial_occupied}</span>
                   </div>
-                  <span className="text-[10px] text-zinc-400">Poutrelles & fûts</span>
+                  <span className="text-[10px] text-zinc-400">{locations.find(l => l.code === 'YARD')?.name || 'Yard'}</span>
                 </div>
                 <svg className="w-16 h-7" viewBox="0 0 60 25">
                   <path d="M 2 18 Q 20 15, 38 7 T 58 3" fill="none" stroke="#a3e635" strokeWidth="2.5" strokeLinecap="round" />
@@ -701,7 +701,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="lg:col-span-4 liquid-glass-card p-5 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-              <h3 className="font-bold text-sm text-zinc-900 tracking-tight">Capacité par Famille</h3>
+              <h3 className="font-bold text-sm text-zinc-900 tracking-tight">{t.dash_capacity_family_title}</h3>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-700 border border-zinc-200">
                 Seuils Sécurité
               </span>
@@ -724,7 +724,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div>
                 <div className="flex justify-between text-xs mb-1">
                   <span className="font-semibold text-zinc-800 truncate">Vannes Haute Pression DN50/100</span>
-                  <span className="font-mono text-zinc-500 text-[11px]">88% exploité</span>
+                  <span className="font-mono text-zinc-500 text-[11px]">88% {t.dash_exploited}</span>
                 </div>
                 <div className="w-full bg-zinc-200/80 h-2 rounded-full overflow-hidden">
                   <div className="bg-lime h-full rounded-full transition-all duration-500" style={{ width: '88%' }} />
@@ -734,7 +734,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               <div>
                 <div className="flex justify-between text-xs mb-1">
                   <span className="font-semibold text-zinc-800 truncate">Blindages Pompes 50D-B40 & 200ZJ</span>
-                  <span className="font-mono text-zinc-500 text-[11px]">74% exploité</span>
+                  <span className="font-mono text-zinc-500 text-[11px]">74% {t.dash_exploited}</span>
                 </div>
                 <div className="w-full bg-zinc-200/80 h-2 rounded-full overflow-hidden">
                   <div className="bg-lime h-full rounded-full transition-all duration-500" style={{ width: '74%' }} />
@@ -743,8 +743,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="font-semibold text-zinc-800 truncate">Roulements SKF Haute Charge</span>
-                  <span className="font-mono text-zinc-500 text-[11px]">65% exploité</span>
+                  <span className="font-semibold text-zinc-800 truncate">{t.dash_fam_bearings}</span>
+                  <span className="font-mono text-zinc-500 text-[11px]">65% {t.dash_exploited}</span>
                 </div>
                 <div className="w-full bg-zinc-200/80 h-2 rounded-full overflow-hidden">
                   <div className="bg-lime h-full rounded-full transition-all duration-500" style={{ width: '65%' }} />
@@ -753,8 +753,8 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
 
               <div>
                 <div className="flex justify-between text-xs mb-1">
-                  <span className="font-semibold text-zinc-800 truncate">Appareillage Électrique & Câbles</span>
-                  <span className="font-mono text-zinc-500 text-[11px]">60% exploité</span>
+                  <span className="font-semibold text-zinc-800 truncate">{t.dash_fam_cables}</span>
+                  <span className="font-mono text-zinc-500 text-[11px]">60% {t.dash_exploited}</span>
                 </div>
                 <div className="w-full bg-zinc-200/80 h-2 rounded-full overflow-hidden">
                   <div className="bg-lime h-full rounded-full transition-all duration-500" style={{ width: '60%' }} />
@@ -764,12 +764,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="pt-3 mt-4 border-t border-zinc-100 flex items-center justify-between text-xs text-zinc-500">
-            <span>Racks B1-MD01 & B2 audités</span>
+            <span>{t.dash_racks_audited}</span>
             <button 
               onClick={() => onNavigateToStock()}
               className="text-zinc-900 font-bold hover:underline inline-flex items-center gap-1"
             >
-              <span>Inventaire</span>
+              <span>{t.tab_inventory}</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -781,7 +781,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center gap-2">
                 <AlertTriangle className="w-4 h-4 text-amber-600" />
-                <h3 className="font-bold text-sm text-zinc-900 tracking-tight">Réapprovisionnements Critiques</h3>
+                <h3 className="font-bold text-sm text-zinc-900 tracking-tight">{t.dash_critical_restock_title}</h3>
               </div>
               <button 
                 onClick={() => onNavigateToStock('lowStock')}
@@ -847,12 +847,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="pt-3 mt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
-            <span className="text-zinc-500">Seuil de réappro : ≤ 5 pcs</span>
+            <span className="text-zinc-500">{t.kpi_units_available_limit}</span>
             <button
               onClick={() => onNavigateToStock('lowStock')}
               className="text-zinc-900 font-bold hover:underline inline-flex items-center gap-1"
             >
-              <span>Traiter les alertes</span>
+              <span>{t.dash_handle_alerts}</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -864,7 +864,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
               <div className="flex items-center gap-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <h3 className="font-bold text-sm text-zinc-900 tracking-tight">Flux Opérationnels en Direct</h3>
+                <h3 className="font-bold text-sm text-zinc-900 tracking-tight">{t.dash_live_feed_title}</h3>
               </div>
               <button 
                 onClick={onNavigateToMovements}
@@ -909,12 +909,12 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           </div>
 
           <div className="pt-3 mt-3 border-t border-zinc-100 flex items-center justify-between text-xs">
-            <span className="text-zinc-400 font-mono text-[11px]">Traçabilité indélébile Firestore</span>
+            <span className="text-zinc-400 font-mono text-[11px]">{t.dash_firestore_traceability}</span>
             <button
               onClick={onNavigateToMovements}
               className="text-zinc-900 font-bold hover:underline"
             >
-              Historique complet
+              {t.dash_all_movements}
             </button>
           </div>
         </div>
@@ -930,9 +930,9 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
         <div className="p-4 sm:p-5 border-b border-zinc-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h3 className="font-extrabold text-base text-zinc-950 tracking-tight flex items-center gap-2">
-              <span>Matériel Industriel & Pièces Détachées</span>
+              <span>{t.dash_industrial_material_title}</span>
               <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-zinc-100 text-zinc-600 font-semibold">
-                {scopedStock.length} références
+                {scopedStock.length} {t.col_ref}
               </span>
             </h3>
             <p className="text-xs text-zinc-400 mt-0.5">
@@ -948,7 +948,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 type="text"
                 value={productSearch}
                 onChange={(e) => setProductSearch(e.target.value)}
-                placeholder="Code SAP, désignation, nom chinois..."
+                placeholder={t.search_placeholder || "Code SAP, désignation, nom chinois..."}
                 className="bg-zinc-50 border border-zinc-200/80 rounded-full pl-8 pr-3 py-1.5 text-xs text-zinc-800 placeholder-zinc-400 focus:outline-none focus:border-zinc-800 focus:bg-white transition-all font-sans"
               />
             </div>
@@ -959,16 +959,16 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
               onChange={(e) => setProductSort(e.target.value as any)}
               className="text-xs font-semibold bg-zinc-50 border border-zinc-200/80 text-zinc-700 rounded-full px-3 py-1.5 outline-none cursor-pointer"
             >
-              <option value="totalValue">Trier : Valeur ($)</option>
-              <option value="quantity">Trier : Quantité</option>
-              <option value="materialCode">Trier : Code SAP</option>
+              <option value="totalValue">{t.stock_sort_total_value || 'Trier : Valeur ($)'}</option>
+              <option value="quantity">{t.stock_sort_qty || 'Trier : Quantité'}</option>
+              <option value="materialCode">{t.stock_sort_code || 'Trier : Code SAP'}</option>
             </select>
 
             <button
               onClick={() => onNavigateToStock()}
               className="px-3.5 py-1.5 bg-carbon hover:bg-zinc-800 text-white rounded-full text-xs font-bold transition-all shadow-xs inline-flex items-center gap-1.5"
             >
-              <span>Inventaire complet</span>
+              <span>{t.tab_stock || 'Inventaire complet'}</span>
               <ArrowRight className="w-3 h-3 text-lime" />
             </button>
           </div>
@@ -980,15 +980,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             <thead className="bg-zinc-50/70 text-zinc-500 uppercase font-mono text-[11px] border-b border-zinc-200">
               <tr>
                 <th className="py-3 px-4">#</th>
-                <th className="py-3 px-3">Photo</th>
-                <th className="py-3 px-4">Code SAP</th>
-                <th className="py-3 px-4">Désignation</th>
-                <th className="py-3 px-4">Emplacement</th>
-                <th className="py-3 px-4 text-right">Prix Unit. ($)</th>
-                <th className="py-3 px-4 text-right">Quantité</th>
-                <th className="py-3 px-4 text-right">Valeur Totale</th>
-                <th className="py-3 px-4 text-center">Statut</th>
-                <th className="py-3 px-4 text-center">Actions</th>
+                <th className="py-3 px-3">{t.tab_photo || 'Photo'}</th>
+                <th className="py-3 px-4">{t.col_code || 'Code SAP'}</th>
+                <th className="py-3 px-4">{t.col_name || 'Désignation'}</th>
+                <th className="py-3 px-4">{t.field_physical_address || 'Emplacement'}</th>
+                <th className="py-3 px-4 text-right">{t.col_price || 'Prix Unit. ($)'}</th>
+                <th className="py-3 px-4 text-right">{t.col_qty || 'Quantité'}</th>
+                <th className="py-3 px-4 text-right">{t.col_total_value || 'Valeur Totale'}</th>
+                <th className="py-3 px-4 text-center">{t.col_status || 'Statut'}</th>
+                <th className="py-3 px-4 text-center">{t.col_actions || 'Actions'}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-zinc-200/60 bg-white/40">
@@ -1009,7 +1009,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                       <div 
                         onClick={() => onOpenMaterialModal(item.materialId)}
                         className="w-10 h-10 rounded-lg overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0 cursor-pointer hover:border-zinc-900 transition-colors"
-                        title="Ouvrir la fiche"
+                        title={t.stock_action_view_title || "Ouvrir la fiche"}
                       >
                         <img src={imgUrl} alt="" className="w-full h-full object-cover" />
                       </div>
@@ -1071,15 +1071,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     <td className="py-3 px-4 text-center whitespace-nowrap">
                       {isZero ? (
                         <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                          Rupture
+                          {t.stock_status_rupture_short || 'Rupture'}
                         </span>
                       ) : isLow ? (
                         <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
-                          Stock Faible
+                          {t.stock_status_low_short || 'Stock Faible'}
                         </span>
                       ) : (
                         <span className="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-lime-muted text-lime-text border border-lime/30">
-                          En Stock
+                          {t.stock_status_normal_short || 'En Stock'}
                         </span>
                       )}
                     </td>
@@ -1090,7 +1090,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                         <button
                           onClick={() => onOpenMaterialModal(item.materialId)}
                           className="p-1.5 text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                          title="Fiche détaillée 360°"
+                          title={t.stock_action_view_title || "Fiche détaillée 360°"}
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </button>
@@ -1098,7 +1098,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                           <button
                             onClick={() => onQuickReceipt(item)}
                             className="p-1.5 text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                            title="Entrée rapide"
+                            title={t.stock_action_receipt_title || "Entrée rapide"}
                           >
                             <ArrowDownToLine className="w-3.5 h-3.5" />
                           </button>
@@ -1107,7 +1107,7 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                           <button
                             onClick={() => onQuickIssue(item)}
                             className="p-1.5 text-zinc-500 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                            title="Sortie rapide"
+                            title={t.stock_action_issue_title || "Sortie rapide"}
                           >
                             <ArrowUpFromLine className="w-3.5 h-3.5" />
                           </button>

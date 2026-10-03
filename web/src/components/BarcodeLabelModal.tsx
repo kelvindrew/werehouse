@@ -199,7 +199,7 @@ export const BarcodeLabelModal: React.FC<BarcodeLabelModalProps> = ({
                     </>
                   ) : location ? (
                     <>
-                      <div className="text-[10px] font-bold text-zinc-500 uppercase">Emplacement / Site</div>
+                      <div className="text-[10px] font-bold text-zinc-500 uppercase">{t.field_physical_address || 'Emplacement'} / {t.col_warehouse || 'Site'}</div>
                       <div className="font-mono font-black text-lg text-zinc-900 tracking-tight">
                         {location.code}
                       </div>
@@ -207,7 +207,7 @@ export const BarcodeLabelModal: React.FC<BarcodeLabelModalProps> = ({
                         {location.name}
                       </div>
                       <div className="text-[11px] text-zinc-500">
-                        Type : <strong>{location.type}</strong>
+                        {t.col_type || 'Type'} : <strong>{location.type}</strong>
                       </div>
                     </>
                   ) : null}
@@ -229,9 +229,9 @@ export const BarcodeLabelModal: React.FC<BarcodeLabelModalProps> = ({
           <div className="p-3 bg-blue-50/60 border border-blue-200/80 rounded-lg text-xs text-blue-900 flex items-start gap-2.5">
             <Smartphone className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
             <div>
-              <strong className="font-semibold block mb-0.5">Scannable avec l'Application Android</strong>
+              <strong className="font-semibold block mb-0.5">{t.android_scan_title || "Scannable avec l'Application Android"}</strong>
               <span className="text-blue-800 text-[11px] leading-relaxed">
-                Ce QR Code est instantanément reconnu par le module <code>ScannerScreen.kt</code> de l'application Android WMS pour préparer une entrée, une sortie ou un inventaire en rayon.
+                {t.android_scan_desc || "Ce QR Code est instantanément reconnu par l'application Android WMS pour préparer une entrée, une sortie ou un inventaire en rayon."}
               </span>
             </div>
           </div>
@@ -245,7 +245,7 @@ export const BarcodeLabelModal: React.FC<BarcodeLabelModalProps> = ({
             className="px-3 py-1.5 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-300 rounded text-xs font-semibold inline-flex items-center gap-1.5 transition-colors"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-            <span>{copied ? 'Copié !' : 'Copier le code'}</span>
+            <span>{copied ? (t.copied_feedback || 'Copié !') : (t.copy_code || 'Copier le code')}</span>
           </button>
 
           <div className="flex items-center gap-2">
@@ -262,7 +262,7 @@ export const BarcodeLabelModal: React.FC<BarcodeLabelModalProps> = ({
               className="px-5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded text-xs font-semibold inline-flex items-center gap-1.5 transition-colors shadow-xs"
             >
               <Printer className="w-3.5 h-3.5" />
-              <span>Imprimer l'étiquette</span>
+              <span>{t.btn_print_label || "Imprimer l'étiquette"}</span>
             </button>
           </div>
         </div>

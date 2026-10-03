@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import { dataService } from '../lib/dataService';
 import { useAuth } from '../context/AuthContext';
+import { TranslationDictionary } from '../lib/i18n';
 import { StockItem, StorageLocation } from '@shared/types/models';
 import { 
   Search, 
@@ -61,7 +62,7 @@ type StockLevelFilter = 'ALL' | 'OUT_OF_STOCK' | 'LOW_STOCK' | 'NORMAL_STOCK';
  * Double-encoding accessible stock status helper.
  * Provides explicit text label, vector icon, and color contrast.
  */
-export function getStockStatus(item: StockItem): {
+export function getStockStatus(item: StockItem, t?: TranslationDictionary): {
   level: 'OUT_OF_STOCK' | 'LOW_STOCK' | 'NORMAL_STOCK';
   label: string;
   shortLabel: string;
@@ -73,8 +74,8 @@ export function getStockStatus(item: StockItem): {
   if (qty <= 0) {
     return {
       level: 'OUT_OF_STOCK',
-      label: 'Rupture (0)',
-      shortLabel: 'Rupture',
+      label: t?.stock_status_rupture_label || 'Rupture (0)',
+      shortLabel: t?.stock_status_rupture_short || 'Rupture',
       badgeClass: 'bg-rose-50 text-rose-800 border border-rose-200 ring-1 ring-rose-200/50',
       tableBadgeClass: 'bg-rose-50 text-rose-800 border border-rose-200',
       icon: AlertCircle
@@ -83,8 +84,8 @@ export function getStockStatus(item: StockItem): {
   if (qty <= 5) {
     return {
       level: 'LOW_STOCK',
-      label: 'Stock bas (≤ 5)',
-      shortLabel: 'Stock bas',
+      label: t?.stock_status_low_label || 'Stock bas (≤ 5)',
+      shortLabel: t?.stock_status_low_short || 'Stock bas',
       badgeClass: 'bg-amber-50 text-amber-900 border border-amber-200 ring-1 ring-amber-200/50',
       tableBadgeClass: 'bg-amber-50 text-amber-900 border border-amber-200',
       icon: AlertTriangle
@@ -92,8 +93,8 @@ export function getStockStatus(item: StockItem): {
   }
   return {
     level: 'NORMAL_STOCK',
-    label: 'Normal (> 5)',
-    shortLabel: 'Normal',
+    label: t?.stock_status_normal_label || 'Normal (> 5)',
+    shortLabel: t?.stock_status_normal_short || 'Normal',
     badgeClass: 'bg-emerald-50 text-emerald-900 border border-emerald-200 ring-1 ring-emerald-200/50',
     tableBadgeClass: 'bg-emerald-50 text-emerald-900 border border-emerald-200',
     icon: CheckCircle2
@@ -115,6 +116,7 @@ export const StockThumbnail: React.FC<StockThumbnailProps> = ({
   title,
   size = 'card'
 }) => {
+  const { t } = useAuth();
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
@@ -126,10 +128,10 @@ export const StockThumbnail: React.FC<StockThumbnailProps> = ({
       <div
         onClick={onClick}
         className="w-8 h-8 min-w-[32px] max-w-[32px] min-h-[32px] max-h-[32px] aspect-square rounded-lg bg-zinc-100 border border-zinc-200 flex items-center justify-center overflow-hidden shrink-0 cursor-pointer hover:border-zinc-900 transition-colors group/item relative"
-        title={title || "Agrandir / Visite visuelle"}
+        title={title || t.btn_tour_item || "Agrandir / Visite visuelle"}
         role="button"
         tabIndex={0}
-        aria-label={`Photo de ${materialCode}`}
+        aria-label={`${t.photo_and_media || 'Photo'} : ${materialCode}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') {
             e.preventDefault();
@@ -156,10 +158,10 @@ export const StockThumbnail: React.FC<StockThumbnailProps> = ({
     <div
       onClick={onClick}
       className="w-12 h-12 sm:w-14 sm:h-14 min-w-[48px] sm:min-w-[56px] max-w-[48px] sm:max-w-[56px] min-h-[48px] sm:min-h-[56px] max-h-[48px] sm:max-h-[56px] aspect-square rounded-2xl bg-zinc-100 border border-zinc-200/90 shadow-2xs flex items-center justify-center overflow-hidden shrink-0 cursor-pointer relative group/thumb hover:border-zinc-950 transition-colors"
-      title={title || "Visite Visuelle / Agrandir"}
+      title={title || t.btn_tour_item || "Visite Visuelle / Agrandir"}
       tabIndex={0}
       role="button"
-      aria-label={`Photo de ${materialCode}`}
+      aria-label={`${t.photo_and_media || 'Photo'} : ${materialCode}`}
       onKeyDown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
@@ -503,10 +505,10 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 ? 'bg-zinc-900 text-white border-zinc-900 shadow-xs'
                 : 'bg-white hover:bg-zinc-50 text-zinc-700 border-zinc-300 shadow-2xs'
             }`}
-            title={hideFinancialValues ? "Afficher les montants financiers" : "Masquer les montants financiers pour discrétion en atelier"}
+            title={hideFinancialValues ? (t.stock_show_values || "Afficher les valeurs") : (t.stock_hide_values || "Masquer les valeurs")}
           >
             {hideFinancialValues ? <EyeOff className="w-3.5 h-3.5 text-zinc-300" /> : <Eye className="w-3.5 h-3.5 text-zinc-600" />}
-            <span className="hidden md:inline">{hideFinancialValues ? 'Valeurs masquées' : 'Valeurs visibles'}</span>
+            <span className="hidden md:inline">{hideFinancialValues ? (t.stock_hide_values || 'Valeurs masquées') : (t.stock_show_values || 'Valeurs visibles')}</span>
           </button>
 
           {/* Visual Tour / Photos Modal */}
@@ -574,10 +576,10 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 ? 'bg-rose-700 text-white border-rose-700 shadow-xs ring-2 ring-rose-300'
                 : 'bg-rose-50 hover:bg-rose-100 text-rose-900 border-rose-200'
             }`}
-            title="Cliquer pour afficher uniquement les articles en rupture"
+            title={t.stock_rupture_tooltip || "Cliquer pour afficher uniquement les articles en rupture"}
           >
             <AlertCircle className={`w-3.5 h-3.5 ${stockLevelFilter === 'OUT_OF_STOCK' ? 'text-white' : 'text-rose-600'}`} />
-            <span>Rupture : 0</span>
+            <span>{t.stock_rupture_btn || 'Rupture : 0'}</span>
             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
               stockLevelFilter === 'OUT_OF_STOCK' ? 'bg-white/20 text-white' : 'bg-rose-200/80 text-rose-900'
             }`}>
@@ -594,10 +596,10 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 ? 'bg-amber-600 text-white border-amber-600 shadow-xs ring-2 ring-amber-300'
                 : 'bg-amber-50 hover:bg-amber-100 text-amber-900 border-amber-200'
             }`}
-            title="Cliquer pour afficher les articles en stock bas (1 à 5 unités)"
+            title={t.stock_low_tooltip || "Cliquer pour afficher les articles en stock bas (1 à 5 unités)"}
           >
             <AlertTriangle className={`w-3.5 h-3.5 ${stockLevelFilter === 'LOW_STOCK' ? 'text-white' : 'text-amber-600'}`} />
-            <span>Stock bas : 1 à 5</span>
+            <span>{t.stock_low_btn || 'Stock bas : 1 à 5'}</span>
             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
               stockLevelFilter === 'LOW_STOCK' ? 'bg-white/20 text-white' : 'bg-amber-200/80 text-amber-900'
             }`}>
@@ -614,10 +616,10 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 ? 'bg-emerald-700 text-white border-emerald-700 shadow-xs ring-2 ring-emerald-300'
                 : 'bg-emerald-50 hover:bg-emerald-100 text-emerald-900 border-emerald-200'
             }`}
-            title="Cliquer pour afficher les articles avec stock suffisant (> 5 unités)"
+            title={t.stock_normal_tooltip || "Cliquer pour afficher les articles avec stock suffisant (> 5 unités)"}
           >
             <CheckCircle2 className={`w-3.5 h-3.5 ${stockLevelFilter === 'NORMAL_STOCK' ? 'text-white' : 'text-emerald-600'}`} />
-            <span>Normal : &gt; 5</span>
+            <span>{t.stock_normal_btn || 'Normal : > 5'}</span>
             <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded-full ${
               stockLevelFilter === 'NORMAL_STOCK' ? 'bg-white/20 text-white' : 'bg-emerald-200/80 text-emerald-900'
             }`}>
@@ -686,15 +688,15 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
           {/* Stock Level Dropdown Filter */}
           <div className="md:col-span-2">
             <select
-              aria-label="Niveau de stock"
+              aria-label={t.stock_legend_title || "Niveau de stock"}
               value={stockLevelFilter}
               onChange={(e) => setStockLevelFilter(e.target.value as StockLevelFilter)}
               className="w-full bg-white border border-zinc-300 text-xs text-zinc-800 px-3 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-zinc-950 font-medium"
             >
-              <option value="ALL">Tous les niveaux</option>
-              <option value="OUT_OF_STOCK">Rupture (0)</option>
-              <option value="LOW_STOCK">Stock bas (≤ 5)</option>
-              <option value="NORMAL_STOCK">Stock normal (&gt; 5)</option>
+              <option value="ALL">{t.stock_all_levels || 'Tous les niveaux'}</option>
+              <option value="OUT_OF_STOCK">{t.stock_status_rupture_label || 'Rupture (0)'}</option>
+              <option value="LOW_STOCK">{t.stock_status_low_label || 'Stock bas (≤ 5)'}</option>
+              <option value="NORMAL_STOCK">{t.stock_status_normal_label || 'Stock normal (> 5)'}</option>
             </select>
           </div>
 
@@ -702,7 +704,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
           <div className="md:col-span-1">
             <AutocompleteInput
               field="binLocation"
-              placeholder="Casier..."
+              placeholder={t.field_physical_address || "Casier..."}
               value={binFilter}
               onChange={setBinFilter}
               uppercase
@@ -720,13 +722,13 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
             {hasActiveFilters ? (
               <>
                 <span className="text-[11px] font-bold text-zinc-500 uppercase tracking-wider font-mono mr-1">
-                  Filtres actifs :
+                  {t.stock_active_filters || 'Filtres actifs :'}
                 </span>
 
                 {/* Search Term Chip */}
                 {searchTerm.trim() && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-800 border border-zinc-300">
-                    <span>Recherche : « {searchTerm} »</span>
+                    <span>{t.filter_search_prefix || 'Recherche'} : « {searchTerm} »</span>
                     <button
                       type="button"
                       onClick={() => setSearchTerm('')}
@@ -741,7 +743,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 {/* Warehouse Chip */}
                 {selectedWarehouse !== 'ALL' && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-blue-50 text-blue-800 border border-blue-200">
-                    <span>Entrepôt : {selectedWarehouse}</span>
+                    <span>{t.stock_filter_warehouse_prefix || 'Entrepôt :'} {selectedWarehouse}</span>
                     <button
                       type="button"
                       onClick={() => setSelectedWarehouse('ALL')}
@@ -756,7 +758,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 {/* Category Chip */}
                 {categoryFilter !== 'ALL' && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-purple-50 text-purple-800 border border-purple-200">
-                    <span>Catégorie : {categoryFilter}</span>
+                    <span>{t.stock_filter_category_prefix || 'Catégorie :'} {categoryFilter}</span>
                     <button
                       type="button"
                       onClick={() => setCategoryFilter('ALL')}
@@ -778,7 +780,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                       : 'bg-emerald-50 text-emerald-800 border-emerald-200'
                   }`}>
                     <span>
-                      {stockLevelFilter === 'OUT_OF_STOCK' ? 'Rupture' : stockLevelFilter === 'LOW_STOCK' ? 'Stock bas' : 'Normal'}
+                      {stockLevelFilter === 'OUT_OF_STOCK' ? (t.stock_status_rupture_short || 'Rupture') : stockLevelFilter === 'LOW_STOCK' ? (t.stock_status_low_short || 'Stock bas') : (t.stock_status_normal_short || 'Normal')}
                     </span>
                     <button
                       type="button"
@@ -794,7 +796,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 {/* Bin Location Chip */}
                 {binFilter.trim() && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-800 border border-zinc-300 font-mono">
-                    <span>Casier : {binFilter}</span>
+                    <span>{t.stock_filter_bin_prefix || 'Casier :'} {binFilter}</span>
                     <button
                       type="button"
                       onClick={() => setBinFilter('')}
@@ -809,7 +811,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 {/* UOM Chip */}
                 {uomFilter && (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-zinc-100 text-zinc-800 border border-zinc-300 font-mono">
-                    <span>Unité : {uomFilter}</span>
+                    <span>{t.stock_filter_uom_prefix || 'Unité :'} {uomFilter}</span>
                     <button
                       type="button"
                       onClick={() => setUomFilter('')}
@@ -826,7 +828,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                   type="button"
                   onClick={resetAllFilters}
                   className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold text-red-600 hover:text-red-800 hover:bg-red-50 border border-red-200 transition-colors ml-1 active:scale-95 cursor-pointer"
-                  title="Réinitialiser tous les filtres actifs"
+                  title={t.clear_all_filters || "Réinitialiser tous les filtres actifs"}
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>{t.clear_all_filters || 'Tout effacer'}</span>
@@ -834,7 +836,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               </>
             ) : (
               <span className="text-zinc-400 text-xs italic">
-                Aucun filtre actif (affichage complet)
+                {t.stock_no_active_filter || 'Aucun filtre actif (affichage complet)'}
               </span>
             )}
           </div>
@@ -843,9 +845,9 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
           <div className="flex items-center gap-2.5 shrink-0 self-end md:self-auto">
             {/* Quick Sort Selector (Available for both Cards and Table) */}
             <div className="flex items-center gap-1 bg-white border border-zinc-200/90 rounded-full px-2.5 py-1 shadow-2xs">
-              <span className="text-[11px] text-zinc-500 font-semibold hidden lg:inline">Trier :</span>
+              <span className="text-[11px] text-zinc-500 font-semibold hidden lg:inline">{t.stock_sort_label || 'Trier :'}</span>
               <select
-                aria-label="Trier la liste"
+                aria-label={t.stock_sort_label || "Trier la liste"}
                 value={sortField}
                 onChange={(e) => {
                   setSortField(e.target.value as SortField);
@@ -853,20 +855,20 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 }}
                 className="bg-transparent text-xs text-zinc-900 font-bold focus:outline-none cursor-pointer"
               >
-                <option value="totalValue">Valeur totale</option>
-                <option value="quantity">Quantité</option>
-                <option value="materialCode">Référence</option>
-                <option value="materialName">Désignation</option>
-                <option value="warehouseId">Entrepôt</option>
-                <option value="binLocation">Emplacement</option>
+                <option value="totalValue">{t.stock_sort_total_value || 'Valeur totale'}</option>
+                <option value="quantity">{t.stock_sort_qty || 'Quantité'}</option>
+                <option value="materialCode">{t.stock_sort_code || 'Référence'}</option>
+                <option value="materialName">{t.stock_sort_name || 'Désignation'}</option>
+                <option value="warehouseId">{t.stock_sort_warehouse || 'Entrepôt'}</option>
+                <option value="binLocation">{t.stock_sort_bin || 'Emplacement'}</option>
               </select>
 
               <button
                 type="button"
                 onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
                 className="p-1 text-zinc-600 hover:text-zinc-950 rounded-full hover:bg-zinc-100 transition-colors"
-                title={sortOrder === 'asc' ? 'Ordre croissant (cliquer pour décroissant)' : 'Ordre décroissant (cliquer pour croissant)'}
-                aria-label="Inverser l'ordre de tri"
+                title={sortOrder === 'asc' ? (t.stock_sort_asc || 'Ordre croissant (cliquer pour décroissant)') : (t.stock_sort_desc || 'Ordre décroissant (cliquer pour croissant)')}
+                aria-label={t.stock_sort_invert_aria || "Inverser l'ordre de tri"}
               >
                 {sortOrder === 'asc' ? <ArrowUp className="w-3 h-3 text-zinc-900" /> : <ArrowDown className="w-3 h-3 text-zinc-900" />}
               </button>
@@ -895,7 +897,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
         {viewMode === 'cards' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5 p-3.5 bg-zinc-50/50">
             {paginatedItems.map((item) => {
-              const status = getStockStatus(item);
+              const status = getStockStatus(item, t);
 
               return (
                 <div 
@@ -922,7 +924,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                               type="button"
                               onClick={() => onOpenMaterialModal(item.materialId)}
                               className="font-mono font-bold text-xs text-zinc-950 hover:underline tracking-tight text-left truncate focus-visible:ring-2 focus-visible:ring-zinc-950 rounded"
-                              title="Consulter la fiche détaillée"
+                              title={t.stock_action_view_title || "Consulter la fiche détaillée"}
                             >
                               {item.materialCode}
                             </button>
@@ -930,8 +932,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                               type="button"
                               onClick={(e) => handleCopyCode(item.materialCode, e)}
                               className="text-zinc-400 hover:text-zinc-700 p-0.5 rounded transition-colors"
-                              title="Copier le code"
-                              aria-label="Copier le code"
+                              title={t.stock_copy_code_title || "Copier le code"}
+                              aria-label={t.stock_copy_code_title || "Copier le code"}
                             >
                               {copiedCode === item.materialCode ? (
                                 <Check className="w-3 h-3 text-emerald-600" />
@@ -1016,11 +1018,11 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                         type="button"
                         onClick={() => onQuickIssue(item)}
                         className="flex-1 py-1.5 px-2.5 bg-zinc-950 hover:bg-zinc-800 text-lime font-bold text-xs rounded-xl inline-flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-zinc-950"
-                        title="Enregistrer une sortie de stock"
-                        aria-label={`Sortie rapide pour ${item.materialCode}`}
+                        title={t.stock_action_issue_title || "Enregistrer une sortie de stock"}
+                        aria-label={`${t.stock_action_issue || 'Sortie rapide pour'} ${item.materialCode}`}
                       >
                         <ArrowUpFromLine className="w-3.5 h-3.5 text-lime" />
-                        <span>Sortie</span>
+                        <span>{t.stock_action_issue || 'Sortie'}</span>
                       </button>
                     ) : (
                       <button
@@ -1029,7 +1031,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                         className="flex-1 py-1.5 px-2.5 bg-zinc-950 hover:bg-zinc-800 text-white font-bold text-xs rounded-xl inline-flex items-center justify-center gap-1.5 shadow-2xs transition-all active:scale-95"
                       >
                         <Eye className="w-3.5 h-3.5 text-lime" />
-                        <span>Consulter</span>
+                        <span>{t.stock_action_view || 'Consulter'}</span>
                       </button>
                     )}
 
@@ -1041,8 +1043,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                             type="button"
                             onClick={() => onQuickReceipt(item)}
                             className="p-1.5 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 border border-zinc-200 rounded-xl transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-zinc-950"
-                            title="Entrée de stock (+)"
-                            aria-label={`Entrée de stock pour ${item.materialCode}`}
+                            title={t.stock_action_receipt_title || "Entrée de stock (+)"}
+                            aria-label={`${t.stock_action_receipt_title || 'Entrée de stock pour'} ${item.materialCode}`}
                           >
                             <ArrowDownToLine className="w-3.5 h-3.5 text-emerald-600" />
                           </button>
@@ -1050,8 +1052,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                             type="button"
                             onClick={() => onQuickTransfer(item)}
                             className="p-1.5 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 border border-zinc-200 rounded-xl transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-zinc-950"
-                            title="Transférer vers un autre casier/magasin"
-                            aria-label={`Transférer ${item.materialCode}`}
+                            title={t.stock_action_transfer_title || "Transférer vers un autre casier/magasin"}
+                            aria-label={`${t.stock_action_transfer_title || 'Transférer'} ${item.materialCode}`}
                           >
                             <ArrowLeftRight className="w-3.5 h-3.5 text-blue-600" />
                           </button>
@@ -1063,8 +1065,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                           type="button"
                           onClick={() => onOpenLabelModal(item)}
                           className="p-1.5 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 border border-zinc-200 rounded-xl transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-zinc-950"
-                          title="Imprimer étiquette QR code"
-                          aria-label={`Imprimer étiquette pour ${item.materialCode}`}
+                          title={t.stock_action_qr_title || "Imprimer étiquette QR code"}
+                          aria-label={`${t.stock_action_qr_title || 'Imprimer étiquette pour'} ${item.materialCode}`}
                         >
                           <QrCode className="w-3.5 h-3.5" />
                         </button>
@@ -1074,8 +1076,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                         type="button"
                         onClick={() => onOpenMaterialModal(item.materialId)}
                         className="p-1.5 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 border border-zinc-200 rounded-xl transition-all active:scale-95 focus-visible:ring-2 focus-visible:ring-zinc-950"
-                        title="Détails complets de la fiche"
-                        aria-label={`Détails complets pour ${item.materialCode}`}
+                        title={t.stock_action_view_title || "Détails complets de la fiche"}
+                        aria-label={`${t.stock_action_view_title || 'Détails complets pour'} ${item.materialCode}`}
                       >
                         <Eye className="w-3.5 h-3.5" />
                       </button>
@@ -1089,14 +1091,14 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               <div className="col-span-full py-12 text-center text-zinc-500">
                 <Package className="w-10 h-10 mx-auto text-zinc-300 mb-2" />
                 <p className="text-sm font-semibold text-zinc-700">{t.no_matching_stock || 'Aucun article ne correspond à vos filtres'}</p>
-                <p className="text-xs text-zinc-400 mt-1">Essayez de modifier votre recherche ou de réinitialiser les filtres.</p>
+                <p className="text-xs text-zinc-400 mt-1">{t.stock_no_match_hint || 'Essayez de modifier votre recherche ou de réinitialiser les filtres.'}</p>
                 <button
                   type="button"
                   onClick={resetAllFilters}
                   className="mt-3 px-4 py-1.5 bg-zinc-900 text-white rounded-full text-xs font-bold inline-flex items-center gap-1.5"
                 >
                   <RotateCcw className="w-3 h-3" />
-                  <span>Réinitialiser les filtres</span>
+                  <span>{t.stock_reset_filters_btn || 'Réinitialiser les filtres'}</span>
                 </button>
               </div>
             )}
@@ -1233,7 +1235,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 {/* Table Body (Dense, compact rows) */}
                 <tbody className="divide-y divide-zinc-200/90">
                   {paginatedItems.map((item) => {
-                    const status = getStockStatus(item);
+                    const status = getStockStatus(item, t);
                     const locationParts = dataService.getLocationParts(item);
 
                     return (
@@ -1255,7 +1257,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                 imageUrl={item.imageUrl}
                                 materialCode={item.materialCode}
                                 onClick={() => handleOpenMaterialTour(item)}
-                                title="Agrandir / Visite visuelle"
+                                title={t.btn_tour_item || "Agrandir / Visite visuelle"}
                                 size="table"
                               />
 
@@ -1271,8 +1273,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                     type="button"
                                     onClick={(e) => handleCopyCode(item.materialCode, e)}
                                     className="text-zinc-400 hover:text-zinc-700 p-0.5 rounded transition-colors opacity-0 group-hover:opacity-100"
-                                    title="Copier le code"
-                                    aria-label="Copier le code"
+                                    title={t.stock_copy_code_title || "Copier le code"}
+                                    aria-label={t.stock_copy_code_title || "Copier le code"}
                                   >
                                     {copiedCode === item.materialCode ? (
                                       <Check className="w-3 h-3 text-emerald-600" />
@@ -1362,8 +1364,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                   type="button"
                                   onClick={() => onQuickIssue(item)}
                                   className="p-1 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                                  title="Sortie de stock"
-                                  aria-label={`Sortie pour ${item.materialCode}`}
+                                  title={t.stock_action_issue_title || "Sortie de stock"}
+                                  aria-label={`${t.stock_action_issue || 'Sortie pour'} ${item.materialCode}`}
                                 >
                                   <ArrowUpFromLine className="w-3.5 h-3.5 text-zinc-800" />
                                 </button>
@@ -1371,8 +1373,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                   type="button"
                                   onClick={() => onQuickReceipt(item)}
                                   className="p-1 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                                  title="Entrée de stock"
-                                  aria-label={`Entrée pour ${item.materialCode}`}
+                                  title={t.stock_action_receipt_title || "Entrée de stock"}
+                                  aria-label={`${t.stock_action_receipt_title || 'Entrée pour'} ${item.materialCode}`}
                                 >
                                   <ArrowDownToLine className="w-3.5 h-3.5 text-emerald-600" />
                                 </button>
@@ -1380,8 +1382,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                   type="button"
                                   onClick={() => onQuickTransfer(item)}
                                   className="p-1 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                                  title="Transférer"
-                                  aria-label={`Transfert pour ${item.materialCode}`}
+                                  title={t.stock_action_transfer_title || "Transférer"}
+                                  aria-label={`${t.stock_action_transfer_title || 'Transfert pour'} ${item.materialCode}`}
                                 >
                                   <ArrowLeftRight className="w-3.5 h-3.5 text-blue-600" />
                                 </button>
@@ -1392,8 +1394,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                                 type="button"
                                 onClick={() => onOpenLabelModal(item)}
                                 className="p-1 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                                title="Étiquette QR Code"
-                                aria-label={`Étiquette pour ${item.materialCode}`}
+                                title={t.stock_action_qr_title || "Étiquette QR Code"}
+                                aria-label={`${t.stock_action_qr_title || 'Étiquette pour'} ${item.materialCode}`}
                               >
                                 <QrCode className="w-3.5 h-3.5" />
                               </button>
@@ -1402,8 +1404,8 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                               type="button"
                               onClick={() => onOpenMaterialModal(item.materialId)}
                               className="p-1 text-zinc-700 hover:text-zinc-950 hover:bg-zinc-100 rounded-lg transition-colors"
-                              title="Détails"
-                              aria-label={`Détails pour ${item.materialCode}`}
+                              title={t.stock_action_view_title || "Détails"}
+                              aria-label={`${t.stock_action_view_title || 'Détails pour'} ${item.materialCode}`}
                             >
                               <Eye className="w-3.5 h-3.5" />
                             </button>
@@ -1424,7 +1426,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                           className="mt-3 px-3 py-1 bg-zinc-900 text-white rounded-full text-xs font-bold inline-flex items-center gap-1"
                         >
                           <RotateCcw className="w-3 h-3" />
-                          <span>Réinitialiser les filtres</span>
+                          <span>{t.stock_reset_filters_btn || 'Réinitialiser les filtres'}</span>
                         </button>
                       </td>
                     </tr>
@@ -1450,13 +1452,13 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               }}
               className="bg-white border border-zinc-300 text-zinc-900 text-xs px-2.5 py-1 rounded-lg focus:outline-none focus:ring-1 focus:ring-zinc-950 font-medium"
             >
-              <option value={25}>25 par page</option>
-              <option value={50}>50 par page</option>
-              <option value={100}>100 par page</option>
-              <option value={200}>200 par page</option>
+              <option value={25}>25 {t.per_page || 'par page'}</option>
+              <option value={50}>50 {t.per_page || 'par page'}</option>
+              <option value={100}>100 {t.per_page || 'par page'}</option>
+              <option value={200}>200 {t.per_page || 'par page'}</option>
             </select>
             <span className="ml-2 font-mono text-zinc-500">
-              {filteredItems.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} - {Math.min(currentPage * pageSize, filteredItems.length)} sur {filteredItems.length.toLocaleString()}
+              {filteredItems.length > 0 ? (currentPage - 1) * pageSize + 1 : 0} - {Math.min(currentPage * pageSize, filteredItems.length)} {t.page_of || 'sur'} {filteredItems.length.toLocaleString()}
             </span>
           </div>
 
@@ -1467,7 +1469,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               disabled={currentPage === 1}
               className="p-1.5 rounded-lg bg-white hover:bg-zinc-100 border border-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-700 transition-colors"
               title={t.prev_page || 'Page précédente'}
-              aria-label="Page précédente"
+              aria-label={t.prev_page || 'Page précédente'}
             >
               <ChevronLeft className="w-3.5 h-3.5" />
             </button>
@@ -1480,7 +1482,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               disabled={currentPage === totalPages}
               className="p-1.5 rounded-lg bg-white hover:bg-zinc-100 border border-zinc-300 disabled:opacity-40 disabled:cursor-not-allowed text-zinc-700 transition-colors"
               title={t.next_page || 'Page suivante'}
-              aria-label="Page suivante"
+              aria-label={t.next_page || 'Page suivante'}
             >
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
@@ -1513,7 +1515,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                 type="button"
                 onClick={() => setSearchTerm('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-1"
-                aria-label="Effacer la recherche"
+                aria-label={t.clear_search || "Effacer la recherche"}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1530,7 +1532,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
                   : 'bg-zinc-800 text-zinc-300 hover:bg-zinc-700'
               }`}
             >
-              Tous
+              {t.all_warehouses || 'Tous'}
             </button>
             <button
               type="button"
@@ -1564,7 +1566,7 @@ export const StockTableView: React.FC<StockTableViewProps> = ({
               }`}
             >
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Stock Faible</span>
+              <span>{t.low_stock_badge || 'Stock Faible'}</span>
             </button>
           </div>
 

@@ -444,7 +444,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
                           type="button"
                           onClick={() => handleOpenTour(loc.code)}
                           className="w-10 h-10 rounded-lg bg-zinc-100 border border-zinc-200 overflow-hidden inline-flex items-center justify-center relative group hover:border-zinc-400 transition-colors shrink-0"
-                          title="Cliquer pour visiter ce magasin en photos"
+                          title={t.loc_tour_launcher_title}
                         >
                           {loc.imageUrl ? (
                             <img src={loc.imageUrl} alt={loc.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" />
@@ -523,7 +523,7 @@ export const LocationsView: React.FC<LocationsViewProps> = ({
                           <button
                             type="button"
                             onClick={() => handleOpenTour(loc.code)}
-                            title="Visite virtuelle photo de ce magasin"
+                            title={t.loc_tour_launcher_title}
                             className="inline-flex items-center space-x-1 px-2.5 py-1 text-xs font-medium text-zinc-800 bg-white hover:bg-zinc-100 border border-zinc-300 rounded transition-colors"
                           >
                             <Camera className="w-3 h-3 text-zinc-700" />

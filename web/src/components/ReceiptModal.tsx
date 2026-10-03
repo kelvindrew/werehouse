@@ -268,7 +268,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     field="zone"
                     value={zone}
                     onChange={setZone}
-                    placeholder="ex: Zone A"
+                    placeholder={t.placeholder_zone_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -278,7 +278,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     field="containerNumber"
                     value={containerNumber}
                     onChange={setContainerNumber}
-                    placeholder="ex: Container 02"
+                    placeholder={t.placeholder_container_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -288,7 +288,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     field="rack"
                     value={rack}
                     onChange={setRack}
-                    placeholder="ex: R12"
+                    placeholder={t.placeholder_rack_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -298,7 +298,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     field="shelf"
                     value={shelf}
                     onChange={setShelf}
-                    placeholder="ex: S03"
+                    placeholder={t.placeholder_shelf_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -308,7 +308,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     field="position"
                     value={position}
                     onChange={setPosition}
-                    placeholder="ex: C-04"
+                    placeholder={t.placeholder_pos_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -318,7 +318,7 @@ export const ReceiptModal: React.FC<ReceiptModalProps> = ({
                     type="text"
                     value={locationNotes}
                     onChange={(e) => setLocationNotes(e.target.value)}
-                    placeholder="ex: Au sol près porte"
+                    placeholder={t.placeholder_location_notes_example}
                     className="w-full px-2 py-1.5 text-xs bg-white border border-zinc-300 rounded focus:border-zinc-900 outline-none"
                   />
                 </div>

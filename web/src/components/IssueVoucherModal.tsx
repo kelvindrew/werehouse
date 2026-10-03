@@ -459,12 +459,12 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                     }}
                     className="w-full text-xs bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                   >
-                    <option value="ALL">Tous les magasins / Emplacements consolidés</option>
+                    <option value="ALL">{t.voucher_all_sites_consolidated}</option>
                     <option value="B1">{t.b1_warehouse} — Pièces détachées MD01</option>
                     <option value="B2">{t.b2_warehouse} — Consommables Allées A-E</option>
-                    <option value="CONT-01">Container 01 — Brides & Outillage</option>
-                    <option value="CONT-02">Container 02 — Raccords & Vannes</option>
-                    <option value="YARD">Yard Extérieur — Gros gabarits & Tuyaux</option>
+                    <option value="CONT-01">{t.voucher_container_01}</option>
+                    <option value="CONT-02">{t.voucher_container_02}</option>
+                    <option value="YARD">{t.voucher_yard}</option>
                   </select>
                 </div>
 
@@ -492,7 +492,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                     field="requester"
                     value={buyerName}
                     onChange={setBuyerName}
-                    placeholder="ex: Jean-Pierre Kalala, Michel Mwamba..."
+                    placeholder={t.voucher_recipient_placeholder}
                     required
                     inputClassName="w-full text-xs bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                   />
@@ -554,7 +554,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                   rows={2}
                   value={observations}
                   onChange={e => setObservations(e.target.value)}
-                  placeholder="Remarques éventuelles sur la demande, conditions de transport ou consignes..."
+                  placeholder={t.voucher_remarks_placeholder}
                   className="w-full text-xs bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 p-2.5 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                 />
               </div>
@@ -569,10 +569,10 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 <div className="flex items-center justify-between">
                   <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200 flex items-center space-x-2">
                     <Search className="w-3.5 h-3.5 text-zinc-500" />
-                    <span>Rechercher un matériel disponible dans le magasin {warehouseId}</span>
+                    <span>{t.voucher_search_in_warehouse.replace('{warehouse}', warehouseId)}</span>
                   </h3>
                   <span className="text-[11px] font-mono text-zinc-500">
-                    Stock actif uniquement
+                    {t.voucher_active_stock_only}
                   </span>
                 </div>
 
@@ -583,7 +583,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                       type="text"
                       value={searchQuery}
                       onChange={e => setSearchQuery(e.target.value)}
-                      placeholder="Code matériel (ex: 4069...), désignation, spécification ou emplacement..."
+                      placeholder={t.voucher_search_item_placeholder}
                       className="w-full text-xs bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 px-3 py-2 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:border-zinc-900 dark:focus:border-zinc-100"
                     />
                   </div>
@@ -668,7 +668,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                               Dispo: {item.availableQuantity} {item.uom}
                             </span>
                             {isAlreadyAdded && (
-                              <span className="block text-[10px] text-zinc-500 mt-0.5">Déjà ajouté</span>
+                              <span className="block text-[10px] text-zinc-500 mt-0.5">{t.btn_added}</span>
                             )}
                           </div>
                         </div>
@@ -699,14 +699,14 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                     <table className="w-full text-xs text-left">
                       <thead className="bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 font-mono text-[11px] uppercase border-b border-zinc-200 dark:border-zinc-800">
                         <tr>
-                          <th className="py-2.5 px-3">Code</th>
-                          <th className="py-2.5 px-3">Désignation</th>
-                          <th className="py-2.5 px-3">Emplacement</th>
-                          <th className="py-2.5 px-3 text-right">Dispo</th>
-                          <th className="py-2.5 px-3 text-right">Qté demandée</th>
-                          <th className="py-2.5 px-3 text-right">P.U ($)</th>
-                          <th className="py-2.5 px-3 text-right">Total ($)</th>
-                          <th className="py-2.5 px-3 text-center">Action</th>
+                          <th className="py-2.5 px-3">{t.voucher_col_code}</th>
+                          <th className="py-2.5 px-3">{t.voucher_col_name}</th>
+                          <th className="py-2.5 px-3">{t.voucher_col_bin}</th>
+                          <th className="py-2.5 px-3 text-right">{t.col_available || 'Dispo'}</th>
+                          <th className="py-2.5 px-3 text-right">{t.issue_qty_requested}</th>
+                          <th className="py-2.5 px-3 text-right">{t.col_unit_price || 'P.U ($)'}</th>
+                          <th className="py-2.5 px-3 text-right">{t.voucher_col_total_val}</th>
+                          <th className="py-2.5 px-3 text-center">{t.col_actions}</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -729,7 +729,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                                 type="button"
                                 onClick={() => handleRemoveItem(it.id)}
                                 className="p-1 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors"
-                                title="Supprimer"
+                                title={t.btn_delete}
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -761,12 +761,12 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 <table className="w-full text-xs text-left">
                   <thead className="bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 font-mono text-[11px] uppercase border-b border-zinc-200 dark:border-zinc-800">
                     <tr>
-                      <th className="py-2.5 px-3">Article</th>
-                      <th className="py-2.5 px-3">Emplacement physique</th>
-                      <th className="py-2.5 px-3 text-right">Stock dispo</th>
-                      <th className="py-2.5 px-3 text-right">Qté demandée</th>
-                      <th className="py-2.5 px-3 text-center w-36">Qté réellement sortie *</th>
-                      <th className="py-2.5 px-3 text-right">Écart</th>
+                      <th className="py-2.5 px-3">{t.col_article || 'Article'}</th>
+                      <th className="py-2.5 px-3">{t.col_location}</th>
+                      <th className="py-2.5 px-3 text-right">{t.col_available || 'Stock dispo'}</th>
+                      <th className="py-2.5 px-3 text-right">{t.issue_qty_requested}</th>
+                      <th className="py-2.5 px-3 text-center w-36">{t.issue_qty_actual} *</th>
+                      <th className="py-2.5 px-3 text-right">{t.col_variance || 'Écart'}</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
@@ -857,12 +857,12 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                   <table className="w-full text-xs text-left">
                     <thead className="bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 font-mono text-[11px] uppercase border-b border-zinc-200 dark:border-zinc-800">
                       <tr>
-                        <th className="py-2 px-3">Code</th>
-                        <th className="py-2 px-3">Désignation</th>
-                        <th className="py-2 px-3">Emplacement</th>
-                        <th className="py-2 px-3 text-right">Demandé</th>
-                        <th className="py-2 px-3 text-right">Sorti réel</th>
-                        <th className="py-2 px-3 text-right">Total ($)</th>
+                        <th className="py-2 px-3">{t.voucher_col_code}</th>
+                        <th className="py-2 px-3">{t.voucher_col_name}</th>
+                        <th className="py-2 px-3">{t.voucher_col_bin}</th>
+                        <th className="py-2 px-3 text-right">{t.voucher_col_requested}</th>
+                        <th className="py-2 px-3 text-right">{t.voucher_col_issued}</th>
+                        <th className="py-2 px-3 text-right">{t.voucher_col_total_val}</th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 font-mono">
@@ -948,7 +948,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 className="px-3 py-2 text-xs font-mono border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors flex items-center space-x-1"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
-                <span>Précédent</span>
+                <span>{t.prev_page}</span>
               </button>
             )}
           </div>
@@ -962,7 +962,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 className="px-3 py-2 text-xs font-mono border border-zinc-300 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300 transition-colors flex items-center space-x-1"
               >
                 <Save className="w-3.5 h-3.5" />
-                <span>Enregistrer en cours</span>
+                <span>{t.btn_save}</span>
               </button>
             )}
 
@@ -973,7 +973,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 onClick={handleNextFromStep1}
                 className="px-4 py-2 text-xs font-mono font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-colors flex items-center space-x-1"
               >
-                <span>Suivant : Sélection matériels</span>
+                <span>{t.next_page}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -985,7 +985,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 disabled={items.length === 0}
                 className="px-4 py-2 text-xs font-mono font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center space-x-1"
               >
-                <span>Suivant : Vérification physique</span>
+                <span>{t.next_page}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -996,7 +996,7 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 onClick={handleNextFromStep3}
                 className="px-4 py-2 text-xs font-mono font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-colors flex items-center space-x-1"
               >
-                <span>Suivant : Récapitulatif & Signature</span>
+                <span>{t.next_page}</span>
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
             )}
@@ -1045,16 +1045,16 @@ export const IssueVoucherModal: React.FC<IssueVoucherModalProps> = ({
                 <span className="font-bold">{voucherNumber}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Acheteur :</span>
+                <span className="text-zinc-500">{t.buyer_label || 'Acheteur :'}</span>
                 <span>{buyerName}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Articles :</span>
-                <span>{items.length} références ({totalIssuedQty} unités)</span>
+                <span className="text-zinc-500">{t.issued_items_label || 'Articles :'}</span>
+                <span>{items.length} {t.dash_refs_locations} ({totalIssuedQty} {t.col_uom})</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-zinc-500">Carnet :</span>
-                <span>{paperBookRef || 'Attesté'}</span>
+                <span className="text-zinc-500">{t.voucher_paper_book} :</span>
+                <span>{paperBookRef || t.voucher_paper_attested}</span>
               </div>
             </div>
 

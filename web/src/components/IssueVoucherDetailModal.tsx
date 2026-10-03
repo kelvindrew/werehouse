@@ -239,10 +239,10 @@ export const IssueVoucherDetailModal: React.FC<IssueVoucherDetailModalProps> = (
           <div>
             <div className="flex items-center justify-between mb-2">
               <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-800 dark:text-zinc-200">
-                Articles délivrés ({voucher.items.length})
+                {t.issued_items_label?.replace(' :', '') || 'Articles délivrés'} ({voucher.items.length})
               </h3>
               <span className="text-xs font-mono text-zinc-500">
-                Total : <strong className="text-zinc-900 dark:text-zinc-100">{voucher.totalIssuedQty} unités sorties</strong>
+                Total : <strong className="text-zinc-900 dark:text-zinc-100">{voucher.totalIssuedQty} {t.kpi_total_units_issued?.toLowerCase() || 'unités sorties'}</strong>
               </span>
             </div>
 
@@ -250,19 +250,19 @@ export const IssueVoucherDetailModal: React.FC<IssueVoucherDetailModalProps> = (
               <table className="w-full text-xs text-left">
                 <thead className="bg-zinc-100 dark:bg-zinc-800/80 text-zinc-600 dark:text-zinc-400 font-mono text-[11px] uppercase border-b border-zinc-200 dark:border-zinc-800">
                   <tr>
-                    <th className="py-2.5 px-3">Code</th>
-                    <th className="py-2.5 px-3">Désignation</th>
-                    <th className="py-2.5 px-3">Emplacement</th>
+                    <th className="py-2.5 px-3">{t.voucher_col_code}</th>
+                    <th className="py-2.5 px-3">{t.voucher_col_name}</th>
+                    <th className="py-2.5 px-3">{t.voucher_col_bin}</th>
                     {isConfirmed && (
                       <th className="py-2.5 px-3 text-right">{t.issue_stock_before}</th>
                     )}
-                    <th className="py-2.5 px-3 text-right">Demandé</th>
-                    <th className="py-2.5 px-3 text-right">Sorti réel</th>
+                    <th className="py-2.5 px-3 text-right">{t.voucher_col_requested}</th>
+                    <th className="py-2.5 px-3 text-right">{t.voucher_col_issued}</th>
                     {isConfirmed && (
                       <th className="py-2.5 px-3 text-right">{t.issue_stock_after}</th>
                     )}
-                    <th className="py-2.5 px-3 text-right">P.U ($)</th>
-                    <th className="py-2.5 px-3 text-right">Total ($)</th>
+                    <th className="py-2.5 px-3 text-right">{t.col_unit_price || 'P.U ($)'}</th>
+                    <th className="py-2.5 px-3 text-right">{t.voucher_col_total_val}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800 font-mono">
@@ -297,7 +297,7 @@ export const IssueVoucherDetailModal: React.FC<IssueVoucherDetailModalProps> = (
                 </tbody>
                 <tfoot className="bg-zinc-100 dark:bg-zinc-800/80 border-t border-zinc-200 dark:border-zinc-800 font-mono font-bold text-xs">
                   <tr>
-                    <td colSpan={isConfirmed ? 4 : 3} className="py-2.5 px-3 text-right">TOTAUX :</td>
+                    <td colSpan={isConfirmed ? 4 : 3} className="py-2.5 px-3 text-right">{t.voucher_totals_label}</td>
                     <td className="py-2.5 px-3 text-right">{voucher.totalRequestedQty}</td>
                     <td className="py-2.5 px-3 text-right text-zinc-900 dark:text-zinc-100">{voucher.totalIssuedQty}</td>
                     {isConfirmed && <td></td>}
@@ -313,7 +313,7 @@ export const IssueVoucherDetailModal: React.FC<IssueVoucherDetailModalProps> = (
           <div className="hidden print:grid grid-cols-2 gap-8 pt-10 border-t-2 border-black font-mono text-xs">
             <div className="border border-black p-4 h-32 flex flex-col justify-between">
               <div>
-                <span className="font-bold block">VISA DU MAGASINIER (WAREHOUSE CLERK)</span>
+                <span className="font-bold block">{t.voucher_signature_clerk}</span>
                 <span className="text-[10px] text-zinc-600">Nom : {voucher.agentName}</span>
               </div>
               <div className="border-t border-dotted border-black pt-1 text-[10px] text-zinc-500">
@@ -323,7 +323,7 @@ export const IssueVoucherDetailModal: React.FC<IssueVoucherDetailModalProps> = (
 
             <div className="border border-black p-4 h-32 flex flex-col justify-between">
               <div>
-                <span className="font-bold block">VISA DU RÉCEPTIONNAIRE / ACHETEUR</span>
+                <span className="font-bold block">{t.voucher_signature_recipient}</span>
                 <span className="text-[10px] text-zinc-600">Nom : {voucher.buyerName} ({voucher.department || '—'})</span>
               </div>
               <div className="border-t border-dotted border-black pt-1 text-[10px] text-zinc-500">

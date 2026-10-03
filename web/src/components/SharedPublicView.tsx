@@ -24,7 +24,17 @@ interface SharedPublicViewProps {
 }
 
 export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClose }) => {
-  const [currentLang, setCurrentLang] = useState<SupportedLanguage>('fr');
+  const [currentLang, setCurrentLang] = useState<SupportedLanguage>(() => {
+    try {
+      const saved = localStorage.getItem('wms_app_language') as SupportedLanguage;
+      if (saved && (saved === 'fr' || saved === 'en' || saved === 'zh')) {
+        return saved;
+      }
+    } catch {
+      // ignore
+    }
+    return 'fr';
+  });
   const t = useMemo(() => getTranslation(currentLang), [currentLang]);
 
   const [loading, setLoading] = useState(true);
@@ -175,7 +185,13 @@ export const SharedPublicView: React.FC<SharedPublicViewProps> = ({ token, onClo
             {LANGUAGE_OPTIONS.map(opt => (
               <button
                 key={opt.code}
-                onClick={() => setCurrentLang(opt.code)}
+                onClick={() => {
+                  setCurrentLang(opt.code);
+                  try {
+                    localStorage.setItem('wms_app_language', opt.code);
+                    document.documentElement.lang = opt.code;
+                  } catch {}
+                }}
                 className={`px-2 py-1 rounded text-xs transition flex items-center gap-1 ${
                   currentLang === opt.code
                     ? 'bg-zinc-900 text-white font-bold'

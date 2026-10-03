@@ -249,15 +249,15 @@ export const TransferModal: React.FC<TransferModalProps> = ({
               >
                 <option value="ALL">{t.all_sources} ({allAvailableStock.length})</option>
                 <optgroup label={t.main_warehouses_group}>
-                  <option value="B1">Magasin B1 (MD01)</option>
-                  <option value="B2">Magasin B2 (Zones A-E)</option>
+                  <option value="B1">{t.b1_warehouse} (MD01)</option>
+                  <option value="B2">{t.b2_warehouse} (Zones A-E)</option>
                   {locations.filter(l => l.type === 'WAREHOUSE' && l.code !== 'B1' && l.code !== 'B2').map(l => (
-                    <option key={l.id} value={l.code}>Magasin {l.code} — {l.name}</option>
+                    <option key={l.id} value={l.code}>{t.col_warehouse} {l.code} — {l.name}</option>
                   ))}
                 </optgroup>
                 <optgroup label={t.containers_and_sites_group}>
                   {locations.filter(l => l.type === 'CONTAINER').map(l => (
-                    <option key={l.id} value={l.code}>Conteneur {l.code} ({l.name})</option>
+                    <option key={l.id} value={l.code}>{t.type_container} {l.code} ({l.name})</option>
                   ))}
                   {locations.filter(l => l.type !== 'WAREHOUSE' && l.type !== 'CONTAINER' && l.code !== 'B1' && l.code !== 'B2').map(l => (
                     <option key={l.id} value={l.code}>{l.code} — {l.name}</option>
@@ -283,7 +283,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 className="w-full bg-white border border-zinc-300 text-xs text-zinc-900 p-2.5 rounded focus:outline-none focus:border-zinc-900 font-mono disabled:bg-zinc-100 disabled:text-zinc-400"
               >
                 {stockList.length === 0 ? (
-                  <option value="">Aucun article disponible sur ce site</option>
+                  <option value="">{t.trans_no_stock_site}</option>
                 ) : (
                   stockList.map(s => (
                     <option key={s.id} value={s.id}>
@@ -334,16 +334,16 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     className="w-full bg-white border border-zinc-300 text-xs text-zinc-900 p-1.5 rounded font-bold outline-none focus:border-zinc-900"
                   >
                     <optgroup label={t.main_warehouses_group}>
-                      <option value="B1">Magasin B1 (MD01)</option>
-                      <option value="B2">Magasin B2 (Zones A-E)</option>
+                      <option value="B1">{t.b1_warehouse} (MD01)</option>
+                      <option value="B2">{t.b2_warehouse} (Zones A-E)</option>
                       {locations.filter(l => l.type === 'WAREHOUSE' && l.code !== 'B1' && l.code !== 'B2').map(l => (
-                        <option key={l.id} value={l.code}>Magasin {l.code} — {l.name}</option>
+                        <option key={l.id} value={l.code}>{t.col_warehouse} {l.code} — {l.name}</option>
                       ))}
                     </optgroup>
                     <optgroup label={t.containers_and_sites_group}>
                       {locations.filter(l => l.type === 'CONTAINER').map(loc => (
                         <option key={loc.id} value={loc.code}>
-                          Conteneur {loc.code} ({loc.name})
+                          {t.type_container} {loc.code} ({loc.name})
                         </option>
                       ))}
                       {locations.filter(l => l.type !== 'WAREHOUSE' && l.type !== 'CONTAINER' && l.code !== 'B1' && l.code !== 'B2').map(loc => (
@@ -372,7 +372,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 </div>
                 <AutocompleteInput
                   field="binLocation"
-                  placeholder="ex: R01-S01, Rayon 2, Travée B, Conteneur Gauche..."
+                  placeholder={t.trans_bin_placeholder}
                   value={destBinLocation}
                   onChange={setDestBinLocation}
                   uppercase
@@ -383,7 +383,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                 />
                 {combinedSuggestions.length > 0 && (
                   <div className="flex flex-wrap items-center gap-1.5 mt-2">
-                    <span className="text-[10px] text-zinc-400 font-medium">Suggestions :</span>
+                    <span className="text-[10px] text-zinc-400 font-medium">{t.suggestions_label}</span>
                     {combinedSuggestions.map((sugg) => (
                       <button
                         key={sugg}
@@ -423,7 +423,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     field="zone"
                     value={destZone}
                     onChange={setDestZone}
-                    placeholder="ex: Zone A"
+                    placeholder={t.placeholder_zone_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -433,7 +433,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     field="containerNumber"
                     value={destContainerNumber}
                     onChange={setDestContainerNumber}
-                    placeholder="ex: Container 02"
+                    placeholder={t.placeholder_container_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -443,7 +443,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     field="rack"
                     value={destRack}
                     onChange={setDestRack}
-                    placeholder="ex: R12"
+                    placeholder={t.placeholder_rack_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -453,7 +453,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     field="shelf"
                     value={destShelf}
                     onChange={setDestShelf}
-                    placeholder="ex: S03"
+                    placeholder={t.placeholder_shelf_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -463,7 +463,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     field="position"
                     value={destPosition}
                     onChange={setDestPosition}
-                    placeholder="ex: C-04"
+                    placeholder={t.placeholder_pos_example}
                     inputClassName="px-2 py-1.5"
                   />
                 </div>
@@ -473,7 +473,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
                     type="text"
                     value={destLocationNotes}
                     onChange={(e) => setDestLocationNotes(e.target.value)}
-                    placeholder="ex: Au sol"
+                    placeholder={t.placeholder_location_notes_example}
                     className="w-full px-2 py-1.5 text-xs bg-white border border-zinc-300 rounded focus:border-zinc-900 outline-none"
                   />
                 </div>
@@ -510,7 +510,7 @@ export const TransferModal: React.FC<TransferModalProps> = ({
             </label>
             <AutocompleteInput
               field="reason"
-              placeholder="ex: Réapprovisionnement atelier, réorganisation magasin..."
+              placeholder={t.transfer_reason_placeholder}
               value={reason}
               onChange={setReason}
             />

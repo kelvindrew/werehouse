@@ -431,7 +431,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 {isEditing && (
                   <span className="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded-full border border-blue-300 flex items-center gap-1">
                     <Pencil className="w-3 h-3" />
-                    <span>Mode Édition</span>
+                    <span>{t.mat_edit_mode_badge}</span>
                   </span>
                 )}
               </div>
@@ -445,10 +445,10 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 type="button"
                 onClick={handleStartEdit}
                 className="px-3 py-1.5 bg-zinc-950 hover:bg-zinc-800 text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-xs active:scale-95 cursor-pointer"
-                title="Modifier toutes les informations du matériel"
+                title={t.mat_edit_btn}
               >
                 <Pencil className="w-3.5 h-3.5 text-lime" />
-                <span>Modifier la fiche</span>
+                <span>{t.mat_edit_btn}</span>
               </button>
             )}
 
@@ -519,9 +519,9 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
             <div className="bg-blue-50/70 border border-blue-200 rounded-2xl p-4 text-xs text-blue-900 flex items-start gap-3">
               <Pencil className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
               <div>
-                <span className="font-bold text-sm block">Modification des données maîtres de l'article</span>
+                <span className="font-bold text-sm block">{t.mat_edit_notice_title}</span>
                 <p className="text-blue-700 mt-0.5 leading-relaxed">
-                  Vous modifiez directement la fiche signalétique de cet article. Les modifications apportées (code, nom, spécification, unité et prix standard) seront automatiquement synchronisées sur l'ensemble des casiers de stock associés et enregistrées dans le journal d'audit immuable.
+                  {t.mat_edit_notice_desc}
                 </p>
               </div>
             </div>
@@ -558,7 +558,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                           setEditImageUrl('');
                         }}
                         className="p-1.5 bg-red-600 text-white rounded-lg hover:bg-red-700 cursor-pointer shadow"
-                        title="Supprimer la photo"
+                        title={t.mat_photo_delete}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -567,7 +567,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 ) : (
                   <div className="flex flex-col items-center justify-center text-zinc-400 p-2 text-center">
                     <Camera className="w-7 h-7 mb-1 text-zinc-400" />
-                    <span className="text-[10px] font-bold">Ajouter une photo</span>
+                    <span className="text-[10px] font-bold">{t.mat_photo_upload}</span>
                   </div>
                 )}
               </div>
@@ -576,21 +576,21 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 <div className="flex items-center justify-center sm:justify-between flex-wrap gap-2">
                   <span className="font-bold text-zinc-900 flex items-center gap-1.5">
                     <ImageIcon className="w-4 h-4 text-zinc-700" />
-                    <span>Photo du matériel (Édition)</span>
+                    <span>{t.mat_photo_edit_title}</span>
                   </span>
                   {editImageUrl ? (
                     <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 px-2.5 py-0.5 rounded-full font-mono font-bold flex items-center gap-1">
                       <Check className="w-3 h-3 text-emerald-600" />
-                      <span>Photo prête à être enregistrée</span>
+                      <span>{t.mat_photo_ready}</span>
                     </span>
                   ) : (
                     <span className="text-[10px] bg-zinc-100 text-zinc-500 border border-zinc-200 px-2 py-0.5 rounded-full font-mono">
-                      Aucune photo sélectionnée
+                      {t.mat_photo_none}
                     </span>
                   )}
                 </div>
                 <p className="text-zinc-500 text-[11px] leading-relaxed">
-                  Importez ou modifiez la photo de référence pour cet équipement. Elle sera enregistrée lors de la validation du formulaire avec le mot de sécurité.
+                  {t.mat_photo_desc}
                 </p>
                 <div className="pt-1 flex items-center justify-center sm:justify-start gap-2">
                   <button
@@ -600,7 +600,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                     className="px-3 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-white rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-xs cursor-pointer active:scale-95"
                   >
                     <UploadCloud className="w-3.5 h-3.5 text-lime" />
-                    <span>{editImageUrl ? 'Remplacer la photo' : 'Importer une photo'}</span>
+                    <span>{editImageUrl ? t.mat_photo_replace : t.mat_photo_upload}</span>
                   </button>
                   {editImageUrl && (
                     <button
@@ -609,7 +609,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                       className="px-3 py-1.5 bg-white hover:bg-red-50 text-red-600 border border-red-200 rounded-xl text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer active:scale-95"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
-                      <span>Supprimer</span>
+                      <span>{t.btn_delete}</span>
                     </button>
                   )}
                   <input
@@ -628,7 +628,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Code Matériel */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Code Matériel (SAP / Référence) <span className="text-red-500">*</span>
+                  {t.mat_field_code} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -642,7 +642,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Désignation principale (Nom) */}
               <div className="sm:col-span-2">
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Désignation Principale (Nom Anglais / Standard) <span className="text-red-500">*</span>
+                  {t.mat_field_name} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -656,7 +656,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Nom en Chinois */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Nom en Chinois (Chinese Name)
+                  {t.mat_field_chinese_name}
                 </label>
                 <input
                   type="text"
@@ -670,7 +670,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Spécification technique */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Spécification / Modèle technique
+                  {t.mat_field_specs}
                 </label>
                 <input
                   type="text"
@@ -684,7 +684,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Unité de mesure (UOM) */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Unité de Mesure (UOM) <span className="text-red-500">*</span>
+                  {t.mat_field_uom} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -699,7 +699,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Prix Unitaire Standard */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Prix Unitaire Standard ($ USD)
+                  {t.mat_field_price} ($ USD)
                 </label>
                 <input
                   type="number"
@@ -714,7 +714,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Catégorie */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Catégorie Industrielle
+                  {t.mat_field_category}
                 </label>
                 <input
                   type="text"
@@ -728,7 +728,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Division / Usine (Plant) */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Division / Usine (Plant)
+                  {t.mat_plant}
                 </label>
                 <input
                   type="text"
@@ -742,7 +742,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Fabricant */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Fabricant (Manufacturer)
+                  {t.mat_manufacturer}
                 </label>
                 <input
                   type="text"
@@ -756,13 +756,13 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Fournisseur */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Fournisseur (Supplier)
+                  {t.mat_supplier}
                 </label>
                 <input
                   type="text"
                   value={editForm.supplier}
                   onChange={(e) => setEditForm(prev => ({ ...prev, supplier: e.target.value }))}
-                  placeholder="Nom du fournisseur habituel..."
+                  placeholder={t.supplier_placeholder}
                   className="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-950"
                 />
               </div>
@@ -770,7 +770,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Type de valorisation */}
               <div>
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Type de Valorisation
+                  {t.mat_field_valuation}
                 </label>
                 <input
                   type="text"
@@ -784,13 +784,13 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Description détaillée */}
               <div className="sm:col-span-2 lg:col-span-3">
                 <label className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 mb-1">
-                  Description technique complémentaire
+                  {t.mat_field_desc}
                 </label>
                 <textarea
                   rows={2}
                   value={editForm.description}
                   onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                  placeholder="Notes techniques, références croisées ou instructions particulières..."
+                  placeholder={t.mat_desc_placeholder}
                   className="w-full bg-white border border-zinc-300 rounded-xl px-3 py-2 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-950 resize-none"
                 />
               </div>
@@ -805,7 +805,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                   className="w-4 h-4 rounded text-zinc-950 focus:ring-zinc-950 border-zinc-300 cursor-pointer"
                 />
                 <label htmlFor="requiresReview" className="text-xs font-semibold text-zinc-800 cursor-pointer select-none">
-                  Marquer comme « Code temporaire nécessitant une révision »
+                  {t.mat_temp_code_review}
                 </label>
               </div>
             </div>
@@ -839,7 +839,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                   ) : isBinChanged ? (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-blue-100 text-blue-900 border border-blue-300 shadow-2xs">
                       <ArrowLeftRight className="w-3 h-3 text-blue-700" />
-                      <span>Déplacement casier</span>
+                      <span>{t.mat_bin_move}</span>
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
@@ -874,13 +874,13 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {/* Single stock line or no stock chip */}
               {stockRecords.length === 1 && (
                 <div className="flex flex-wrap items-center gap-2 bg-white px-3.5 py-2 rounded-xl border border-zinc-200 text-xs">
-                  <span className="text-zinc-500 font-medium">Emplacement actuel :</span>
+                  <span className="text-zinc-500 font-medium">{t.col_location} :</span>
                   <span className="font-mono font-bold text-zinc-900 px-2 py-0.5 bg-zinc-100 rounded-md border border-zinc-300">
                     {stockRecords[0].warehouseId} • {stockRecords[0].binLocation}
                   </span>
                   <span className="text-zinc-400">|</span>
                   <span className="text-zinc-600 font-mono text-[11px]">
-                    Stock disponible : <strong className="text-zinc-900">{stockRecords[0].availableQuantity} {material.uom}</strong>
+                    {t.col_available || 'Stock dispo'} : <strong className="text-zinc-900">{stockRecords[0].availableQuantity} {material.uom}</strong>
                   </span>
                 </div>
               )}
@@ -888,7 +888,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               {stockRecords.length === 0 && (
                 <div className="bg-white px-3.5 py-2 rounded-xl border border-dashed border-zinc-300 text-xs text-zinc-500 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-amber-400" />
-                  <span>Aucun stock physique enregistré pour ce matériel. Définissez son emplacement de stockage :</span>
+                  <span>{t.no_stock_recorded_item}</span>
                 </div>
               )}
 
@@ -1019,9 +1019,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                       </span>
                     </div>
                     <p className="text-amber-900 text-[11px] leading-relaxed">
-                      L'emplacement sélectionné n'est pas celui du magasin d'origine (actuellement <strong>{originalWarehouseId}</strong>).
-                      Cette modification sera enregistrée comme un <strong>transfert de stock officiel</strong> de <strong>{originalWarehouseId}</strong> ({originalBinLocation}) vers <strong>{targetWarehouseId}</strong> ({targetBinLocation || 'Nouveau casier'}).
-                      Deux mouvements inséparables (<code>TRANSFER_OUT</code> et <code>TRANSFER_IN</code>) seront créés et consignés dans l'historique et l'audit.
+                      {t.mat_edit_transfer_warn}
                     </p>
                   </div>
                 </div>
@@ -1061,72 +1059,72 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 {showAdvancedLocation && (
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 bg-white p-3.5 rounded-2xl border border-zinc-200 mt-2.5 animate-in fade-in">
                     <div>
-                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Zone</label>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">{t.field_zone}</label>
                       <input
                         type="text"
                         value={targetZone}
                         onChange={(e) => setTargetZone(e.target.value)}
-                        placeholder="Ex: Zone A, MD01"
+                        placeholder={t.placeholder_zone_example}
                         className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Rayon (Rack)</label>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">{t.field_rack}</label>
                       <input
                         type="text"
                         value={targetRack}
                         onChange={(e) => setTargetRack(e.target.value)}
-                        placeholder="Ex: R01, R12"
+                        placeholder={t.placeholder_rack_example}
                         className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Étagère (Shelf)</label>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">{t.field_shelf}</label>
                       <input
                         type="text"
                         value={targetShelf}
                         onChange={(e) => setTargetShelf(e.target.value)}
-                        placeholder="Ex: S01, S03"
+                        placeholder={t.placeholder_shelf_example}
                         className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Rangée (Row)</label>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">{t.field_row}</label>
                       <input
                         type="text"
                         value={targetRow}
                         onChange={(e) => setTargetRow(e.target.value)}
-                        placeholder="Ex: L1, Rangée 4"
+                        placeholder={t.placeholder_row_example}
                         className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Position / Bac</label>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">{t.field_position}</label>
                       <input
                         type="text"
                         value={targetPosition}
                         onChange={(e) => setTargetPosition(e.target.value)}
-                        placeholder="Ex: P02, C-04"
+                        placeholder={t.placeholder_pos_example}
                         className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">N° Conteneur</label>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">{t.field_container_number}</label>
                       <input
                         type="text"
                         value={targetContainerNumber}
                         onChange={(e) => setTargetContainerNumber(e.target.value)}
-                        placeholder="Ex: CONT-01"
+                        placeholder={t.placeholder_container_example}
                         className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
                       />
                     </div>
                     <div className="col-span-2">
-                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">Remarques / Repères</label>
+                      <label className="block text-[10px] font-bold uppercase text-zinc-500 mb-1">{t.field_location_notes}</label>
                       <input
                         type="text"
                         value={targetLocationNotes}
                         onChange={(e) => setTargetLocationNotes(e.target.value)}
-                        placeholder="Ex: Au sol près de la porte 2..."
+                        placeholder={t.placeholder_location_notes_example}
                         className="w-full bg-zinc-50 border border-zinc-300 rounded-xl px-2.5 py-1.5 text-xs font-medium text-zinc-900 focus:outline-none focus:ring-1 focus:ring-zinc-950"
                       />
                     </div>
@@ -1156,10 +1154,10 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                   )}
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-zinc-900">
-                      Contrôle de sécurité obligatoire
+                      {t.mat_security_title}
                     </h4>
                     <p className="text-[11px] text-zinc-600 mt-0.5">
-                      Pour enregistrer les modifications de cette fiche matériel, recopiez exactement le mot de sécurité aléatoire généré :
+                      {t.mat_security_desc}
                     </p>
                   </div>
                 </div>
@@ -1169,10 +1167,10 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                   type="button"
                   onClick={handleRegenerateWord}
                   className="px-2.5 py-1.5 bg-white hover:bg-zinc-100 text-zinc-700 border border-zinc-300 rounded-xl text-[11px] font-bold flex items-center gap-1 shrink-0 transition-colors shadow-2xs active:scale-95 cursor-pointer"
-                  title="Générer un autre mot aléatoire"
+                  title={t.mat_security_change_word}
                 >
                   <RefreshCw className="w-3.5 h-3.5" />
-                  <span className="hidden sm:inline">Changer de mot</span>
+                  <span className="hidden sm:inline">{t.mat_security_change_word}</span>
                 </button>
               </div>
 
@@ -1191,7 +1189,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                     required
                     value={inputSecurityWord}
                     onChange={(e) => setInputSecurityWord(e.target.value.trim().toUpperCase())}
-                    placeholder="Recopiez le mot ici (ex: SECURITE-123)..."
+                    placeholder={t.mat_security_placeholder}
                     className={`w-full bg-white border px-3.5 py-2.5 rounded-2xl font-mono text-xs sm:text-sm font-bold focus:outline-none uppercase transition-all ${
                       isSecurityWordValid
                         ? 'border-emerald-500 text-emerald-950 ring-2 ring-emerald-500/40 bg-emerald-50/30'
@@ -1203,7 +1201,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                   {isSecurityWordValid && (
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-emerald-600 font-bold text-xs flex items-center gap-1">
                       <Check className="w-4 h-4 stroke-[3]" />
-                      <span className="hidden sm:inline">Vérifié !</span>
+                      <span className="hidden sm:inline">{t.mat_security_verified}</span>
                     </span>
                   )}
                 </div>
@@ -1214,17 +1212,17 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 {isSecurityWordValid ? (
                   <span className="text-emerald-700 font-bold flex items-center gap-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>Déverrouillage réussi : vous pouvez maintenant enregistrer la fiche.</span>
+                    <span>{t.mat_security_unlocked}</span>
                   </span>
                 ) : inputSecurityWord.length > 0 ? (
                   <span className="text-amber-800 font-medium flex items-center gap-1.5">
                     <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>Saisie actuelle : « {inputSecurityWord} » (attendu : « {randomSecurityWord} »)</span>
+                    <span>{t.mat_security_input_current} « {inputSecurityWord} » ({t.mat_security_expected} « {randomSecurityWord} »)</span>
                   </span>
                 ) : (
                   <span className="text-zinc-500 flex items-center gap-1.5">
                     <Lock className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-                    <span>Bouton d'enregistrement verrouillé tant que le mot n'est pas saisi.</span>
+                    <span>{t.mat_security_button_locked}</span>
                   </span>
                 )}
               </div>
@@ -1237,7 +1235,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 onClick={handleCancelEdit}
                 className="px-4 py-2.5 bg-zinc-100 hover:bg-zinc-200 text-zinc-800 rounded-2xl text-xs font-bold transition-colors cursor-pointer"
               >
-                Annuler
+                {t.btn_cancel}
               </button>
 
               <button
@@ -1250,7 +1248,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 ) : (
                   <Lock className="w-4 h-4 text-zinc-400" />
                 )}
-                <span>Enregistrer les modifications</span>
+                <span>{t.mat_save_btn}</span>
               </button>
             </div>
           </form>
@@ -1269,7 +1267,7 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 className={`w-32 h-32 rounded-2xl bg-white border border-zinc-300 flex items-center justify-center overflow-hidden relative group shrink-0 shadow-xs ${
                   material.imageUrl ? 'cursor-pointer hover:border-zinc-800 transition-all' : ''
                 }`}
-                title={material.imageUrl ? "Cliquer pour agrandir l'image" : "Aucune photo"}
+                title={material.imageUrl ? t.mat_enlarge_photo : t.mat_photo_none}
               >
                 {material.imageUrl ? (
                   <>
@@ -1281,13 +1279,13 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white">
                       <ZoomIn className="w-6 h-6 stroke-[2.5]" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider">Agrandir</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider">{t.btn_enlarge}</span>
                     </div>
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-zinc-400 p-3 text-center">
                     <Package className="w-8 h-8 mb-1 text-zinc-300" />
-                    <span className="text-[10px] font-medium text-zinc-400">Aucune photo</span>
+                    <span className="text-[10px] font-medium text-zinc-400">{t.mat_photo_none}</span>
                   </div>
                 )}
               </div>
@@ -1363,13 +1361,13 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
               <div className="bg-zinc-50/70 p-4 rounded-3xl border border-zinc-200/80 text-xs space-y-1.5">
                 <div className="flex flex-wrap items-center gap-4 text-zinc-600">
                   {material.category && (
-                    <span><strong className="text-zinc-900">Catégorie :</strong> {material.category}</span>
+                    <span><strong className="text-zinc-900">{t.mat_field_category} :</strong> {material.category}</span>
                   )}
                   {material.manufacturer && (
-                    <span><strong className="text-zinc-900">Fabricant :</strong> {material.manufacturer}</span>
+                    <span><strong className="text-zinc-900">{t.mat_manufacturer} :</strong> {material.manufacturer}</span>
                   )}
                   {material.supplier && (
-                    <span><strong className="text-zinc-900">Fournisseur :</strong> {material.supplier}</span>
+                    <span><strong className="text-zinc-900">{t.mat_supplier} :</strong> {material.supplier}</span>
                   )}
                 </div>
                 {material.description && (
@@ -1573,8 +1571,8 @@ export const MaterialDetailModal: React.FC<MaterialDetailModalProps> = ({
                 type="button"
                 onClick={() => setIsImageLightboxOpen(false)}
                 className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-                title="Fermer (Échap)"
-                aria-label="Fermer"
+                title={t.btn_close}
+                aria-label={t.btn_close}
               >
                 <X className="w-5 h-5" />
               </button>

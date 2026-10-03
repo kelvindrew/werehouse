@@ -239,29 +239,29 @@ export const IssueModal: React.FC<IssueModalProps> = ({
               {/* Summary Details */}
               <div className="bg-zinc-50 border border-zinc-200 rounded-xl p-5 space-y-3 text-xs">
                 <div className="flex justify-between items-center pb-2 border-b border-zinc-200">
-                  <span className="text-zinc-500 font-medium">Demandeur / Bénéficiaire :</span>
+                  <span className="text-zinc-500 font-medium">{t.issue_buyer_name} :</span>
                   <span className="font-bold text-zinc-900 font-mono text-sm">{completedVoucher.buyerName}</span>
                 </div>
                 {completedVoucher.department && (
                   <div className="flex justify-between items-center pb-2 border-b border-zinc-200">
-                    <span className="text-zinc-500 font-medium">Département / Affectation :</span>
+                    <span className="text-zinc-500 font-medium">{t.issue_dept_label}</span>
                     <span className="font-semibold text-zinc-800">{completedVoucher.department}</span>
                   </div>
                 )}
                 <div className="flex justify-between items-center pb-2 border-b border-zinc-200">
-                  <span className="text-zinc-500 font-medium">Articles délivrés :</span>
+                  <span className="text-zinc-500 font-medium">{t.issue_items_delivered}</span>
                   <span className="font-bold text-zinc-900 font-mono">
-                    {completedVoucher.totalIssuedQty} unités ({completedVoucher.items.length} réf.)
+                    {completedVoucher.totalIssuedQty} {t.kpi_units} ({completedVoucher.items.length} {t.col_ref})
                   </span>
                 </div>
                 <div className="flex justify-between items-center pb-2 border-b border-zinc-200">
-                  <span className="text-zinc-500 font-medium">Valorisation sortie :</span>
+                  <span className="text-zinc-500 font-medium">{t.issue_valuation_label}</span>
                   <span className="font-mono font-bold text-emerald-700">
                     ${completedVoucher.totalValuationUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-zinc-500 font-medium">Magasin d'origine :</span>
+                  <span className="text-zinc-500 font-medium">{t.issue_origin_wh}</span>
                   <span className="font-mono font-bold px-2 py-0.5 rounded bg-zinc-200 text-zinc-800 text-[11px]">
                     {completedVoucher.warehouseId}
                   </span>
@@ -276,7 +276,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                   className="w-full sm:flex-1 py-3 px-4 bg-zinc-950 hover:bg-zinc-800 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 shadow-sm transition-colors"
                 >
                   <Printer className="w-4 h-4 text-lime" />
-                  <span>Imprimer le Bon de Sortie Officiel (A4)</span>
+                  <span>{t.issue_print_voucher_a4}</span>
                 </button>
 
                 <button
@@ -285,7 +285,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                   className="w-full sm:w-auto py-3 px-4 bg-white hover:bg-zinc-100 text-zinc-800 border border-zinc-300 font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-colors"
                 >
                   <RotateCcw className="w-4 h-4 text-zinc-600" />
-                  <span>Nouvelle sortie</span>
+                  <span>{t.issue_new_action}</span>
                 </button>
 
                 <button
@@ -323,18 +323,18 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                       className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 hover:underline"
                     >
                       <Layers className="w-3.5 h-3.5" />
-                      <span>Passer en Bon Multi-Articles ➔</span>
+                      <span>{t.switch_to_multi_voucher}</span>
                     </button>
                   )}
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {[
-                    { id: 'ALL', label: 'Tous les magasins' },
-                    { id: 'B1', label: 'B1 — Lourd & Vannes' },
-                    { id: 'B2', label: 'B2 — Maintenance' },
-                    { id: 'CONT-01', label: 'Container 01' },
-                    { id: 'CONT-02', label: 'Container 02' },
-                    { id: 'YARD', label: 'Yard Extérieur' },
+                    { id: 'ALL', label: t.all_warehouses },
+                    { id: 'B1', label: t.b1_warehouse },
+                    { id: 'B2', label: t.b2_warehouse },
+                    { id: 'CONT-01', label: t.voucher_container_01 },
+                    { id: 'CONT-02', label: t.voucher_container_02 },
+                    { id: 'YARD', label: t.voucher_yard },
                   ].map(w => (
                     <button
                       key={w.id}
@@ -364,7 +364,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                   <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-3" />
                   <input
                     type="text"
-                    placeholder="Tapez le code SAP (ex: 100000000000045) ou désignation..."
+                    placeholder={t.voucher_search_item_placeholder}
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="w-full pl-9 pr-3 py-2 bg-white border border-zinc-300 rounded-lg text-xs font-mono text-zinc-900 focus:outline-none focus:border-zinc-950 focus:ring-1 focus:ring-zinc-950"
@@ -518,7 +518,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                 {/* Valuation line */}
                 {lineTotalValuation > 0 && (
                   <div className="flex justify-between items-center text-[11px] font-mono px-2 text-zinc-500">
-                    <span>Impact valeur déstockée :</span>
+                    <span>{t.issue_valuation_label}</span>
                     <span className="font-bold text-emerald-700">
                       ${lineTotalValuation.toLocaleString(undefined, { minimumFractionDigits: 2 })} USD
                     </span>
@@ -534,7 +534,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                   </label>
                   <AutocompleteInput
                     field="requester"
-                    placeholder="ex: Jean-Pierre Kalala, Équipe A..."
+                    placeholder={t.voucher_recipient_placeholder}
                     value={requester}
                     onChange={setRequester}
                     onSelectSuggestion={(s) => {
@@ -552,7 +552,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                   </label>
                   <AutocompleteInput
                     field="department"
-                    placeholder="ex: Maintenance, Usine, Concassage..."
+                    placeholder={t.destination_dept}
                     value={department}
                     onChange={setDepartment}
                   />
@@ -567,7 +567,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                   </label>
                   <AutocompleteInput
                     field="reason"
-                    placeholder="ex: Remplacement pompe, Révision..."
+                    placeholder={t.issue_reason}
                     value={reason}
                     onChange={setReason}
                   />
@@ -575,7 +575,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
 
                 <div>
                   <label className="block text-xs font-bold text-zinc-700 mb-1">
-                    N° Bon / Ordre de travail
+                    {t.issue_voucher_number}
                   </label>
                   <input
                     type="text"
@@ -594,7 +594,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                 </label>
                 <textarea
                   rows={2}
-                  placeholder="Remarques complémentaires pour le registre..."
+                  placeholder={t.voucher_remarks_placeholder}
                   value={comments}
                   onChange={(e) => setComments(e.target.value)}
                   className="w-full bg-white border border-zinc-300 text-xs text-zinc-900 p-2.5 rounded-lg focus:outline-none focus:border-zinc-950 resize-none"
@@ -617,7 +617,7 @@ export const IssueModal: React.FC<IssueModalProps> = ({
                   className="px-6 py-2.5 bg-zinc-950 hover:bg-zinc-800 disabled:opacity-40 disabled:cursor-not-allowed text-white rounded-xl text-xs font-black transition-all flex items-center gap-2 shadow-sm"
                 >
                   <Check className="w-4 h-4 text-lime" />
-                  <span>Confirmer la sortie physique</span>
+                  <span>{t.issue_confirm_btn}</span>
                 </button>
               </div>
             </form>

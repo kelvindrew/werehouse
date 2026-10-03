@@ -367,7 +367,7 @@ export const InventoryView: React.FC = () => {
             type="text"
             value={locationSearch}
             onChange={(e) => setLocationSearch(e.target.value)}
-            placeholder="Rechercher un magasin, conteneur ou site..."
+            placeholder={t.inv_search_site_placeholder}
             className="w-full pl-10 pr-4 py-3 bg-white border border-zinc-200/90 rounded-2xl text-xs sm:text-sm font-medium text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-zinc-950 focus:border-transparent transition-all shadow-xs"
           />
         </div>
@@ -460,14 +460,14 @@ export const InventoryView: React.FC = () => {
           <div className="bg-lime/10 border-2 border-lime/40 rounded-2xl sm:rounded-3xl p-3.5 xs:p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 sm:gap-4 shadow-sm">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-1.5 xs:gap-2">
-                <span className="text-[11px] xs:text-xs font-bold uppercase tracking-wider text-zinc-700">Magasin :</span>
+                <span className="text-[11px] xs:text-xs font-bold uppercase tracking-wider text-zinc-700">{t.col_warehouse || 'Magasin'} :</span>
                 <span className="font-mono font-bold text-xs xs:text-sm bg-zinc-900 text-lime px-2 py-0.5 rounded-md">
                   {selectedLocationObj.code}
                 </span>
                 <span className="font-bold text-zinc-950 text-xs xs:text-sm truncate">{selectedLocationObj.name}</span>
               </div>
               <p className="text-[11px] xs:text-xs text-zinc-600 mt-1 line-clamp-2">
-                📍 {selectedLocationObj.physicalLocation} • <span className="font-bold text-zinc-900">{pendingStockCount} références</span> à vérifier.
+                {selectedLocationObj.physicalLocation} • <span className="font-bold text-zinc-900">{pendingStockCount} {t.dash_refs_locations || 'références'}</span> {t.inventory_filter_pending || 'à vérifier'}.
               </p>
             </div>
 
@@ -581,11 +581,11 @@ export const InventoryView: React.FC = () => {
           {/* Bin / Allée Filter */}
           <div className="relative">
             <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-              {t.col_bin} / Emplacement
+              {t.col_bin} / {t.col_location}
             </label>
             <AutocompleteInput
               field="binLocation"
-              placeholder="Filtrer par allée, casier (ex: MD01-A-01)..."
+              placeholder={`${t.filter_by || 'Filtrer'} : ${t.col_bin}...`}
               value={binSearch}
               onChange={setBinSearch}
               fontMono
@@ -597,11 +597,11 @@ export const InventoryView: React.FC = () => {
           {/* Material Code & Name */}
           <div className="relative">
             <label className="block text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-1">
-              Code ou Nom de l'article
+              {t.mat_code} / {t.mat_field_name}
             </label>
             <AutocompleteInput
               field="materialName"
-              placeholder="Rechercher désignation ou code..."
+              placeholder={t.search_placeholder}
               value={materialSearch}
               onChange={setMaterialSearch}
               inputClassName="rounded-2xl bg-zinc-50 border-zinc-200 text-xs py-2 px-3.5 w-full focus:bg-white"
@@ -803,7 +803,7 @@ export const InventoryView: React.FC = () => {
                       <div className="flex items-center justify-between text-xs font-mono font-bold">
                         <span className="text-amber-950 flex items-center gap-1">
                           <AlertTriangle className="w-3.5 h-3.5 text-amber-700" />
-                          <span>Écart constaté :</span>
+                          <span>{t.col_variance || 'Écart'} :</span>
                         </span>
                         <span className={diffQty > 0 ? 'text-emerald-800' : 'text-red-700'}>
                           {diffQty > 0 ? `+${diffQty}` : diffQty} {item.uom} ({diffValue > 0 ? `+${diffValue.toFixed(2)}` : diffValue.toFixed(2)} $)
@@ -831,7 +831,7 @@ export const InventoryView: React.FC = () => {
                       {/* Custom Reason Input */}
                       <input
                         type="text"
-                        placeholder="Motif détaillé de l'ajustement..."
+                        placeholder={t.issue_reason}
                         value={adjustmentReasons[item.id] || ''}
                         onChange={(e) => handleReasonChange(item.id, e.target.value)}
                         className="w-full bg-white border border-amber-300 text-xs px-2.5 py-1.5 rounded-xl text-zinc-900 focus:outline-none focus:ring-1 focus:ring-amber-500"
@@ -858,7 +858,7 @@ export const InventoryView: React.FC = () => {
                       className="w-full py-2 bg-zinc-900 hover:bg-zinc-800 text-white rounded-2xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-xs active:scale-95 transition-all"
                     >
                       <Check className="w-3.5 h-3.5" />
-                      <span>Confirmer conforme</span>
+                      <span>{t.inv_confirm_compliant}</span>
                     </button>
                   ) : null}
                 </div>
@@ -1023,19 +1023,19 @@ export const InventoryView: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2.5 xs:gap-3 text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-lime animate-pulse"></span>
-            <span className="text-zinc-400">Site :</span>
+            <span className="text-zinc-400">{t.col_warehouse} :</span>
             <span className="font-bold text-lime text-xs xs:text-sm">{activeWarehouse}</span>
           </div>
           <span className="text-zinc-600">•</span>
           <div className="flex items-center gap-1.5">
-            <span className="text-zinc-400">Vérifiés :</span>
+            <span className="text-zinc-400">{t.inv_status_verified || 'Vérifiés'} :</span>
             <span className="font-bold text-white text-xs xs:text-sm">{stats.okCount + stats.diffCount} / {stats.total}</span>
           </div>
           {stats.diffCount > 0 && (
             <>
               <span className="text-zinc-600">•</span>
               <span className="text-amber-400 font-bold bg-amber-950/60 px-2 py-0.5 rounded-md border border-amber-800/60">
-                {stats.diffCount} écart(s)
+                {stats.diffCount} {t.col_variance || 'écart(s)'}
               </span>
             </>
           )}

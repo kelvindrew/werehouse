@@ -159,7 +159,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
             className="px-3.5 py-2 text-xs font-mono font-bold bg-lime hover:bg-lime/90 text-zinc-950 transition-all flex items-center gap-1.5 rounded-lg shadow-2xs"
           >
             <ArrowUpFromLine className="w-4 h-4 stroke-[2.5]" />
-            <span>⚡ Sortie Rapide (Express)</span>
+            <span>{t.voucher_quick_express}</span>
           </button>
 
           <button
@@ -263,7 +263,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
             type="text"
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            placeholder="Rechercher par N° bon, acheteur, matériel, département, motif, page carnet..."
+            placeholder={t.voucher_search_placeholder}
             className="w-full pl-10 pr-4 py-2 text-xs bg-zinc-50 hover:bg-zinc-100/70 border border-zinc-200 rounded-full text-zinc-900 focus:outline-none focus:border-zinc-900 focus:bg-white transition-colors"
           />
         </div>
@@ -271,7 +271,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
         {/* Warehouse Selection Capsule */}
         <div className="flex items-center bg-zinc-100/90 p-1 rounded-full border border-zinc-200/80 overflow-x-auto max-w-full text-xs font-medium">
           {[
-            { id: 'ALL', label: 'Tous Magasins' },
+            { id: 'ALL', label: t.all_warehouses || 'Tous' },
             { id: 'B1', label: 'B1' },
             { id: 'B2', label: 'B2' },
             { id: 'CONT-01', label: 'CONT-01' },
@@ -406,7 +406,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
                       className="flex-1 py-1.5 px-2 bg-zinc-950 text-white hover:bg-zinc-800 rounded-xl text-xs font-bold flex items-center justify-center gap-1 shadow-2xs active:scale-95 transition-all"
                     >
                       <Printer className="w-3.5 h-3.5 text-lime" />
-                      <span>Imprimer A4</span>
+                      <span>{t.voucher_print_a4}</span>
                     </button>
                     <button
                       type="button"
@@ -414,7 +414,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
                       className="py-1.5 px-3 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
                     >
                       <Eye className="w-3.5 h-3.5" />
-                      <span>Détail</span>
+                      <span>{t.voucher_view}</span>
                     </button>
                     {!isConfirmed && !isCancelled && (
                       <button
@@ -422,7 +422,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
                         onClick={() => handleContinueVoucher(v)}
                         className="py-1.5 px-3 bg-zinc-100 hover:bg-zinc-200 text-blue-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1 active:scale-95 transition-all"
                       >
-                        <span>Continuer</span>
+                        <span>{t.btn_continue_preparation}</span>
                       </button>
                     )}
                   </div>
@@ -432,7 +432,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
 
             {filteredVouchers.length === 0 && (
               <div className="py-8 text-center text-zinc-400 font-mono text-xs">
-                Aucun bon de sortie ne correspond aux critères.
+                {t.voucher_no_results}
               </div>
             )}
           </div>
@@ -452,20 +452,20 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
             <tr>
               <th className="py-3 px-4">{t.issue_voucher_number}</th>
               <th className="py-3 px-4">{t.col_date}</th>
-              <th className="py-3 px-4">Magasin</th>
+              <th className="py-3 px-4">{t.col_warehouse}</th>
               <th className="py-3 px-4">{t.issue_buyer_name}</th>
               <th className="py-3 px-4">{t.destination_dept}</th>
-              <th className="py-3 px-4 text-right">Articles & Sortie</th>
-              <th className="py-3 px-4">Carnet papier</th>
+              <th className="py-3 px-4 text-right">{t.issue_step_materials}</th>
+              <th className="py-3 px-4">{t.voucher_paper_book?.replace(' :', '') || 'Carnet papier'}</th>
               <th className="py-3 px-4">{t.issue_voucher_status}</th>
-              <th className="py-3 px-4 text-center">Actions</th>
+              <th className="py-3 px-4 text-center">{t.col_actions}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-200 dark:divide-zinc-800">
             {filteredVouchers.length === 0 ? (
               <tr>
                 <td colSpan={9} className="py-12 text-center text-zinc-500 font-mono text-xs">
-                  Aucun bon de sortie ne correspond aux critères sélectionnés.
+                  {t.voucher_no_results}
                 </td>
               </tr>
             ) : (
@@ -516,7 +516,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
                         {v.totalIssuedQty} {v.items[0]?.uom || 'pcs'}
                       </span>
                       <span className="block text-[11px] text-zinc-500">
-                        ({v.items.length} références)
+                        ({v.items.length} {t.col_ref})
                       </span>
                     </td>
 
@@ -526,11 +526,11 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
                         <div className="flex items-center space-x-1.5">
                           <span className="text-zinc-900 dark:text-zinc-100 font-bold">☑</span>
                           <span className="text-zinc-700 dark:text-zinc-300 text-[11px]">
-                            {v.paperBookReference || 'Attesté'}
+                            {v.paperBookReference || t.mat_security_verified}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-zinc-400 text-[11px]">En attente ☒</span>
+                        <span className="text-zinc-400 text-[11px]">{t.kpi_pending_issues} ☒</span>
                       )}
                     </td>
 
@@ -548,7 +548,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
                           title={t.btn_view_voucher}
                         >
                           <Eye className="w-3 h-3" />
-                          <span>Voir</span>
+                          <span>{t.voucher_view}</span>
                         </button>
 
                         {!isConfirmed && !isCancelled && (
@@ -557,7 +557,7 @@ export const IssuesView: React.FC<IssuesViewProps> = ({ currentUser, t }) => {
                             className="px-2.5 py-1 text-[11px] font-mono font-bold bg-zinc-900 hover:bg-black text-white dark:bg-zinc-100 dark:hover:bg-white dark:text-zinc-900 transition-colors flex items-center space-x-1"
                             title={t.btn_continue_preparation}
                           >
-                            <span>Traiter</span>
+                            <span>{t.voucher_process}</span>
                             <ArrowRight className="w-3 h-3" />
                           </button>
                         )}

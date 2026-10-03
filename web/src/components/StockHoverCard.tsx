@@ -154,7 +154,7 @@ export const StockHoverCard: React.FC<StockHoverCardProps> = ({
               </span>
             </div>
             <div>
-              <span className="text-[10px] text-zinc-500 block uppercase font-medium">Stock Global Référencé</span>
+              <span className="text-[10px] text-zinc-500 block uppercase font-medium">{t.total_stock_badge}</span>
               <span className="font-mono font-bold text-zinc-900">
                 {totalAcrossSites.toLocaleString()} {item.uom}
               </span>
@@ -190,7 +190,7 @@ export const StockHoverCard: React.FC<StockHoverCardProps> = ({
                   </div>
                 ))
               ) : (
-                <div className="text-[11px] text-zinc-500 italic">Aucun autre emplacement répertorié</div>
+                <div className="text-[11px] text-zinc-500 italic">{t.no_other_locations}</div>
               )}
             </div>
           </div>
@@ -210,7 +210,7 @@ export const StockHoverCard: React.FC<StockHoverCardProps> = ({
                   title={t.action_receipt}
                 >
                   <ArrowDownToLine className="w-3 h-3" />
-                  <span>+ Entrée</span>
+                  <span>{t.card_btn_receipt}</span>
                 </button>
               )}
 
@@ -226,7 +226,7 @@ export const StockHoverCard: React.FC<StockHoverCardProps> = ({
                   title={t.action_issue}
                 >
                   <ArrowUpFromLine className="w-3 h-3" />
-                  <span>- Sortie</span>
+                  <span>{t.card_btn_issue}</span>
                 </button>
               )}
 
@@ -242,7 +242,7 @@ export const StockHoverCard: React.FC<StockHoverCardProps> = ({
                   title={t.action_transfer}
                 >
                   <ArrowLeftRight className="w-3 h-3" />
-                  <span>⇄ Transférer</span>
+                  <span>{t.btn_transfer}</span>
                 </button>
               )}
             </div>

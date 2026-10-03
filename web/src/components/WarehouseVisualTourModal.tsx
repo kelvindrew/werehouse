@@ -279,7 +279,7 @@ export const WarehouseVisualTourModal: React.FC<WarehouseVisualTourModalProps> =
           <button
             onClick={handlePrevLocation}
             className="absolute left-3 md:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-lg"
-            title="Magasin précédent (Flèche gauche)"
+            title={t.tour_prev_site}
           >
             <ChevronLeft className="w-6 h-6" />
           </button>
@@ -287,7 +287,7 @@ export const WarehouseVisualTourModal: React.FC<WarehouseVisualTourModalProps> =
           <button
             onClick={handleNextLocation}
             className="absolute right-3 md:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/20 flex items-center justify-center transition-transform hover:scale-110 active:scale-95 shadow-lg"
-            title="Magasin suivant (Flèche droite)"
+            title={t.tour_next_site}
           >
             <ChevronRight className="w-6 h-6" />
           </button>
@@ -361,10 +361,10 @@ export const WarehouseVisualTourModal: React.FC<WarehouseVisualTourModalProps> =
                       type="button"
                       onClick={() => onOpenEditLocation(currentLocation)}
                       className="px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 text-xs font-semibold rounded-lg border border-zinc-700 transition-colors inline-flex items-center gap-1.5"
-                      title="Modifier les informations de ce magasin"
+                      title={t.btn_edit_location || t.btn_edit}
                     >
                       <Edit2 className="w-3.5 h-3.5" />
-                      <span className="hidden sm:inline">Modifier</span>
+                      <span className="hidden sm:inline">{t.btn_edit_location || t.btn_edit}</span>
                     </button>
                   )}
 

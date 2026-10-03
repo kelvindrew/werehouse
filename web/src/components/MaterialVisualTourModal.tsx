@@ -260,7 +260,7 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher code, nom, spécification..."
+              placeholder={t.tour_search_item_placeholder}
               className="w-full bg-zinc-950/90 border border-zinc-700/80 rounded-full pl-8 pr-3 py-1 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-zinc-400 font-sans"
             />
             {searchQuery && (
@@ -283,7 +283,7 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                   : 'text-zinc-400 hover:text-white hover:bg-zinc-800/80'
               }`}
             >
-              Tous ({catalogItems.length})
+              {t.share_filter_status_all} ({catalogItems.length})
             </button>
             {availableSites.map((site) => {
               const count = catalogItems.filter(i => i.warehouseId === site).length;
@@ -326,7 +326,7 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Rechercher code, nom..."
+              placeholder={t.tour_search_item_placeholder}
               className="w-full bg-zinc-950 border border-zinc-700 rounded-full pl-8 pr-3 py-1 text-xs text-white placeholder-zinc-500 focus:outline-none"
             />
           </div>
@@ -337,7 +337,7 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                 siteFilter === 'ALL' ? 'bg-white text-zinc-950' : 'bg-zinc-800 text-zinc-400'
               }`}
             >
-              Tous
+              {t.share_filter_status_all}
             </button>
             {availableSites.map(s => (
               <button
@@ -563,7 +563,7 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                     <div className="space-y-1">
                       {currentItem.specification && (
                         <p className="text-xs sm:text-sm font-mono text-zinc-300">
-                          <span className="text-zinc-400 font-sans">Spécification : </span>
+                          <span className="text-zinc-400 font-sans">{t.mat_field_specs} : </span>
                           <span className="text-white font-semibold">{currentItem.specification}</span>
                         </p>
                       )}
@@ -574,9 +574,9 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                       )}
                       {currentMaterial?.manufacturer && (
                         <p className="text-[11px] text-zinc-400">
-                          Fabricant : <span className="text-zinc-200 font-medium">{currentMaterial.manufacturer}</span>
+                          {t.mat_manufacturer} : <span className="text-zinc-200 font-medium">{currentMaterial.manufacturer}</span>
                           {currentMaterial.plant && (
-                            <span className="ml-2 font-mono">| Usine : {currentMaterial.plant}</span>
+                            <span className="ml-2 font-mono">| {t.mat_field_plant} : {currentMaterial.plant}</span>
                           )}
                         </p>
                       )}
@@ -589,20 +589,20 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                     {/* Live Stock Numbers */}
                     <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full sm:w-auto bg-zinc-950/90 p-2.5 sm:p-3 rounded-xl border border-zinc-800 text-center shadow-inner">
                       <div className="px-2">
-                        <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Stock Dispo</span>
+                        <span className="text-[10px] text-zinc-400 uppercase font-semibold block">{t.col_available}</span>
                         <span className="text-sm sm:text-base font-bold font-mono text-white mt-0.5 block">
                           {currentItem.availableQuantity.toLocaleString()}
                           <span className="text-[10px] text-zinc-400 font-normal ml-1">{currentItem.uom}</span>
                         </span>
                       </div>
                       <div className="px-2 border-x border-zinc-800">
-                        <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Prix Unit.</span>
+                        <span className="text-[10px] text-zinc-400 uppercase font-semibold block">{t.col_unit_price}</span>
                         <span className="text-sm sm:text-base font-bold font-mono text-zinc-200 mt-0.5 block">
                           ${currentItem.unitPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       </div>
                       <div className="px-2">
-                        <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Valeur Totale</span>
+                        <span className="text-[10px] text-zinc-400 uppercase font-semibold block">{t.col_total_value}</span>
                         <span className="text-sm sm:text-base font-bold font-mono text-emerald-400 mt-0.5 block">
                           ${currentItem.totalValue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
@@ -616,10 +616,10 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                           type="button"
                           onClick={() => onQuickReceipt(currentItem)}
                           className="px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors border border-zinc-700"
-                          title="Entrée rapide de matériel"
+                          title={t.card_btn_receipt}
                         >
                           <ArrowDownToLine className="w-3.5 h-3.5" />
-                          <span>+ Entrée</span>
+                          <span>{t.card_btn_receipt}</span>
                         </button>
                       )}
 
@@ -628,10 +628,10 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                           type="button"
                           onClick={() => onQuickIssue(currentItem)}
                           className="px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors border border-zinc-700"
-                          title="Sortie rapide de matériel"
+                          title={t.card_btn_issue}
                         >
                           <ArrowUpFromLine className="w-3.5 h-3.5" />
-                          <span>- Sortie</span>
+                          <span>{t.card_btn_issue}</span>
                         </button>
                       )}
 
@@ -640,10 +640,10 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                           type="button"
                           onClick={() => onQuickTransfer(currentItem)}
                           className="px-2.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-lg text-xs font-semibold inline-flex items-center gap-1 transition-colors border border-zinc-700"
-                          title="Transférer vers un autre magasin"
+                          title={t.btn_transfer}
                         >
                           <ArrowLeftRight className="w-3.5 h-3.5" />
-                          <span>⇄ Transfert</span>
+                          <span>{t.btn_transfer}</span>
                         </button>
                       )}
 
@@ -652,7 +652,7 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                           type="button"
                           onClick={() => onOpenLabelModal(currentItem)}
                           className="p-1.5 text-zinc-300 hover:text-white bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg transition-colors"
-                          title="Imprimer QR Code & Étiquette"
+                          title={t.card_qr_title}
                         >
                           <QrCode className="w-4 h-4" />
                         </button>
@@ -666,9 +666,9 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
                             onOpenMaterialModal(currentItem.materialId);
                           }}
                           className="px-3 py-1.5 bg-white hover:bg-zinc-200 text-zinc-950 rounded-lg text-xs font-bold inline-flex items-center gap-1.5 transition-all shadow-md active:scale-95"
-                          title="Ouvrir la fiche complète 360°"
+                          title={t.btn_details}
                         >
-                          <span>Fiche 360°</span>
+                          <span>{t.btn_details}</span>
                           <ExternalLink className="w-3.5 h-3.5" />
                         </button>
                       )}
@@ -680,7 +680,7 @@ export const MaterialVisualTourModal: React.FC<MaterialVisualTourModalProps> = (
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-zinc-400">
               <Package className="w-12 h-12 text-zinc-600 mb-3" />
-              <p className="text-sm font-medium text-zinc-300">Aucun matériel ne correspond aux critères de recherche.</p>
+              <p className="text-sm font-medium text-zinc-300">{t.tour_no_items_found}</p>
               <button
                 onClick={() => {
                   setSearchQuery('');
